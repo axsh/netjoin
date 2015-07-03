@@ -1,0 +1,14 @@
+---
+cent-os:
+  type: linux
+  data:
+    ip: 192.168.122.165
+    username: root
+    pass: root
+test: |
+  --- !ruby/struct:Struct::Instance
+  type: linux
+  data: !ruby/struct:Struct::Data
+    ip: 127.0.0.1
+    username: root
+    pass: root

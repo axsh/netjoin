@@ -1,0 +1,109 @@
+#!/usr/bin/env ruby
+# -*- coding: utf-8 -*-
+
+require 'thor'
+require 'yaml'
+
+module DucttapeCLI
+  
+  class Instances < Thor
+  
+    @@types = [ "linux" ]
+
+    desc "show","Show all instances"
+    options :name => :string
+    def show()
+      config = YAML.load_file('config.yml')
+      if options[:name]
+        puts config[options[:name]].inspect
+      else
+        puts config.inspect
+      end
+    end
+    
+    desc "add <name> <type> <ip> <username> <password>","Add a new instance"
+    def add(name, type, ip, username, password)
+      config = YAML.load_file('config.yml')
+      if(config[name])
+        puts "ERROR : instance with name '#{name}' already exists" 
+        return
+      end
+      if(!@@types.include? type)
+        puts "ERROR : type '#{type}' is not supported" 
+        return
+      end
+      Struct.new("Data", :ip, :username, :password)
+      Struct.new("Instance", :type, :data)
+      data = Struct::Data.new(ip, username, password)
+      instance = Struct::Instance.new(type, data)
+      config[name] = instance
+      File.open('config.yml','w') do |h| 
+        h.write config.to_yaml      
+      end
+      puts config.inspect
+    end
+    
+    desc "update <name>", "Update an instance"
+    options :type => :string
+    options :ip => :string
+    options :username => :string
+    options :password => :string
+    def update(name)
+      Struct.new("Data", :ip, :username, :password)
+      Struct.new("Instance", :type, :data)
+      config = YAML.load_file('config.yml')
+      if(!config[name])
+        puts "ERROR : instance with name '#{name}' doest not exist" 
+        return
+      end
+      if (options[:type])
+        config[name]["type"] = options[:type]
+      end
+      if (options[:ip])
+        config[name]["data"]["ip"] = options[:ip]
+      end
+      if (options[:username])
+        config[name]["data"]["username"] = options[:username]
+      end
+      if (options[:password])
+        config[name]["data"]["password"] = options[:password]
+      end
+      File.open('config.yml','w') do |h| 
+        h.write config.to_yaml      
+      end
+      puts config.inspect
+    end
+    
+    desc "delete <name>", "Delete an instance"
+    def delete(name)
+      Struct.new("Data", :ip, :username, :password)
+      Struct.new("Instance", :type, :data)
+      config = YAML.load_file('config.yml')
+      if(!config[name])
+        puts "ERROR : instance with name '#{name}' doest not exist" 
+        return
+      end
+      config.delete(name)
+      File.open('config.yml','w') do |h| 
+        h.write config.to_yaml      
+      end
+      puts config.inspect
+    end
+    
+  end
+  
+end
+
+class Ducttape < Thor
+  
+  desc "hello NAME", "say hello to NAME"
+  def hello(name)
+    puts "Hello #{name}"
+  end
+
+  desc "instances SUBCOMMAND ...ARGS", "manage instances"
+  subcommand "instances", DucttapeCLI::Instances
+
+end
+
+Ducttape.start(ARGV)
