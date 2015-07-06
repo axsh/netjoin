@@ -14,12 +14,10 @@ module DucttapeCLI
     def show()
 
       # Read config file
-      Struct.new("Data", :ip, :username, :password)
-      Struct.new("Instance", :type, :data)
       config = DucttapeCLI.loadConfig()
 
       # If specific instance is asked, show that instance only, if not, show all
-      if options[:name]
+      if (options[:name])
         puts config[options[:name]].inspect
       else
         puts config.inspect
@@ -31,12 +29,10 @@ module DucttapeCLI
     def delete(name)
 
       # Read config file
-      Struct.new("Data", :ip, :username, :password)
-      Struct.new("Instance", :type, :data)
       config = DucttapeCLI.loadConfig()
 
       # Check for existing instance
-      if(!config[name])
+      if (config and !config[name])
         puts "ERROR : instance with name '#{name}' doest not exist" 
         return
       end

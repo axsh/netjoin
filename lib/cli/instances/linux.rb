@@ -12,18 +12,16 @@ module DucttapeCLI
     desc "add <name> <ip> <username> <password> <cert_path>","Add a new linux instance"
     def add(name, ip, username, password, cert_path)
 
-      if(!File.file?(cert_path))
+      if (!File.file?(cert_path))
         puts "ERROR : not able to read certificate file at '#{cert_path}'" 
         return
       end
       
       # Read config file
-      Struct.new("Data", :ip, :username, :password)
-      Struct.new("Instance", :type, :data)
       config = DucttapeCLI.loadConfig()
 
       # Check for existing instance
-      if(config[name])
+      if (config and config[name])
         puts "ERROR : instance with name '#{name}' already exists" 
         return
       end      
@@ -32,20 +30,18 @@ module DucttapeCLI
       instance = Ducttape::Instances::Linux.new(name, ip, username, password)
 
       # Check for OpenVPN installation on the instance
-      if(!Ducttape::Interfaces::Linux.checkOpenVpnInstalled(instance))
+      if (!Ducttape::Interfaces::Linux.checkOpenVpnInstalled(instance))
         puts "OpenVPN not installed, aborting!"
         return
       end
 
-      if(!Ducttape::Interfaces::Linux.installCertificate(instance, cert_path))
+      if (!Ducttape::Interfaces::Linux.installCertificate(instance, cert_path))
         puts "OpenVPN certificate not installed, aborting!"
         return
       end
       
-      # Update the config file
-      data = Struct::Data.new(ip, username, password)
-      instance = Struct::Instance.new(@type, data)
-      config[name] = instance
+      # Update the config file      
+      config[instance.name()] = instance.export()
       DucttapeCLI.writeConfig(config)
     end
     
@@ -57,26 +53,29 @@ module DucttapeCLI
     def update(name)
 
       # Read config file
-      Struct.new("Data", :ip, :username, :password)
-      Struct.new("Instance", :type, :data)
       config = DucttapeCLI.loadConfig()
 
       # Check for existing instance
-      if(!config[name])
+      if (config and !config[name])
         puts "ERROR : instance with name '#{name}' doest not exist" 
         return
       end
 
+      data = config[name][:data]
+
+      instance = Ducttape::Instances::Linux.new(name, data[:ip], data[:username], data[:password])
+      
       # Update the config file
       if (options[:ip])
-        config[name]["data"]["ip"] = options[:ip]
+        instance.ip_address = options[:ip] 
       end
       if (options[:username])
-        config[name]["data"]["username"] = options[:username]
+        instance.username = options[:username]
       end
       if (options[:password])
-        config[name]["data"]["password"] = options[:password]
+        instance.password = options[:password]
       end
+      config[instance.name()] = instance.export()
       DucttapeCLI.writeConfig(config)
     end
 

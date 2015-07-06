@@ -21,6 +21,8 @@ module DucttapeCLI
   end
   
   def self.loadConfig()
+    Struct.new("Data", :ip, :username, :password)
+    Struct.new("Instance", :type, :data)
     return YAML.load_file('instances.yml')
   end
   
