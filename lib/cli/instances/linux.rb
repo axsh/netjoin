@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 require_relative 'base'
+require_relative '../../interfaces/linux'
 
 module DucttapeCLI
     
@@ -8,7 +9,7 @@ module DucttapeCLI
     
     @type = 'linux'
     
-    desc "add <name> <ip> <username> <password>","Add a new instance"
+    desc "add <name> <ip> <username> <password>","Add a new linux instance"
     def add(name, ip, username, password)
       Struct.new("Data", :ip, :username, :password)
       Struct.new("Instance", :type, :data)
@@ -25,15 +26,12 @@ module DucttapeCLI
         h.write config.to_yaml      
       end
       puts config.inspect
-      interface = Ducttape::Interfaces::Linux.new
-      interface.setName(name)
-      interface.setIpAddress(ip)
-      interface.setUsername(username)
-      interface.setPassword(password)
-      p interface
+      instance = Ducttape::Instances::Linux.new(name, ip, username, password)
+      p instance
+      Ducttape::Interfaces::Linux.sayHello(instance)
     end
     
-    desc "update <name>", "Update an instance"
+    desc "update <name>", "Update a linux instance"
     options :type => :string
     options :ip => :string
     options :username => :string
