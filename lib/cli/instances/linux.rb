@@ -20,7 +20,7 @@ module DucttapeCLI
       # Read config file
       Struct.new("Data", :ip, :username, :password)
       Struct.new("Instance", :type, :data)
-      config = YAML.load_file('config.yml')
+      config = DucttapeCLI.loadConfig()
 
       # Check for existing instance
       if(config[name])
@@ -46,9 +46,7 @@ module DucttapeCLI
       data = Struct::Data.new(ip, username, password)
       instance = Struct::Instance.new(@type, data)
       config[name] = instance
-      File.open('config.yml','w') do |h| 
-        h.write config.to_yaml      
-      end
+      DucttapeCLI.writeConfig(config)
     end
     
     desc "update <name>", "Update a linux instance"
@@ -61,7 +59,7 @@ module DucttapeCLI
       # Read config file
       Struct.new("Data", :ip, :username, :password)
       Struct.new("Instance", :type, :data)
-      config = YAML.load_file('config.yml')
+      config = DucttapeCLI.loadConfig()
 
       # Check for existing instance
       if(!config[name])
@@ -79,9 +77,7 @@ module DucttapeCLI
       if (options[:password])
         config[name]["data"]["password"] = options[:password]
       end
-      File.open('config.yml','w') do |h| 
-        h.write config.to_yaml      
-      end
+      DucttapeCLI.writeConfig(config)
     end
 
   end

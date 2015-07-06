@@ -16,7 +16,7 @@ module DucttapeCLI
       # Read config file
       Struct.new("Data", :ip, :username, :password)
       Struct.new("Instance", :type, :data)
-      config = YAML.load_file('config.yml')
+      config = DucttapeCLI.loadConfig()
 
       # If specific instance is asked, show that instance only, if not, show all
       if options[:name]
@@ -33,7 +33,7 @@ module DucttapeCLI
       # Read config file
       Struct.new("Data", :ip, :username, :password)
       Struct.new("Instance", :type, :data)
-      config = YAML.load_file('config.yml')
+      config = DucttapeCLI.loadConfig()
 
       # Check for existing instance
       if(!config[name])
@@ -43,9 +43,7 @@ module DucttapeCLI
 
       # Update the config gile
       config.delete(name)
-      File.open('config.yml','w') do |h| 
-        h.write config.to_yaml      
-      end
+      DucttapeCLI.writeConfig(config)
     end
 
     desc "linux SUBCOMMAND ...ARGS", "manage linux instances"

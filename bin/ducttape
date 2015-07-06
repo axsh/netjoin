@@ -19,6 +19,16 @@ module DucttapeCLI
     subcommand "instances", DucttapeCLI::Instances
   
   end
+  
+  def self.loadConfig()
+    return YAML.load_file('instances.yml')
+  end
+  
+  def self.writeConfig(config)
+    File.open('instances.yml','w') do |h| 
+      h.write config.to_yaml      
+    end
+  end
 end
 
 DucttapeCLI::Main.start(ARGV)
