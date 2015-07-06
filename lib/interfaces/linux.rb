@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
 
-module Ducttape::Interfaces
+require_relative 'base'
 
+module Ducttape::Interfaces  
+  
   class Linux < Base
 
     @ip_address
@@ -18,6 +20,18 @@ module Ducttape::Interfaces
     
     def getIpAddress()
       return @ip_address
+    end
+    
+    def setUsername(username)
+      @username = username
+    end
+    
+    def getUsername()
+      return @username
+    end
+    
+    def setPassword(password)
+      @password = password
     end
 
   end
