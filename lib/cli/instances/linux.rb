@@ -9,9 +9,14 @@ module DucttapeCLI
     
     @type = 'linux'
     
-    desc "add <name> <ip> <username> <password>","Add a new linux instance"
-    def add(name, ip, username, password)
+    desc "add <name> <ip> <username> <password> <cert_path>","Add a new linux instance"
+    def add(name, ip, username, password, cert_path)
 
+      if(!File.file?(cert_path))
+        puts "ERROR : not able to read certificate file at '#{cert_path}'" 
+        return
+      end
+      
       # Read config file
       Struct.new("Data", :ip, :username, :password)
       Struct.new("Instance", :type, :data)
@@ -32,6 +37,11 @@ module DucttapeCLI
         return
       end
 
+      if(!Ducttape::Interfaces::Linux.installCertificate(instance, cert_path))
+        puts "OpenVPN certificate not installed, aborting!"
+        return
+      end
+      
       # Update the config file
       data = Struct::Data.new(ip, username, password)
       instance = Struct::Instance.new(@type, data)
