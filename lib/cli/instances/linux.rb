@@ -11,24 +11,34 @@ module DucttapeCLI
     
     desc "add <name> <ip> <username> <password>","Add a new linux instance"
     def add(name, ip, username, password)
+
+      # Read config file
       Struct.new("Data", :ip, :username, :password)
       Struct.new("Instance", :type, :data)
       config = YAML.load_file('config.yml')
+
+      # Check for existing instance
       if(config[name])
         puts "ERROR : instance with name '#{name}' already exists" 
         return
+      end      
+
+      # Create Instance object to work with
+      instance = Ducttape::Instances::Linux.new(name, ip, username, password)
+
+      # Check for OpenVPN installation on the instance
+      if(!Ducttape::Interfaces::Linux.checkOpenVpnInstalled(instance))
+        puts "OpenVPN not installed, aborting!"
+        return
       end
 
+      # Update the config file
       data = Struct::Data.new(ip, username, password)
       instance = Struct::Instance.new(@type, data)
       config[name] = instance
       File.open('config.yml','w') do |h| 
         h.write config.to_yaml      
       end
-      puts config.inspect
-      instance = Ducttape::Instances::Linux.new(name, ip, username, password)
-      p instance
-      Ducttape::Interfaces::Linux.sayHello(instance)
     end
     
     desc "update <name>", "Update a linux instance"
@@ -37,13 +47,19 @@ module DucttapeCLI
     options :username => :string
     options :password => :string
     def update(name)
+
+      # Read config file
       Struct.new("Data", :ip, :username, :password)
       Struct.new("Instance", :type, :data)
       config = YAML.load_file('config.yml')
+
+      # Check for existing instance
       if(!config[name])
         puts "ERROR : instance with name '#{name}' doest not exist" 
         return
       end
+
+      # Update the config file
       if (options[:ip])
         config[name]["data"]["ip"] = options[:ip]
       end
@@ -56,9 +72,7 @@ module DucttapeCLI
       File.open('config.yml','w') do |h| 
         h.write config.to_yaml      
       end
-      puts config.inspect
     end
-    
-    
+
   end
 end
