@@ -32,7 +32,7 @@ module DucttapeCLI
       config = DucttapeCLI.loadConfig()
 
       # Check for existing instance
-      if (config and !config[name])
+      if (!config[name])
         puts "ERROR : instance with name '#{name}' doest not exist" 
         return
       end
