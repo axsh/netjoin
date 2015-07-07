@@ -6,11 +6,13 @@ module Ducttape::Instances
   
   class Aws < Base
 
+    attr_accessor :region
     attr_accessor :access_key
     attr_accessor :secret_key
     
-    def initialize(name, access_key, secret_key)
+    def initialize(name, region, access_key, secret_key)
       super(name)
+      @region = region
       @access_key = access_key
       @secret_key = secret_key
     end
@@ -21,6 +23,7 @@ module Ducttape::Instances
 
     def getExportData()
       return {
+        :region => @region,
         :access_key => @access_key, 
         :secret_key => @secret_key
       }
