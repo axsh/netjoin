@@ -16,16 +16,19 @@ module Ducttape::Instances
       @username = username
       @password = password
     end
-    
-    def export()
-      data = Struct::Data.new(@ip_address, @username, @password)
-      instance = Struct::Instance.new(getType(), data)
-      return instance
-    end
-    
+
     def getType()
       return :linux
     end
 
+    def getExportData()
+      return {
+        :ip => @ip_address, 
+        :username => @username, 
+        :password=> @password
+      }
+    end
+
   end
+
 end

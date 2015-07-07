@@ -3,6 +3,7 @@
 require 'thor'
 require 'yaml'
 
+require_relative 'instances/aws'
 require_relative 'instances/linux'
 
 module DucttapeCLI
@@ -42,7 +43,9 @@ module DucttapeCLI
       DucttapeCLI.writeConfig(config)
     end
 
-    desc "linux SUBCOMMAND ...ARGS", "manage linux instances"
+    desc "aws SUBCOMMAND ...ARGS", "manage AWS instances"
+    subcommand "aws", DucttapeCLI::Aws
+    desc "linux SUBCOMMAND ...ARGS", "manage Linux instances"
     subcommand "linux", DucttapeCLI::Linux
 
    end
