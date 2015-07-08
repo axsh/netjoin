@@ -10,8 +10,8 @@ module DucttapeCLI
     
     @type = 'aws'
     
-    desc "add <name> <region> <access_key> <secret_key>","Add a new AWS instance"
-    def add(name, region, access_key, secret_key)
+    desc "add <name> <region> <vpc> <ip_address> <access_key> <secret_key>","Add a new AWS instance"
+    def add(name, region, vpc, ip_address, access_key, secret_key)
 
       # Read config file
       config = DucttapeCLI.loadConfig()
@@ -23,9 +23,14 @@ module DucttapeCLI
       end      
 
       # Create Instance object to work with
-      instance = Ducttape::Instances::Aws.new(name, region, access_key, secret_key)
+      instance = Ducttape::Instances::Aws.new(name, region, vpc, ip_address, access_key, secret_key)
       
+      puts "Creating VPN Gateway"
       Ducttape::Interfaces::Aws.createVpnGateway(instance)
+      puts "Attaching VPC to VPN Gateway"
+      Ducttape::Interfaces::Aws.attachVpc(instance)
+      puts "Creating Customer Gateway"
+      Ducttape::Interfaces::Aws.createCustomerGateway(instance)
 
       # Update the config file      
       config[instance.name()] = instance.export()     
@@ -35,6 +40,7 @@ module DucttapeCLI
     
     desc "update <name>", "Update an AWS instance"
     options :region => :string
+    options :vpc => :string
     options :access_key => :string
     options :secret_key => :string
     def update(name)
@@ -55,6 +61,9 @@ module DucttapeCLI
       # Update the config file
       if (options[:region])
         instance.secret_key = options[:region]
+      end
+      if (options[:vpc])
+        instance.vpc = options[:vpc]
       end
       if (options[:access_key])
         instance.access_key = options[:access_key] 

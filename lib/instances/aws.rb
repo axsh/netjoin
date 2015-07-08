@@ -7,12 +7,19 @@ module Ducttape::Instances
   class Aws < Base
 
     attr_accessor :region
+    attr_accessor :vpc
+    attr_accessor :ip_address
     attr_accessor :access_key
     attr_accessor :secret_key
     
-    def initialize(name, region, access_key, secret_key)
+    attr_accessor :vpn_gateway_id
+    attr_accessor :customer_gateway_id
+    
+    def initialize(name, region, vpc, ip_address, access_key, secret_key)
       super(name)
       @region = region
+      @vpc = vpc
+      @ip_address = ip_address
       @access_key = access_key
       @secret_key = secret_key
     end
@@ -24,8 +31,12 @@ module Ducttape::Instances
     def getExportData()
       return {
         :region => @region,
+        :vpc => @vpc,
+        :ip_address => @ip_address,
         :access_key => @access_key, 
-        :secret_key => @secret_key
+        :secret_key => @secret_key,
+        :vpn_gateway_id => @vpn_gateway_id,
+        :customer_gateway_id => @customer_gateway_id
       }
       
     end
