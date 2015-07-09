@@ -18,8 +18,8 @@ module Ducttape::Interfaces
       puts response
     end
     
-    def self.createCustomerGateway(instance)
-      response = `ec2-create-customer-gateway -t ipsec.1 -i #{instance.ip_address} --aws-access-key #{instance.access_key} --aws-secret-key #{instance.secret_key} --show-empty-fields`
+    def self.createCustomerGateway(instance, server_ip)
+      response = `ec2-create-customer-gateway -t ipsec.1 -i #{server_ip} --aws-access-key #{instance.access_key} --aws-secret-key #{instance.secret_key} --show-empty-fields`
       puts response
       r = response.split("\t");
       instance.customer_gateway_id = r[1]

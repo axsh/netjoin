@@ -43,8 +43,9 @@ module DucttapeCLI
       DucttapeCLI.writeConfig(config)
     end
     
-    desc "aws SUBCOMMAND ...ARGS", "manage AWS instances"
-    subcommand "aws", DucttapeCLI::Instance::Aws
+    # TODO finish implementing AWS Support
+    #desc "aws SUBCOMMAND ...ARGS", "manage AWS instances"
+    #subcommand "aws", DucttapeCLI::Instance::Aws
     desc "linux SUBCOMMAND ...ARGS", "manage Linux instances"
     subcommand "linux", DucttapeCLI::Instance::Linux
 

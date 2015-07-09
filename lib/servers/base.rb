@@ -1,17 +1,13 @@
 # -*- coding: utf-8 -*-
 
-module Ducttape::Instances
+module Ducttape::Servers
 
   class Base
 
     attr_accessor :name
-    attr_accessor :server
-    attr_accessor :status
 
-    def initialize(name, server)
+    def initialize(name)
       @name = name
-      @server = server
-      @status = :new
     end
 
     def getType()
@@ -25,8 +21,6 @@ module Ducttape::Instances
     def export()
       return {
         :type => getType(),
-        :server => @server,
-        :status => @status,
         :data => getExportData() 
       }
     end

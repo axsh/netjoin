@@ -2,7 +2,7 @@
 
 require_relative 'base'
 
-module Ducttape::Instances  
+module Ducttape::Servers  
   
   class Linux < Base
 
@@ -10,8 +10,8 @@ module Ducttape::Instances
     attr_accessor :username
     attr_accessor :password
     
-    def initialize(name, server, ip_address, username, password)
-      super(name, server)
+    def initialize(name, ip_address, username, password)
+      super(name)
       @ip_address = ip_address
       @username = username
       @password = password

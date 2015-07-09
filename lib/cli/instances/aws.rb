@@ -10,8 +10,13 @@ module DucttapeCLI::Instance
     
     @type = 'aws'
     
-    desc "add <name> <region> <vpc> <ip_address> <access_key> <secret_key>","Add a new AWS instance"
-    def add(name, region, vpc, ip_address, access_key, secret_key)
+    desc "add <name>","Add a new AWS instance"
+    option :region, :required => true
+    option :vpc, :required => true
+    option :ip_address, :required => true
+    option :access_key, :required => true
+    option :secret_key, :required => true
+    def add(name)
 
       # Read config file
       config = DucttapeCLI.loadConfig()
@@ -23,14 +28,16 @@ module DucttapeCLI::Instance
       end      
 
       # Create Instance object to work with
-      instance = Ducttape::Instances::Aws.new(name, region, vpc, ip_address, access_key, secret_key)
-      
+      instance = Ducttape::Instances::Aws.new(name, options[:region], options[:vpc], options[:ip_address], options[:access_key], options[:secret_key])
+
       puts "Creating VPN Gateway"
       Ducttape::Interfaces::Aws.createVpnGateway(instance)
       puts "Attaching VPC to VPN Gateway"
       Ducttape::Interfaces::Aws.attachVpc(instance)
       puts "Creating Customer Gateway"
-      Ducttape::Interfaces::Aws.createCustomerGateway(instance)
+      # TODO support other than linux servers 
+      server_ip = config['servers'][instance.server][:data][:ip_address]
+      Ducttape::Interfaces::Aws.createCustomerGateway(instance, server_ip)
 
       # Update the config file
       if(!config['instances'])

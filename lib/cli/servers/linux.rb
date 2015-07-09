@@ -25,7 +25,7 @@ module DucttapeCLI::Server
       end      
 
       # Create Instance object to work with
-      instance = Ducttape::Instances::Linux.new(name, options[:ip_address], options[:username], options[:password])
+      instance = Ducttape::Servers::Linux.new(name, options[:ip_address], options[:username], options[:password])
 
       # Check for OpenVPN installation on the instance
       if (!Ducttape::Interfaces::Linux.checkOpenVpnInstalled(instance))
@@ -59,7 +59,7 @@ module DucttapeCLI::Server
 
       data = config['servers'][instance.name()][:data]
 
-      instance = Ducttape::Instances::Linux.new(name, data[:ip_address], data[:username], data[:password])
+      instance = Ducttape::Servers::Linux.new(name, data[:ip_address], data[:username], data[:password])
       
       # Update the config file
       if (options[:ip])

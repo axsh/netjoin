@@ -11,13 +11,14 @@ module DucttapeCLI::Instance
     @type = 'linux'
     
     desc "add <name>","Add a new linux instance"
+    option :server, :required => true
     option :ip_address, :required => true
     option :username, :required => true
     option :password, :required => true
     option :cert_path, :required => true
     def add(name)
 
-      if (!File.file?(cert_path))
+      if (!File.file?(options[:cert_path]))
         puts "ERROR : not able to read certificate file at '#{options[:cert_path]}'" 
         return
       end
@@ -32,7 +33,7 @@ module DucttapeCLI::Instance
       end      
 
       # Create Instance object to work with
-      instance = Ducttape::Instances::Linux.new(name, options[:ip_address], options[:username], options[:password])
+      instance = Ducttape::Instances::Linux.new(name, options[:server], options[:ip_address], options[:username], options[:password])
 
       # Check for OpenVPN installation on the instance
       if (!Ducttape::Interfaces::Linux.checkOpenVpnInstalled(instance))

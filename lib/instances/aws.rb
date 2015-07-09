@@ -15,11 +15,10 @@ module Ducttape::Instances
     attr_accessor :vpn_gateway_id
     attr_accessor :customer_gateway_id
     
-    def initialize(name, region, vpc, ip_address, access_key, secret_key)
-      super(name)
+    def initialize(name, server, region, vpc, access_key, secret_key)
+      super(name, server)
       @region = region
       @vpc = vpc
-      @ip_address = ip_address
       @access_key = access_key
       @secret_key = secret_key
     end
@@ -32,7 +31,6 @@ module Ducttape::Instances
       return {
         :region => @region,
         :vpc => @vpc,
-        :ip_address => @ip_address,
         :access_key => @access_key, 
         :secret_key => @secret_key,
         :vpn_gateway_id => @vpn_gateway_id,
