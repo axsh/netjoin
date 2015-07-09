@@ -10,11 +10,15 @@ module DucttapeCLI::Instance
     
     @type = 'linux'
     
-    desc "add <name> <ip> <username> <password> <cert_path>","Add a new linux instance"
-    def add(name, ip, username, password, cert_path)
+    desc "add <name>","Add a new linux instance"
+    option :ip_address, :required => true
+    option :username, :required => true
+    option :password, :required => true
+    option :cert_path, :required => true
+    def add(name)
 
       if (!File.file?(cert_path))
-        puts "ERROR : not able to read certificate file at '#{cert_path}'" 
+        puts "ERROR : not able to read certificate file at '#{options[:cert_path]}'" 
         return
       end
       
@@ -28,7 +32,7 @@ module DucttapeCLI::Instance
       end      
 
       # Create Instance object to work with
-      instance = Ducttape::Instances::Linux.new(name, ip, username, password)
+      instance = Ducttape::Instances::Linux.new(name, options[:ip_address], options[:username], options[:password])
 
       # Check for OpenVPN installation on the instance
       if (!Ducttape::Interfaces::Linux.checkOpenVpnInstalled(instance))
@@ -36,7 +40,7 @@ module DucttapeCLI::Instance
         return
       end
 
-      if (!Ducttape::Interfaces::Linux.installCertificate(instance, cert_path))
+      if (!Ducttape::Interfaces::Linux.installCertificate(instance, options[:cert_path]))
         puts "OpenVPN certificate not installed, aborting!"
         return
       end
@@ -52,7 +56,7 @@ module DucttapeCLI::Instance
     
     desc "update <name>", "Update a linux instance"
     options :type => :string
-    options :ip => :string
+    options :ip_address => :string
     options :username => :string
     options :password => :string
     def update(name)
@@ -68,12 +72,12 @@ module DucttapeCLI::Instance
 
       data = config['instances'][name][:data]
 
-      instance = Ducttape::Instances::Linux.new(name, data[:ip], data[:username], data[:password])
+      instance = Ducttape::Instances::Linux.new(name, data[:ip_address], data[:username], data[:password])
       instance.status = config['instances'][:status]
       
       # Update the config file
-      if (options[:ip])
-        instance.ip_address = options[:ip] 
+      if (options[:ip_address])
+        instance.ip_address = options[:ip_address] 
       end
       if (options[:username])
         instance.username = options[:username]
