@@ -34,18 +34,7 @@ module DucttapeCLI::Instance
 
       # Create Instance object to work with
       instance = Ducttape::Instances::Linux.new(name, options[:server], options[:ip_address], options[:username], options[:password])
-
-      # Check for OpenVPN installation on the instance
-      if (!Ducttape::Interfaces::Linux.checkOpenVpnInstalled(instance))
-        puts "OpenVPN not installed, aborting!"
-        return
-      end
-
-      if (!Ducttape::Interfaces::Linux.installCertificate(instance, options[:cert_path]))
-        puts "OpenVPN certificate not installed, aborting!"
-        return
-      end
-      
+     
       # Update the config file
       if(!config['instances'])
         config['instances'] = {}
@@ -61,7 +50,7 @@ module DucttapeCLI::Instance
     options :username => :string
     options :password => :string
     def update(name)
-
+      
       # Read config file
       config = DucttapeCLI.loadConfig()
 
@@ -91,4 +80,5 @@ module DucttapeCLI::Instance
     end
 
   end
+
 end
