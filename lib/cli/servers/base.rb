@@ -3,28 +3,28 @@
 require 'thor'
 require 'yaml'
 
-module DucttapeCLI::Instance
+module DucttapeCLI::Server
 
   class Base < Thor
-    
+
     @type = 'base'
 
-    desc "show","Show all instances"
+    desc "show","Show all servers"
     def show()
 
       # Read config file
       config = DucttapeCLI.loadConfig()
 
-      if(!config['instances'])
+      if(!config['servers'])
         return
       end
-      # Remove instances from config that do not match type
-      config['instances'].each do |key, value|
+      # Remove servers from config that do not match type
+      config['servers'].each do |key, value|
         if (!(value['type'].to_s === type()))
-          config['instances'].delete(key)
+          config['servers'].delete(key)
         end
       end
-      puts config['instances'].inspect
+      puts config['servers'].inspect
     end
 
     no_commands{
@@ -36,7 +36,6 @@ module DucttapeCLI::Instance
         self.class.type
       end  
     }
-
-  end
-
+        
+   end
 end

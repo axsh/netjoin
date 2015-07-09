@@ -4,7 +4,7 @@ require_relative 'base'
 require_relative '../../instances/aws'
 require_relative '../../interfaces/aws'
 
-module DucttapeCLI
+module DucttapeCLI::Instance
     
   class Aws < Base
     

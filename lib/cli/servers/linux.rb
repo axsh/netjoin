@@ -3,37 +3,29 @@
 require 'thor'
 require 'yaml'
 
-module DucttapeCLI
+require_relative 'base'
 
-  class Server < Thor
+module DucttapeCLI::Server
 
-    desc "show","Show server"
-    def show()
+  class Linux < Base
 
-      # Read config file
-      config = DucttapeCLI.loadConfig()
-
-      # If specific instance is asked, show that instance only, if not, show all
-      if(config['server'])
-        puts config['server'].inspect
-      end
-      
-    end
-
-    desc "add <ip> <username> <password>","Add server"
-    def add(ip, username, password)
+    desc "add <name>","Add server"
+    option :ip_address, :required => true
+    option :username, :required => true
+    option :password, :required => true
+    def add(name)
      
       # Read config file
       config = DucttapeCLI.loadConfig()
 
       # Check for existing instance
-      if (config['server'])
-        puts "ERROR : server already exists" 
+      if (config['servers'] and config['servers'][name])
+        puts "ERROR : server with name '#{name}' already exists" 
         return
       end      
 
       # Create Instance object to work with
-      instance = Ducttape::Instances::Linux.new('server', ip, username, password)
+      instance = Ducttape::Instances::Linux.new(name, options[:ip_address], options[:username], options[:password])
 
       # Check for OpenVPN installation on the instance
       if (!Ducttape::Interfaces::Linux.checkOpenVpnInstalled(instance))
@@ -42,17 +34,17 @@ module DucttapeCLI
       end
       
       # Update the config file
-      if(!config['server'])
-        config['server'] = {}
+      if(!config['servers'])
+        config['servers'] = {}
       end  
-      config['server'] = instance.export()
+      config['servers'][instance.name()] = instance.export()
 
       DucttapeCLI.writeConfig(config)
     end
     
-    desc "update ", "Update server"
+    desc "update <name>", "Update server"
     options :name => :string
-    options :ip => :string
+    options :ip_address => :string
     options :username => :string
     options :password => :string
     def update(name)
@@ -60,14 +52,14 @@ module DucttapeCLI
       config = DucttapeCLI.loadConfig()
 
       # Check for existing instance
-      if (!config['server'])
-        puts "ERROR : server does not exist" 
+      if (!config['servers'] or !config['servers'][name])
+        puts "ERROR : server with name '#{name}' does not exist" 
         return
       end
 
-      data = config['server'][:data]
+      data = config['servers'][instance.name()][:data]
 
-      instance = Ducttape::Instances::Linux.new('server', data[:ip], data[:username], data[:password])
+      instance = Ducttape::Instances::Linux.new(name, data[:ip_address], data[:username], data[:password])
       
       # Update the config file
       if (options[:ip])
@@ -79,7 +71,7 @@ module DucttapeCLI
       if (options[:password])
         instance.password = options[:password]
       end
-      config['server'] = instance.export()
+      config['servers'][instance.name()] = instance.export()
       DucttapeCLI.writeConfig(config)
     end
         

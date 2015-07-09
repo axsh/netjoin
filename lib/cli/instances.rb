@@ -44,9 +44,9 @@ module DucttapeCLI
     end
     
     desc "aws SUBCOMMAND ...ARGS", "manage AWS instances"
-    subcommand "aws", DucttapeCLI::Aws
+    subcommand "aws", DucttapeCLI::Instance::Aws
     desc "linux SUBCOMMAND ...ARGS", "manage Linux instances"
-    subcommand "linux", DucttapeCLI::Linux
+    subcommand "linux", DucttapeCLI::Instance::Linux
 
    end
 end

@@ -4,7 +4,7 @@ require_relative 'base'
 require_relative '../../instances/linux'
 require_relative '../../interfaces/linux'
 
-module DucttapeCLI
+module DucttapeCLI::Instance
     
   class Linux < Base
     

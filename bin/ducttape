@@ -14,8 +14,8 @@ module DucttapeCLI
     desc "instances SUBCOMMAND ...ARGS", "manage instances"
     subcommand "instances", DucttapeCLI::Instances
     
-    desc "server SUBCOMMAND ...ARGS", "manage server"
-    subcommand "server", DucttapeCLI::Server
+    desc "servers SUBCOMMAND ...ARGS", "manage servers"
+    subcommand "servers", DucttapeCLI::Servers
     
     desc "export","Export configuration"
     def export()

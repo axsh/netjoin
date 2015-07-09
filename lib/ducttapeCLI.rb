@@ -2,6 +2,6 @@
 module DucttapeCLI
   
     require_relative 'cli/instances'
-    require_relative 'cli/server'
+    require_relative 'cli/servers'
       
 end
