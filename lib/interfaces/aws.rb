@@ -14,7 +14,7 @@ module Ducttape::Interfaces
     end
     
     def self.attachVpc(instance)
-      response = `ec2-attach-vpn-gateway #{instance.gateway_id} -c #{instance.vpc} --region #{instance.region} --aws-access-key #{instance.access_key} --aws-secret-key #{instance.secret_key} --show-empty-fields`
+      response = `ec2-attach-vpn-gateway #{instance.vpn_gateway_id} -c #{instance.vpc} --region #{instance.region} --aws-access-key #{instance.access_key} --aws-secret-key #{instance.secret_key} --show-empty-fields`
       puts response
     end
     
