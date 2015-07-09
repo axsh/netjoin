@@ -42,7 +42,7 @@ module DucttapeCLI
       config.delete(name)
       DucttapeCLI.writeConfig(config)
     end
-
+    
     desc "aws SUBCOMMAND ...ARGS", "manage AWS instances"
     subcommand "aws", DucttapeCLI::Aws
     desc "linux SUBCOMMAND ...ARGS", "manage Linux instances"
