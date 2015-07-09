@@ -22,7 +22,7 @@ module DucttapeCLI
       config = DucttapeCLI.loadConfig()
 
       # Check for existing instance
-      if (config[name])
+      if (config['instances'] and config['instances'][name])
         puts "ERROR : instance with name '#{name}' already exists" 
         return
       end      
@@ -41,8 +41,11 @@ module DucttapeCLI
         return
       end
       
-      # Update the config file      
-      config[instance.name()] = instance.export()
+      # Update the config file
+      if(!config['instances'])
+        config['instances'] = {}
+      end  
+      config['instances'][instance.name()] = instance.export()
 
       DucttapeCLI.writeConfig(config)
     end
@@ -58,14 +61,15 @@ module DucttapeCLI
       config = DucttapeCLI.loadConfig()
 
       # Check for existing instance
-      if (!config[name])
-        puts "ERROR : instance with name '#{name}' doest not exist" 
+      if (!config['instances'] or !config['instances'][name])
+        puts "ERROR : instance with name '#{name}' does not exist" 
         return
       end
 
-      data = config[name][:data]
+      data = config['instances'][name][:data]
 
       instance = Ducttape::Instances::Linux.new(name, data[:ip], data[:username], data[:password])
+      instance.status = config['instances'][:status]
       
       # Update the config file
       if (options[:ip])
@@ -77,7 +81,7 @@ module DucttapeCLI
       if (options[:password])
         instance.password = options[:password]
       end
-      config[instance.name()] = instance.export()
+      config['instances'][instance.name()] = instance.export()
       DucttapeCLI.writeConfig(config)
     end
 

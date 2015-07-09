@@ -19,9 +19,9 @@ module DucttapeCLI
 
       # If specific instance is asked, show that instance only, if not, show all
       if (options[:name])
-        puts config[options[:name]].inspect
+        puts config['instances'][options[:name]].inspect
       else
-        puts config.inspect
+        puts config['instances'].inspect
       end
 
     end
@@ -39,7 +39,7 @@ module DucttapeCLI
       end
 
       # Update the config gile
-      config.delete(name)
+      config['instances'].delete(name)
       DucttapeCLI.writeConfig(config)
     end
     

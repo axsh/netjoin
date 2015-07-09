@@ -13,12 +13,21 @@ module DucttapeCLI
       
     desc "instances SUBCOMMAND ...ARGS", "manage instances"
     subcommand "instances", DucttapeCLI::Instances
-  
+    
+    desc "server SUBCOMMAND ...ARGS", "manage server"
+    subcommand "server", DucttapeCLI::Server
+    
+    desc "export","Export configuration"
+    def export()
+      # Read config file
+      config = DucttapeCLI.loadConfig()     
+      puts config.inspect
+    end
+    
   end
   
   def self.loadConfig()
-    Struct.new("Instance", :type, :data)
-    config = YAML.load_file('instances.yml')
+    config = YAML.load_file('config.yml')
     if(!config)
       config = {}
     end     
@@ -26,7 +35,7 @@ module DucttapeCLI
   end
   
   def self.writeConfig(config)
-    File.open('instances.yml','w') do |h| 
+    File.open('config.yml','w') do |h| 
       h.write config.to_yaml      
     end
   end

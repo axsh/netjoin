@@ -17,7 +17,7 @@ module DucttapeCLI
       config = DucttapeCLI.loadConfig()
 
       # Check for existing instance
-      if (config[name])
+      if (config['instances'] and config['instances'][name])
         puts "ERROR : instance with name '#{name}' already exists" 
         return
       end      
@@ -32,8 +32,11 @@ module DucttapeCLI
       puts "Creating Customer Gateway"
       Ducttape::Interfaces::Aws.createCustomerGateway(instance)
 
-      # Update the config file      
-      config[instance.name()] = instance.export()     
+      # Update the config file
+      if(!config['instances'])
+        config['instances'] = {}
+      end  
+      config['instances'][instance.name()] = instance.export()     
 
       DucttapeCLI.writeConfig(config)
     end
@@ -49,12 +52,12 @@ module DucttapeCLI
       config = DucttapeCLI.loadConfig()
 
       # Check for existing instance
-      if (!config[name])
-        puts "ERROR : instance with name '#{name}' doest not exist" 
+      if (!config['instances'] or !config['instances'][name])
+        puts "ERROR : instance with name '#{name}' does not exist" 
         return
       end
 
-      data = config[name][:data]
+      data = config['instances'][name][:data]
 
       instance = Ducttape::Instances::Aws.new(name, data[:access_key], data[:secret_key])
 
@@ -72,7 +75,7 @@ module DucttapeCLI
         instance.secret_key = options[:secret_key]
       end
       
-      config[instance.name()] = instance.export()
+      config['instances'][instance.name()] = instance.export()
       DucttapeCLI.writeConfig(config)
     end
 

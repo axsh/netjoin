@@ -15,13 +15,16 @@ module DucttapeCLI
       # Read config file
       config = DucttapeCLI.loadConfig()
 
+      if(!config['instances'])
+        return
+      end
       # Remove instances from config that do not match type
-      config.each do |key, value|
+      config['instances'].each do |key, value|
         if (!(value['type'].to_s === type()))
-          config.delete(key)
+          config['instances'].delete(key)
         end
       end
-      puts config.inspect
+      puts config['instances'].inspect
     end
 
     no_commands{
