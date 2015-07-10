@@ -15,13 +15,7 @@ module DucttapeCLI::Instance
     option :ip_address, :required => true
     option :username, :required => true
     option :password, :required => true
-    option :cert_path, :required => true
     def add(name)
-
-      if (!File.file?(options[:cert_path]))
-        puts "ERROR : not able to read certificate file at '#{options[:cert_path]}'" 
-        return
-      end
       
       # Read config file
       config = DucttapeCLI.loadConfig()

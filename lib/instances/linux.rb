@@ -23,7 +23,7 @@ module Ducttape::Instances
 
     def getExportData()
       return {
-        :ip => @ip_address, 
+        :ip_address => @ip_address, 
         :username => @username, 
         :password=> @password
       }

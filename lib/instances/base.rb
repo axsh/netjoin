@@ -7,11 +7,13 @@ module Ducttape::Instances
     attr_accessor :name
     attr_accessor :server
     attr_accessor :status
+    attr_accessor :error
 
     def initialize(name, server)
       @name = name
       @server = server
       @status = :new
+      @error = nil
     end
 
     def getType()
@@ -27,6 +29,7 @@ module Ducttape::Instances
         :type => getType(),
         :server => @server,
         :status => @status,
+        :error => @error,
         :data => getExportData() 
       }
     end
