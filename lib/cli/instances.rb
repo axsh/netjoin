@@ -56,9 +56,9 @@ module DucttapeCLI
       end
       
       config['instances'].each do |name, inst|
+        serv = config['servers'][inst[:server]]
         if (:linux === inst[:type])
           status = inst[:status]
-          error = inst[:error]
           if(status == :attached)
             puts "#{name} already attached, skipping"
             return
@@ -66,61 +66,66 @@ module DucttapeCLI
           
           # Create Instance object to work with
           instance = Ducttape::Instances::Linux.new(name, inst[:server], inst[:data][:ip_address], inst[:data][:username], inst[:data][:password])
-          config = DucttapeCLI::loadConfig()
-          server =  Ducttape::Servers::Linux.new(instance.server, config['servers'][:ip_address], config['servers'][:username], config['servers'][:password])
+          server =  Ducttape::Servers::Linux.new(instance.server, serv[:data][:ip_address], serv[:data][:username], serv[:data][:password])
               
           instance.status = :in_process
          
           # Check for OpenVPN installation on the instance
-          if(!error or error === :openvnet_not_installed)
+          if(!instance.error or instance.error === :openvnet_not_installed)
             instance.error = :openvnet_not_installed
+            puts "Checking OpenVPN installation"
             if (Ducttape::Interfaces::Linux.checkOpenVpnInstalled(instance))            
               instance.error = nil
+              puts "  Installed"
             else
-              puts "OpenVPN not installed, aborting!"
-              instance.status = :error
-              return
+              puts "  Not installed, aborting!"
+              instance.status = :error              
             end
           end
-          
+
           # Generate VPN certificate
-          if(!error or error === :cert_generation_failed)
+          if(!instance.error or instance.error === :cert_generation_failed)
+            puts "Generating VPN Certificate"
             instance.error = :cert_generation_failed
             ovpn = Ducttape::Interfaces::Linux.generateCertificate(server, instance)
             if(ovpn)
-              instance.error = nil
+              puts "  Success"
+              instance.error = nil             
             else
               puts "Failed generating certificate"
               instance.status = :error
-              return
             end
           end
-          
+
           # Install certificate
-          if(!error or error === :cert_generation_failed)
+          if(!instance.error or instance.error === :cert_install_failed)
+            puts "Installing VPN Certificate"
             instance.error = :cert_install_failed
             if(Ducttape::Interfaces::Linux.installCertificate(instance, ovpn))
+              puts "  Success"
               instance.error = nil
             else
               puts "Failed installing certificate!"
               instance.status = :error
-              return
             end
           end
-          
-          # Start OpenVPN using the certificate
-          if(!error or error === :cert_generation_failed)
+
+          # Start OpenVPN using the certificate          
+          if(!instance.error or instance.error === :openvpn_not_started)
+            puts "Starting OpenVPN"
             instance.error = :openvpn_not_started
             if(Ducttape::Interfaces::Linux.startOpenVPN(instance))
+              puts "  Success"
               instance.error = nil
             else
               puts "Failed starting OpenVPN!"
               instance.status = :error
-              return
             end
           end
-          
-          instance.status = :attached
+
+          if(!(instance.status === :error))
+            instance.status = :attached
+          end
         end
         config['instances'][instance.name] = instance.export      
       end
