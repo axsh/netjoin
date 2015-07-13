@@ -66,12 +66,7 @@ END"
 
     def self.startOpenVPN(instance)
       Net::SSH.start(instance.ip_address, instance.username, :password => instance.password) do |ssh|
-        result = ssh.exec!("openvpn --config /etc/openvpn/#{instance.name}.ovpn")
-        if result.include? "error"
-          puts "  ERROR"
-          puts result
-          return false
-        end
+        ssh.exec!("openvpn --config /etc/openvpn/#{instance.name}.ovpn --daemon")
         return true
       end
       return false

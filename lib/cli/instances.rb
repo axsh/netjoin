@@ -69,7 +69,7 @@ module DucttapeCLI
             server =  Ducttape::Servers::Linux.new(instance.server, serv[:data][:ip_address], serv[:data][:username], serv[:data][:password])
                 
             instance.status = :in_process
-           
+
             # Check for OpenVPN installation on the instance
             if(!instance.error or instance.error === :openvpn_not_installed)
               instance.error = :openvpn_not_installed
@@ -125,7 +125,7 @@ module DucttapeCLI
   
             if(!(instance.status === :error))
               instance.status = :attached
-              puts "    Attached!"
+              puts "  Attached!"
             end          
           end
           config['instances'][instance.name] = instance.export      
