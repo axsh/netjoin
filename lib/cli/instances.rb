@@ -47,6 +47,7 @@ module DucttapeCLI
     end
     
     desc "attach", "Attach to VPN Network"
+    option :name
     def attach()
       # Read config file
       config = DucttapeCLI.loadConfig()
@@ -55,7 +56,48 @@ module DucttapeCLI
         return
       end
       
-      config['instances'].each do |name, inst|
+      if (options[:name])
+        if (!config['instances'][options[:name]])
+          puts "ERROR : instance with name '#{options[:name]}' doest not exist" 
+          return
+        else
+          self.attach_instance(config, options[:name], config['instances'][options[:name]])
+        end
+      else
+        config['instances'].each do |name, inst|
+          self.attach_instance(config, name, inst);
+        end        
+      end
+    end
+    
+    desc "status", "Status of the instances"
+    option :name
+    def status()
+      # Read config file
+      config = DucttapeCLI.loadConfig()
+           
+      if (!config['instances'])
+        return
+      end
+      
+      # Check for existing instance
+      if (options[:name])
+        if (!config['instances'][options[:name]])
+          puts "ERROR : instance with name '#{options[:name]}' doest not exist" 
+          return
+        else
+          puts config['instances'][options[:name]][:status]
+        end
+      else
+        config['instances'].each do |name, inst|
+          puts "\"#{name}\" : #{inst[:status]}"
+        end
+      end
+    end
+    
+    no_commands {
+     
+      def attach_instance(config, name, inst)
         puts "Attaching \"#{name}\""
         serv = config['servers'][inst[:server]]
         status = inst[:status]
@@ -128,37 +170,11 @@ module DucttapeCLI
               puts "  Attached!"
             end          
           end
-          config['instances'][instance.name] = instance.export      
+          config['instances'][instance.name] = instance.export
         end
         DucttapeCLI.writeConfig(config)
-        
-      end
-    end
-    
-    desc "status", "Status of the instances"
-    option :name
-    def status()
-      # Read config file
-      config = DucttapeCLI.loadConfig()
-           
-      if (!config['instances'])
-        return
-      end
-      
-      # Check for existing instance
-      if (options[:name])
-        if (!config['instances'][options[:name]])
-          puts "ERROR : instance with name '#{options[:name]}' doest not exist" 
-          return
-        else
-          puts config['instances'][options[:name]][:status]
-        end
-      else
-        config['instances'].each do |name, inst|
-          puts "\"#{name}\" : #{inst[:status]}"
-        end
-      end
-    end
+      end 
+    }
     
     # TODO finish implementing AWS Support
     #desc "aws SUBCOMMAND ...ARGS", "manage AWS instances"
