@@ -56,81 +56,83 @@ module DucttapeCLI
       end
       
       config['instances'].each do |name, inst|
+        puts "Attaching \"#{name}\""
         serv = config['servers'][inst[:server]]
-        if (:linux === inst[:type])
-          status = inst[:status]
-          if(status == :attached)
-            puts "#{name} already attached, skipping"
-            return
-          end
-          
-          # Create Instance object to work with
-          instance = Ducttape::Instances::Linux.new(name, inst[:server], inst[:data][:ip_address], inst[:data][:username], inst[:data][:password])
-          server =  Ducttape::Servers::Linux.new(instance.server, serv[:data][:ip_address], serv[:data][:username], serv[:data][:password])
-              
-          instance.status = :in_process
-         
-          # Check for OpenVPN installation on the instance
-          if(!instance.error or instance.error === :openvnet_not_installed)
-            instance.error = :openvnet_not_installed
-            puts "Checking OpenVPN installation"
-            if (Ducttape::Interfaces::Linux.checkOpenVpnInstalled(instance))            
-              instance.error = nil
-              puts "  Installed"
-            else
-              puts "  Not installed, aborting!"
-              instance.status = :error              
+        status = inst[:status]
+        if(status == :attached)
+          puts "  #{name} already attached, skipping"
+        else
+          if (:linux === inst[:type])
+            
+            # Create Instance object to work with
+            instance = Ducttape::Instances::Linux.new(name, inst[:server], inst[:data][:ip_address], inst[:data][:username], inst[:data][:password])
+            server =  Ducttape::Servers::Linux.new(instance.server, serv[:data][:ip_address], serv[:data][:username], serv[:data][:password])
+                
+            instance.status = :in_process
+           
+            # Check for OpenVPN installation on the instance
+            if(!instance.error or instance.error === :openvpn_not_installed)
+              instance.error = :openvpn_not_installed
+              puts "  Checking OpenVPN installation"
+              if (Ducttape::Interfaces::Linux.checkOpenVpnInstalled(instance))            
+                instance.error = nil
+                puts "    Installed"
+              else
+                puts "    Not installed, aborting!"
+                instance.status = :error              
+              end
             end
-          end
-
-          # Generate VPN certificate
-          if(!instance.error or instance.error === :cert_generation_failed)
-            puts "Generating VPN Certificate"
-            instance.error = :cert_generation_failed
-            ovpn = Ducttape::Interfaces::Linux.generateCertificate(server, instance)
-            if(ovpn)
-              puts "  Success"
-              instance.error = nil             
-            else
-              puts "Failed generating certificate"
-              instance.status = :error
+  
+            # Generate VPN certificate
+            if(!instance.error or instance.error === :cert_generation_failed)
+              puts "  Generating VPN Certificate"
+              instance.error = :cert_generation_failed
+              ovpn = Ducttape::Interfaces::Linux.generateCertificate(server, instance)
+              if(ovpn)
+                puts "    Success"
+                instance.error = nil             
+              else
+                puts "    Failed generating certificate"
+                instance.status = :error
+              end
             end
-          end
-
-          # Install certificate
-          if(!instance.error or instance.error === :cert_install_failed)
-            puts "Installing VPN Certificate"
-            instance.error = :cert_install_failed
-            if(Ducttape::Interfaces::Linux.installCertificate(instance, ovpn))
-              puts "  Success"
-              instance.error = nil
-            else
-              puts "Failed installing certificate!"
-              instance.status = :error
+  
+            # Install certificate
+            if(!instance.error or instance.error === :cert_install_failed)
+              puts "  Installing VPN Certificate"
+              instance.error = :cert_install_failed
+              if(Ducttape::Interfaces::Linux.installCertificate(instance, ovpn))
+                puts "    Success"
+                instance.error = nil
+              else
+                puts "    Failed installing certificate!"
+                instance.status = :error
+              end
             end
-          end
-
-          # Start OpenVPN using the certificate          
-          if(!instance.error or instance.error === :openvpn_not_started)
-            puts "Starting OpenVPN"
-            instance.error = :openvpn_not_started
-            if(Ducttape::Interfaces::Linux.startOpenVPN(instance))
-              puts "  Success"
-              instance.error = nil
-            else
-              puts "Failed starting OpenVPN!"
-              instance.status = :error
+  
+            # Start OpenVPN using the certificate          
+            if(!instance.error or instance.error === :openvpn_not_started)
+              puts "  Starting OpenVPN"
+              instance.error = :openvpn_not_started
+              if(Ducttape::Interfaces::Linux.startOpenVPN(instance))
+                puts "    Success"
+                instance.error = nil
+              else
+                puts "    Failed starting OpenVPN!"
+                instance.status = :error
+              end
             end
+  
+            if(!(instance.status === :error))
+              instance.status = :attached
+              puts "    Attached!"
+            end          
           end
-
-          if(!(instance.status === :error))
-            instance.status = :attached
-          end
+          config['instances'][instance.name] = instance.export      
         end
-        config['instances'][instance.name] = instance.export      
+        DucttapeCLI.writeConfig(config)
+        
       end
-      DucttapeCLI.writeConfig(config)
-      
     end
     
     # TODO finish implementing AWS Support
