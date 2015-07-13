@@ -135,6 +135,31 @@ module DucttapeCLI
       end
     end
     
+    desc "status", "Status of the instances"
+    option :name
+    def status()
+      # Read config file
+      config = DucttapeCLI.loadConfig()
+           
+      if (!config['instances'])
+        return
+      end
+      
+      # Check for existing instance
+      if (options[:name])
+        if (!config['instances'][options[:name]])
+          puts "ERROR : instance with name '#{options[:name]}' doest not exist" 
+          return
+        else
+          puts config['instances'][options[:name]][:status]
+        end
+      else
+        config['instances'].each do |name, inst|
+          puts "\"#{name}\" : #{inst[:status]}"
+        end
+      end
+    end
+    
     # TODO finish implementing AWS Support
     #desc "aws SUBCOMMAND ...ARGS", "manage AWS instances"
     #subcommand "aws", DucttapeCLI::Instance::Aws
