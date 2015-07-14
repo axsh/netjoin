@@ -12,14 +12,14 @@ module DucttapeCLI
     options :name => :string
     def show()
 
-      # Read config file
-      config = DucttapeCLI.loadConfig()
+      # Read database file
+      database = DucttapeCLI.loadDatabase()
 
       # If specific server is asked, show that server only, if not, show all
       if (options[:name])
-        puts config['servers'][options[:name]].inspect
+        puts database['servers'][options[:name]].inspect
       else
-        puts config['servers'].inspect
+        puts database['servers'].inspect
       end
 
     end 
@@ -27,18 +27,18 @@ module DucttapeCLI
     desc "delete <name>", "Delete server"
     def delete(name)
     
-      # Read config file
-      config = DucttapeCLI.loadConfig()
+      # Read database file
+      database = DucttapeCLI.loadDatabase()
     
-      # Check for existing instance
-      if (!config['servers'] or !config['servers'][name])
+      # Check for existing server
+      if (!database['servers'] or !database['servers'][name])
         puts "ERROR : server with name '#{name}' doest not exist" 
         return
       end
     
-      # Update the config gile
-      config['servers'].delete(name)
-      DucttapeCLI.writeConfig(config)
+      # Update the database gile
+      database['servers'].delete(name)
+      DucttapeCLI.writeDatabase(database)
     end
       
     desc "linux SUBCOMMAND ...ARGS", "manage Linux servers"

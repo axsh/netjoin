@@ -8,8 +8,8 @@ module Ducttape::Interfaces
   
   class Linux < Base
   
-    def self.checkOpenVpnInstalled(instance)
-      Net::SSH.start(instance.ip_address, instance.username, :password => instance.password) do |ssh|
+    def self.checkOpenVpnInstalled(client)
+      Net::SSH.start(client.ip_address, client.username, :password => client.password) do |ssh|
         result = ssh.exec!('rpm -qa | grep openvpn')
         if (result)
           return true
@@ -18,12 +18,12 @@ module Ducttape::Interfaces
       return false
     end
 
-    def self.generateCertificate(server, instance)
+    def self.generateCertificate(server, client)
       Net::SSH.start(server.ip_address, server.username, :password => server.password) do |ssh|
-        build = ssh.exec!("cd /etc/openvpn/easy-rsa/ && source ./vars && ./build-key #{instance.name}")
+        build = ssh.exec!("cd /etc/openvpn/easy-rsa/ && source ./vars && ./build-key #{client.name}")
         ca = ssh.exec!("cat /etc/openvpn/easy-rsa/keys/ca.crt")
-        cert = ssh.exec!("cat /etc/openvpn/easy-rsa/keys/#{instance.name}.crt")
-        key = ssh.exec!("cat /etc/openvpn/easy-rsa/keys/#{instance.name}.key")
+        cert = ssh.exec!("cat /etc/openvpn/easy-rsa/keys/#{client.name}.crt")
+        key = ssh.exec!("cat /etc/openvpn/easy-rsa/keys/#{client.name}.key")
         file = "client
 dev tun
 proto udp
@@ -54,19 +54,19 @@ END"
       return false
     end
 
-    def self.installCertificate(instance, ovpn)
-      Net::SSH.start(instance.ip_address, instance.username, :password => instance.password) do |ssh|
-        ssh.exec!("touch /etc/openvpn/#{instance.name}.ovpn")
-        ssh.exec!("cat > /etc/openvpn/#{instance.name}.ovpn << END
+    def self.installCertificate(client, ovpn)
+      Net::SSH.start(client.ip_address, client.username, :password => client.password) do |ssh|
+        ssh.exec!("touch /etc/openvpn/#{client.name}.ovpn")
+        ssh.exec!("cat > /etc/openvpn/#{client.name}.ovpn << END
         #{ovpn}")
         return true          
       end
       return false
     end
 
-    def self.startOpenVPN(instance)
-      Net::SSH.start(instance.ip_address, instance.username, :password => instance.password) do |ssh|
-        ssh.exec!("openvpn --config /etc/openvpn/#{instance.name}.ovpn --daemon")
+    def self.startOpenVPN(client)
+      Net::SSH.start(client.ip_address, client.username, :password => client.password) do |ssh|
+        ssh.exec!("openvpn --config /etc/openvpn/#{client.name}.ovpn --daemon")
         return true
       end
       return false

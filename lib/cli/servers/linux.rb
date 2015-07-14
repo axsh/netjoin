@@ -17,31 +17,31 @@ module DucttapeCLI::Server
     option :password, :required => true
     def add(name)
      
-      # Read config file
-      config = DucttapeCLI.loadConfig()
+      # Read database file
+      database = DucttapeCLI.loadDatabase()
 
-      # Check for existing instance
-      if (config['servers'] and config['servers'][name])
+      # Check for existing server
+      if (database['servers'] and database['servers'][name])
         puts "ERROR : server with name '#{name}' already exists" 
         return
       end      
 
-      # Create Instance object to work with
-      instance = Ducttape::Servers::Linux.new(name, options[:ip_address], options[:username], options[:password])
+      # Create server object to work with
+      server = Ducttape::Servers::Linux.new(name, options[:ip_address], options[:username], options[:password])
 
-      # Check for OpenVPN installation on the instance
-      if (!Ducttape::Interfaces::Linux.checkOpenVpnInstalled(instance))
+      # Check for OpenVPN installation on the server
+      if (!Ducttape::Interfaces::Linux.checkOpenVpnInstalled(server))
         puts "OpenVPN not installed on the server, aborting!"
         return
       end
       
-      # Update the config file
-      if(!config['servers'])
-        config['servers'] = {}
+      # Update the database file
+      if(!database['servers'])
+        database['servers'] = {}
       end  
-      config['servers'][instance.name()] = instance.export()
+      database['servers'][server.name()] = server.export()
 
-      DucttapeCLI.writeConfig(config)
+      DucttapeCLI.writeDatabase(database)
     end
     
     desc "update <name>", "Update server"
@@ -50,20 +50,20 @@ module DucttapeCLI::Server
     options :username => :string
     options :password => :string
     def update(name)
-      # Read config file
-      config = DucttapeCLI.loadConfig()
+      # Read database file
+      database = DucttapeCLI.loadDatabase()
 
-      # Check for existing instance
-      if (!config['servers'] or !config['servers'][name])
+      # Check for existing server
+      if (!database['servers'] or !database['servers'][name])
         puts "ERROR : server with name '#{name}' does not exist" 
         return
       end
 
-      data = config['servers'][name][:data]
+      data = database['servers'][name][:data]
 
       server = Ducttape::Servers::Linux.new(name, data[:ip_address], data[:username], data[:password])
       
-      # Update the config file
+      # Update the database file
       if (options[:ip])
         server.ip_address = options[:ip] 
       end
@@ -73,8 +73,8 @@ module DucttapeCLI::Server
       if (options[:password])
         server.password = options[:password]
       end
-      config['servers'][name] = server.export()
-      DucttapeCLI.writeConfig(config)
+      database['servers'][name] = server.export()
+      DucttapeCLI.writeDatabase(database)
     end
         
    end

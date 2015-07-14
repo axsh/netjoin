@@ -2,7 +2,7 @@
 
 require_relative 'base'
 
-module Ducttape::Instances  
+module Ducttape::Clients  
   
   class Aws < Base
 

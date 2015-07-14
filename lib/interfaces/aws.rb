@@ -6,23 +6,23 @@ module Ducttape::Interfaces
   
   class Aws < Base    
 
-    def self.createVpnGateway(instance)
-      response = `ec2-create-vpn-gateway --region #{instance.region} --type ipsec.1 --aws-access-key #{instance.access_key} --aws-secret-key #{instance.secret_key} --show-empty-fields`
+    def self.createVpnGateway(client)
+      response = `ec2-create-vpn-gateway --region #{client.region} --type ipsec.1 --aws-access-key #{client.access_key} --aws-secret-key #{client.secret_key} --show-empty-fields`
       puts response
       r = response.split("\t");
-      instance.vpn_gateway_id = r[1]      
+      client.vpn_gateway_id = r[1]      
     end
     
-    def self.attachVpc(instance)
-      response = `ec2-attach-vpn-gateway #{instance.vpn_gateway_id} -c #{instance.vpc} --region #{instance.region} --aws-access-key #{instance.access_key} --aws-secret-key #{instance.secret_key} --show-empty-fields`
+    def self.attachVpc(client)
+      response = `ec2-attach-vpn-gateway #{client.vpn_gateway_id} -c #{client.vpc} --region #{client.region} --aws-access-key #{client.access_key} --aws-secret-key #{client.secret_key} --show-empty-fields`
       puts response
     end
     
-    def self.createCustomerGateway(instance, server_ip)
-      response = `ec2-create-customer-gateway -t ipsec.1 -i #{server_ip} --aws-access-key #{instance.access_key} --aws-secret-key #{instance.secret_key} --show-empty-fields`
+    def self.createCustomerGateway(client, server_ip)
+      response = `ec2-create-customer-gateway -t ipsec.1 -i #{server_ip} --aws-access-key #{client.access_key} --aws-secret-key #{client.secret_key} --show-empty-fields`
       puts response
       r = response.split("\t");
-      instance.customer_gateway_id = r[1]
+      client.customer_gateway_id = r[1]
     end
     
   end

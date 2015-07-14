@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-module Ducttape::Instances
+module Ducttape::Clients
 
   class Base
 

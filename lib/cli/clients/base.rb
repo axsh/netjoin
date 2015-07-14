@@ -3,28 +3,28 @@
 require 'thor'
 require 'yaml'
 
-module DucttapeCLI::Server
+module DucttapeCLI::Client
 
   class Base < Thor
-
+    
     @type = 'base'
 
-    desc "show","Show all servers"
+    desc "show","Show all clients"
     def show()
 
       # Read database file
       database = DucttapeCLI.loadDatabase()
 
-      if(!database['servers'])
+      if(!database['clients'])
         return
       end
-      # Remove servers from database that do not match type
-      database['servers'].each do |key, value|
+      # Remove clients from database that do not match type
+      database['clients'].each do |key, value|
         if (!(value[:type].to_s === type()))
-          database['servers'].delete(key)
+          database['clients'].delete(key)
         end
       end
-      puts database['servers'].inspect
+      puts database['clients'].inspect
     end
 
     no_commands{
@@ -36,6 +36,7 @@ module DucttapeCLI::Server
         self.class.type
       end  
     }
-        
-   end
+
+  end
+
 end
