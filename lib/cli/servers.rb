@@ -17,9 +17,9 @@ module DucttapeCLI
 
       # If specific server is asked, show that server only, if not, show all
       if (options[:name])
-        puts database['servers'][options[:name]].inspect
+        puts database['servers'][options[:name]]
       else
-        puts database['servers'].inspect
+        puts database['servers']
       end
 
     end 
@@ -39,10 +39,11 @@ module DucttapeCLI
       # Update the database gile
       database['servers'].delete(name)
       DucttapeCLI::CLI.writeDatabase(database)
+      puts database['servers']
     end
       
     desc "linux SUBCOMMAND ...ARGS", "manage Linux servers"
     subcommand "linux", DucttapeCLI::Server::Linux
-        
+  
    end
 end

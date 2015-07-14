@@ -66,8 +66,8 @@ module DucttapeCLI::Server
       server = Ducttape::Servers::Linux.new(name, data[:ip_address], data[:username], data[:password])
       
       # Update the database file
-      if (options[:ip])
-        server.ip_address = options[:ip] 
+      if (options[:ip_address])
+        server.ip_address = options[:ip_address] 
       end
       if (options[:username])
         server.username = options[:username]
