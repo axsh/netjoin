@@ -15,7 +15,7 @@ module DucttapeCLI
     def show()
 
       # Read database file
-      database = DucttapeCLI.loadDatabase()
+      database = DucttapeCLI::CLI.loadDatabase()
 
       if (!database['clients'])
         return
@@ -33,7 +33,7 @@ module DucttapeCLI
     def delete(name)
 
       # Read database file
-      database = DucttapeCLI.loadDatabase()
+      database = DucttapeCLI::CLI.loadDatabase()
 
       # Check for existing client
       if (!database['clients'] or !database['clients'][name])
@@ -43,14 +43,14 @@ module DucttapeCLI
 
       # Update the database gile
       database['clients'].delete(name)
-      DucttapeCLI.writeDatabase(database)
+      DucttapeCLI::CLI.writeDatabase(database)
     end
     
     desc "attach", "Attach to VPN Network"
     option :name
     def attach()
       # Read database file
-      database = DucttapeCLI.loadDatabase()
+      database = DucttapeCLI::CLI.loadDatabase()
       
       if (!database['clients'])
         return
@@ -74,7 +74,7 @@ module DucttapeCLI
     option :name
     def status()
       # Read database file
-      database = DucttapeCLI.loadDatabase()
+      database = DucttapeCLI::CLI.loadDatabase()
            
       if (!database['clients'])
         return
@@ -172,7 +172,7 @@ module DucttapeCLI
           end
           database['clients'][client.name] = client.export
         end
-        DucttapeCLI.writeDatabase(database)
+        DucttapeCLI::CLI.writeDatabase(database)
       end 
     }
     

@@ -24,21 +24,22 @@ module DucttapeCLI
       puts database.inspect
     end
     
-  end
-  
-  def self.loadDatabase()
-    database = YAML.load_file('database.yml')
-    if(!database)
-      database = {}
-    end     
-    return database
-  end
-  
-  def self.writeDatabase(database)
-    File.open('database.yml','w') do |h| 
-      h.write database.to_yaml      
-    end
-  end
+    no_commands {
+      def self.loadDatabase()
+        database = YAML.load_file('database.yml')
+        if(!database)
+          database = {}
+        end     
+        return database
+      end
+      
+      def self.writeDatabase(database)
+        File.open('database.yml','w') do |h| 
+          h.write database.to_yaml      
+        end
+      end
+    }
+  end  
   
 end
 

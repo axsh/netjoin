@@ -13,7 +13,7 @@ module DucttapeCLI
     def show()
 
       # Read database file
-      database = DucttapeCLI.loadDatabase()
+      database = DucttapeCLI::CLI.loadDatabase()
 
       # If specific server is asked, show that server only, if not, show all
       if (options[:name])
@@ -28,7 +28,7 @@ module DucttapeCLI
     def delete(name)
     
       # Read database file
-      database = DucttapeCLI.loadDatabase()
+      database = DucttapeCLI::CLI.loadDatabase()
     
       # Check for existing server
       if (!database['servers'] or !database['servers'][name])
@@ -38,7 +38,7 @@ module DucttapeCLI
     
       # Update the database gile
       database['servers'].delete(name)
-      DucttapeCLI.writeDatabase(database)
+      DucttapeCLI::CLI.writeDatabase(database)
     end
       
     desc "linux SUBCOMMAND ...ARGS", "manage Linux servers"

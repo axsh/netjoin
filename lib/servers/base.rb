@@ -24,6 +24,15 @@ module Ducttape::Servers
         :data => getExportData() 
       }
     end
+    
+    def export_yaml()
+      return { 
+        @name => {
+          :type => getType(),
+          :data => getExportData()
+        } 
+      }.to_yaml()
+    end
 
   end
 end

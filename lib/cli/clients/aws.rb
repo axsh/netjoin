@@ -19,7 +19,7 @@ module DucttapeCLI::Client
     def add(name)
 
       # Read database file
-      database = DucttapeCLI.loadDatabase()
+      database = DucttapeCLI::CLI.loadDatabase()
 
       # Check for existing client
       if (database['clients'] and database['clients'][name])
@@ -45,7 +45,7 @@ module DucttapeCLI::Client
       end  
       database['clients'][client.name()] = client.export()     
 
-      DucttapeCLI.writeDatabase(database)
+      DucttapeCLI::CLI.writeDatabase(database)
     end
     
     desc "update <name>", "Update an AWS client"
@@ -56,7 +56,7 @@ module DucttapeCLI::Client
     def update(name)
 
       # Read database file
-      database = DucttapeCLI.loadDatabase()
+      database = DucttapeCLI::CLI.loadDatabase()
 
       # Check for existing client
       if (!database['clients'] or !database['clients'][name])
@@ -83,7 +83,7 @@ module DucttapeCLI::Client
       end
       
       database['clients'][client.name()] = client.export()
-      DucttapeCLI.writeDatabase(database)
+      DucttapeCLI::CLI.writeDatabase(database)
     end
 
   end

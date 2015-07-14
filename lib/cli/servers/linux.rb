@@ -18,7 +18,7 @@ module DucttapeCLI::Server
     def add(name)
      
       # Read database file
-      database = DucttapeCLI.loadDatabase()
+      database = DucttapeCLI::CLI.loadDatabase()
 
       # Check for existing server
       if (database['servers'] and database['servers'][name])
@@ -30,7 +30,7 @@ module DucttapeCLI::Server
       server = Ducttape::Servers::Linux.new(name, options[:ip_address], options[:username], options[:password])
 
       # Check for OpenVPN installation on the server
-      if (!Ducttape::Interfaces::Linux.checkOpenVpnInstalled(server))
+      if (!server.ip_address === '0.0.0.0' and !Ducttape::Interfaces::Linux.checkOpenVpnInstalled(server))
         puts "OpenVPN not installed on the server, aborting!"
         return
       end
@@ -41,7 +41,9 @@ module DucttapeCLI::Server
       end  
       database['servers'][server.name()] = server.export()
 
-      DucttapeCLI.writeDatabase(database)
+      DucttapeCLI::CLI.writeDatabase(database)
+      
+      puts server.export_yaml
     end
     
     desc "update <name>", "Update server"
@@ -51,7 +53,7 @@ module DucttapeCLI::Server
     options :password => :string
     def update(name)
       # Read database file
-      database = DucttapeCLI.loadDatabase()
+      database = DucttapeCLI::CLI.loadDatabase()
 
       # Check for existing server
       if (!database['servers'] or !database['servers'][name])
@@ -74,7 +76,10 @@ module DucttapeCLI::Server
         server.password = options[:password]
       end
       database['servers'][name] = server.export()
-      DucttapeCLI.writeDatabase(database)
+      
+      DucttapeCLI::CLI.writeDatabase(database)
+      
+      puts server.export_yaml
     end
         
    end
