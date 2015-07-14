@@ -22,7 +22,7 @@ module DucttapeCLI::Server
 
       # Check for existing server
       if (database['servers'] and database['servers'][name])
-        puts "ERROR : server with name '#{name}' already exists" 
+        puts "ERROR : server with name '#{name}' already exists"
         return
       end      
 

@@ -10,6 +10,7 @@ module DucttapeCLI::Server
     @type = 'base'
 
     desc "show","Show all servers"
+    options :name => :string
     def show()
 
       # Read database file
@@ -18,13 +19,29 @@ module DucttapeCLI::Server
       if(!database['servers'])
         return
       end
+      
+      # If specific server is asked, show that server only, if not, show all
+       if (options[:name])
+         if (database['servers'][options[:name]])
+           if(database['servers'][options[:name]][:type].to_s === type())
+             puts database['servers'][options[:name]]
+             return
+           else
+            puts "ERROR : server with name '#{options[:name]}' does not exist" 
+            return
+          end
+        else
+          puts "ERROR : server with name '#{options[:name]}' does not exist" 
+          return
+        end       
+      end
       # Remove servers from database that do not match type
       database['servers'].each do |key, value|
         if (!(value[:type].to_s === type()))
           database['servers'].delete(key)
         end
       end
-      puts database['servers'].inspect
+      puts database['servers']
     end
 
     no_commands{

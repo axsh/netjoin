@@ -17,6 +17,10 @@ module DucttapeCLI
 
       # If specific server is asked, show that server only, if not, show all
       if (options[:name])
+        if (!database['servers'][options[:name]])
+          puts "ERROR : server with name '#{options[:name]}' does not exist" 
+          return
+        end
         puts database['servers'][options[:name]]
       else
         puts database['servers']
@@ -32,7 +36,7 @@ module DucttapeCLI
     
       # Check for existing server
       if (!database['servers'] or !database['servers'][name])
-        puts "ERROR : server with name '#{name}' doest not exist" 
+        puts "ERROR : server with name '#{name}' does not exist" 
         return
       end
     
