@@ -56,7 +56,7 @@ module DucttapeCLI::Instance
 
       data = config['instances'][name][:data]
 
-      instance = Ducttape::Instances::Linux.new(name, data[:ip_address], data[:username], data[:password])
+      instance = Ducttape::Instances::Linux.new(name, options[:server], data[:ip_address], data[:username], data[:password])
       instance.status = config['instances'][:status]
       
       # Update the config file

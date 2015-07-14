@@ -9,20 +9,20 @@ module DucttapeCLI
   class Servers < Thor
 
     desc "show","Show all servers"
-        options :name => :string
-        def show()
-    
-          # Read config file
-          config = DucttapeCLI.loadConfig()
-    
-          # If specific server is asked, show that server only, if not, show all
-          if (options[:name])
-            puts config['servers'][options[:name]].inspect
-          else
-            puts config['servers'].inspect
-          end
-    
-        end 
+    options :name => :string
+    def show()
+
+      # Read config file
+      config = DucttapeCLI.loadConfig()
+
+      # If specific server is asked, show that server only, if not, show all
+      if (options[:name])
+        puts config['servers'][options[:name]].inspect
+      else
+        puts config['servers'].inspect
+      end
+
+    end 
     
     desc "delete <name>", "Delete server"
     def delete(name)

@@ -8,6 +8,8 @@ require_relative 'base'
 module DucttapeCLI::Server
 
   class Linux < Base
+    
+    @type = 'linux'
 
     desc "add <name>","Add server"
     option :ip_address, :required => true
@@ -57,21 +59,21 @@ module DucttapeCLI::Server
         return
       end
 
-      data = config['servers'][instance.name()][:data]
+      data = config['servers'][name][:data]
 
-      instance = Ducttape::Servers::Linux.new(name, data[:ip_address], data[:username], data[:password])
+      server = Ducttape::Servers::Linux.new(name, data[:ip_address], data[:username], data[:password])
       
       # Update the config file
       if (options[:ip])
-        instance.ip_address = options[:ip] 
+        server.ip_address = options[:ip] 
       end
       if (options[:username])
-        instance.username = options[:username]
+        server.username = options[:username]
       end
       if (options[:password])
-        instance.password = options[:password]
+        server.password = options[:password]
       end
-      config['servers'][instance.name()] = instance.export()
+      config['servers'][name] = server.export()
       DucttapeCLI.writeConfig(config)
     end
         

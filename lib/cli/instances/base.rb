@@ -20,7 +20,7 @@ module DucttapeCLI::Instance
       end
       # Remove instances from config that do not match type
       config['instances'].each do |key, value|
-        if (!(value['type'].to_s === type()))
+        if (!(value[:type].to_s === type()))
           config['instances'].delete(key)
         end
       end

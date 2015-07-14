@@ -20,7 +20,7 @@ module DucttapeCLI::Server
       end
       # Remove servers from config that do not match type
       config['servers'].each do |key, value|
-        if (!(value['type'].to_s === type()))
+        if (!(value[:type].to_s === type()))
           config['servers'].delete(key)
         end
       end
