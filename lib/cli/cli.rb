@@ -33,7 +33,7 @@ module DucttapeCLI
     def export()
       # Read database file
       database = CLI.loadDatabase()     
-      puts database.inspect
+      puts database.to_yaml()
     end
     
     def self.getFromConfig(name)
