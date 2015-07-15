@@ -1,6 +1,20 @@
 # ducttape
 Name provisional, WIP
 
+A CLI to allows you to specify a VPN network layout. Add clients to a database file and later attach it to a VPN network.
+
+First version will only work with Linux clients and OpenVPN. An OpenVPN server will need to be manually set up to be used by Ducttape. Ducttape will connecto to the server to generate the VPN certificates.
+
+# Setup
+
+Clone this repository.
+
+Initialize ducttape to create the config and database files by the following command :
+
+```bash
+$ bin/ducttape init
+```
+
 # VPN Server
 
 ## Linux - OpenVPN
