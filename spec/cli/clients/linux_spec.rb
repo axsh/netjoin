@@ -7,7 +7,7 @@ describe DucttapeCLI::Client::Linux do
     context "All" do
       let(:output) { capture(:stdout) { subject.show } }
 
-      it "contains client" do
+      it "shows all linux clients" do
         expect(output).to eql '---
 vpn-client-10:
   :type: :linux
@@ -37,7 +37,7 @@ vpn-client-99:
         subject.show
       } }
 
-      it "contains client" do
+      it "show a single linux client" do
         expect(output).to eql '---
 :type: :linux
 :server: vpn-server
@@ -57,7 +57,7 @@ vpn-client-99:
         subject.show
       } }
 
-      it "does not contain client" do
+      it "fails to show a non-existing client" do
         expect(output).to eql "ERROR : client with name 'test-client2' does not exist\n"
       end
     end # End context Non-existing
@@ -70,7 +70,7 @@ vpn-client-99:
         subject.add 'test-client'
       } }
 
-      it "contains client" do
+      it "creates a new linux client" do
         expect(output).to eql '---
 test-client:
   :type: :linux
@@ -91,7 +91,7 @@ test-client:
         subject.add 'test-client'
       } }
 
-      it "already contains client" do
+      it "fails to create an already existing client" do
         expect(output).to eql "ERROR : client with name 'test-client' already exists\n"
       end
     end # End context Duplicate
@@ -106,7 +106,7 @@ test-client:
         subject.update 'test-client'
       } }
 
-      it "contains client" do
+      it "updates an existing client" do
         expect(output).to eql '---
 test-client:
   :type: :linux
@@ -127,7 +127,7 @@ test-client:
         subject.update 'test-client2'
       } }
 
-      it "dot not contain client" do
+      it "fails to update a non-existing client" do
         expect(output).to eql "ERROR : client with name 'test-client2' does not exist\n"
       end
     end # End context Non-existing

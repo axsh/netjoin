@@ -7,7 +7,7 @@ describe DucttapeCLI::Clients do
     context "All" do
       let(:output) { capture(:stdout) { subject.show } }
   
-      it "contains client" do
+      it "show all the clients" do
         expect(output).to eql '---
 vpn-client-10:
   :type: :linux
@@ -37,7 +37,7 @@ vpn-client-99:
         subject.show
       } }
   
-      it "contains client" do
+      it "show an existing client" do
         expect(output).to eql '---
 :type: :linux
 :server: vpn-server
@@ -57,7 +57,7 @@ vpn-client-99:
         subject.show
       } }
   
-      it "does not contain client" do
+      it "fails to show a non-existing client" do
         expect(output).to eql "ERROR : client with name 'test-client2' does not exist\n"
       end
     end # End context Non-existing
@@ -71,7 +71,7 @@ vpn-client-99:
         subject.status
       } }
   
-      it "does not contain client" do
+      it "show status of all client" do
         expect(output).to eql "\"vpn-client-10\" : new\n\"vpn-client-99\" : new\n"
       end
     end # End context All
@@ -82,7 +82,7 @@ vpn-client-99:
         subject.status
       } }
   
-      it "does not contain client" do
+      it "show status of a single client" do
         expect(output).to eql "new\n"
       end
     end # End context Single
@@ -94,7 +94,7 @@ vpn-client-99:
     context "Single" do
       let(:output) { capture(:stdout) { subject.delete 'test-client' } }
   
-      it "does not contain client" do
+      it "deletes an existing client" do
         expect(output).not_to include '---
 test-client:
   :type: :linux
@@ -112,7 +112,7 @@ test-client:
     context "Non-existing" do
       let(:output) { capture(:stdout) { subject.delete 'test-client' } }
   
-      it "does not contain client" do
+      it "fails to delete a non-existing client" do
         expect(output).to eql "ERROR : client with name 'test-client' does not exist\n"
       end
     end # End context Non-existing

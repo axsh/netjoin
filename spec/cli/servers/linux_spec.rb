@@ -7,7 +7,7 @@ describe DucttapeCLI::Server::Linux do
     context "All" do
       let(:output) { capture(:stdout) { subject.show } }
   
-      it "contains server" do
+      it "shows all linux servers" do
         expect(output).to eql '---
 vpn-server-1:
   :type: :linux
@@ -25,7 +25,7 @@ vpn-server-1:
         subject.show
       } }
   
-      it "contains server" do
+      it "show a single linux server" do
         expect(output).to include '---
 :type: :linux
 :data:
@@ -42,7 +42,7 @@ vpn-server-1:
         subject.show
       } }
   
-      it "does not contain server" do
+      it "fails to show a non-existing server" do
         expect(output).to eql "ERROR : server with name 'test-server2' does not exist\n"
       end
     end # End context Non-existing
@@ -57,7 +57,7 @@ vpn-server-1:
         subject.add 'test-server'
       } }
 
-      it "contains server" do
+      it "creates a new linux server" do
         expect(output).to eql '---
 test-server:
   :type: :linux
@@ -75,7 +75,7 @@ test-server:
         subject.add 'test-server'
       } }
 
-      it "already contains server" do
+      it "fails to create an already existing server" do
         expect(output).to eql "ERROR : server with name 'test-server' already exists\n"
       end
     end # End context Duplicate
@@ -89,7 +89,7 @@ test-server:
         subject.update 'test-server'
       } }
 
-      it "contains server" do
+      it "updates an existing server" do
         expect(output).to eql '---
 test-server:
   :type: :linux
@@ -107,7 +107,7 @@ test-server:
         subject.update 'test-server2'
       } }
 
-      it "dot not contain server" do
+      it "fails to update a non-existing server" do
         expect(output).to eql "ERROR : server with name 'test-server2' does not exist\n"
       end
     end # End context Non-existing

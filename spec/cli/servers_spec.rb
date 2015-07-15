@@ -7,7 +7,7 @@ describe DucttapeCLI::Servers do
     context "All" do
       let(:output) { capture(:stdout) { subject.show } }
 
-      it "contains server" do
+      it "shows all servers" do
         expect(output).to eql '---
 vpn-server-1:
   :type: :linux
@@ -25,7 +25,7 @@ vpn-server-1:
         subject.show
       } }
 
-      it "contains server" do
+      it "shows an existing server" do
         expect(output).to eql '---
 :type: :linux
 :data:
@@ -42,7 +42,7 @@ vpn-server-1:
         subject.show
       } }
 
-      it "does not contain server" do
+      it "fails to show a non-existing server" do
         expect(output).to eql "ERROR : server with name 'test-server2' does not exist\n"
       end
     end # End context Non-existing
@@ -54,7 +54,7 @@ vpn-server-1:
     context "Existing" do
       let(:output) { capture(:stdout) { subject.delete 'test-server' } }
 
-      it "does not contain server" do
+      it "deletes an existing server" do
         expect(output).to_not include '{:type=>:linux, :data=>{:ip_address=>"0.0.0.1", :username=>"root2", :password=>"root2"}}'          
       end
     end # End context Existing
@@ -62,7 +62,7 @@ vpn-server-1:
     context "Non-existing" do
       let(:output) { capture(:stdout) { subject.delete 'test-server' } }
 
-      it "does not contain server" do
+      it "fails to delete a non-existing server" do
         expect(output).to eql "ERROR : server with name 'test-server' does not exist\n"
       end
     end # End context Non-existing

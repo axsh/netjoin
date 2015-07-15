@@ -1,12 +1,14 @@
 require 'spec_helper'
 
 describe DucttapeCLI::CLI do
-  
-  context "All" do
-    let(:output) { capture(:stdout) { subject.export } }
-      
-    it "equals" do
-      expect(output).to eql '---
+
+  context "Export" do
+
+    context "All" do
+      let(:output) { capture(:stdout) { subject.export } }
+
+      it "contains all the database content" do
+        expect(output).to eql '---
 servers:
   vpn-server-1:
     :type: :linux
@@ -34,7 +36,9 @@ clients:
       :username: root
       :password: test123
 '
-    end
-  end
-  
+      end
+    end # End context All
+
+  end # End context Export
+
 end
