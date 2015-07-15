@@ -7,40 +7,5 @@ require 'yaml'
 require_relative '../lib/ducttape'
 require_relative '../lib/ducttapeCLI'
 
-module DucttapeCLI 
-  
-  class Main < Thor
-      
-    desc "clients SUBCOMMAND ...ARGS", "manage clients"
-    subcommand "clients", DucttapeCLI::Clients
-    
-    desc "servers SUBCOMMAND ...ARGS", "manage servers"
-    subcommand "servers", DucttapeCLI::Servers
-    
-    desc "export","Export database"
-    def export()
-      # Read database file
-      database = DucttapeCLI.loadDatabase()     
-      puts database.inspect
-    end
-    
-    no_commands {
-      def self.loadDatabase()
-        database = YAML.load_file('database.yml')
-        if(!database)
-          database = {}
-        end     
-        return database
-      end
-      
-      def self.writeDatabase(database)
-        File.open('database.yml','w') do |h| 
-          h.write database.to_yaml      
-        end
-      end
-    }
-  end  
-  
-end
 
-DucttapeCLI::Main.start(ARGV)
+DucttapeCLI::CLI.start(ARGV)
