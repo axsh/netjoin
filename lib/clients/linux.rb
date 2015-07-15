@@ -17,13 +17,13 @@ module Ducttape::Clients
       @password = password
     end
     
-    def self.retrieve(name, db_client)
+    def self.retrieve(name, info)
 
-      server = db_client[:server]
-      status = db_client[:status]
-      error = db_client[:error]
+      server = info[:server]
+      status = info[:status]
+      error = info[:error]
 
-      data = db_client[:data]
+      data = info[:data]
       ip_address = data[:ip_address]
       username = data[:username]
       password = data[:password]

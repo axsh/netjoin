@@ -35,12 +35,14 @@ module DucttapeCLI::Client
           return
         end       
       end
+      
       # Remove clients from database that do not match type
       database['clients'].each do |key, value|
         if (!(value[:type].to_s === type()))
           database['clients'].delete(key)
         end
       end
+      
       puts database['clients'].to_yaml()
     end
 

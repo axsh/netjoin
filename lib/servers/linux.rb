@@ -16,6 +16,19 @@ module Ducttape::Servers
       @username = username
       @password = password
     end
+    
+    def self.retrieve(name, info)
+
+      data = info[:data]
+      
+      ip_address = data[:ip_address]
+      username = data[:username]
+      password = data[:password]
+
+      client = Linux.new(name, ip_address, username, password)
+
+      return client
+    end
 
     def getType()
       return :linux

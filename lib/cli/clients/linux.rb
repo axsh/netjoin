@@ -57,9 +57,9 @@ module DucttapeCLI::Client
         return
       end
 
-      db_client = database['clients'][name]      
+      info = database['clients'][name]
 
-      client = Ducttape::Clients::Linux.retrieve(name, db_client)
+      client = Ducttape::Clients::Linux.retrieve(name, info)
       
       # Update the database file
       if (options[:ip_address])

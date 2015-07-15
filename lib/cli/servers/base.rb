@@ -35,12 +35,14 @@ module DucttapeCLI::Server
           return
         end
       end
+      
       # Remove servers from database that do not match type
       database['servers'].each do |key, value|
         if (!(value[:type].to_s === type()))
           database['servers'].delete(key)
         end
       end
+      
       puts database['servers'].to_yaml()
     end
 
