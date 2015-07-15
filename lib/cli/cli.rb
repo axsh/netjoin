@@ -11,6 +11,24 @@ module DucttapeCLI
     desc "servers SUBCOMMAND ...ARGS", "manage servers"
     subcommand "servers", DucttapeCLI::Servers
     
+    desc "init", "init ducttape"
+    def init()
+      if (!File.file?('config.yml'))
+        dist_config = CLI.loadFile('config-dist.yml')
+        CLI.writeFile('config.yml', dist_config)
+        puts "Configuration file 'config.yml' created!"
+      else
+        puts "Configuration file 'config.yml' already exists, skipping!"
+      end
+      if(!File.file?('database.yml'))
+        dist_database = CLI.loadFile('database-dist.yml')
+        CLI.writeFile('database.yml', dist_database)
+        puts "Database file 'database.yml' created!"
+      else
+        puts "Database file 'database.yml' already exists, skipping!"
+      end
+    end
+    
     desc "export","Export database"
     def export()
       # Read database file
