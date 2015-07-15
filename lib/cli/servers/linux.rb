@@ -13,6 +13,8 @@ module DucttapeCLI::Server
 
     desc "add <name>","Add server"
     option :ip_address, :required => true
+    option :dns_mode
+    option :dns_network
     option :username, :required => true
     option :password, :required => true
     def add(name)
@@ -27,7 +29,7 @@ module DucttapeCLI::Server
       end      
 
       # Create server object to work with
-      server = Ducttape::Servers::Linux.new(name, options[:ip_address], options[:username], options[:password])
+      server = Ducttape::Servers::Linux.new(name, options[:ip_address], options[:username], options[:password], options[:dns_mode], options[:dns_network])
 
       # Check for OpenVPN installation on the server
       if (!server.ip_address === '0.0.0.0' and !Ducttape::Interfaces::Linux.checkOpenVpnInstalled(server))
@@ -49,6 +51,8 @@ module DucttapeCLI::Server
     desc "update <name>", "Update server"
     options :name => :string
     options :ip_address => :string
+    option :dns_mode
+    option :dns_network
     options :username => :string
     options :password => :string
     def update(name)
@@ -68,6 +72,12 @@ module DucttapeCLI::Server
       # Update the database file
       if (options[:ip_address])
         server.ip_address = options[:ip_address] 
+      end
+      if (options[:dns_mode])
+        server.dns_mode = options[:dns_mode] 
+      end
+      if (options[:dns_network])
+        server.dns_network = options[:dns_network] 
       end
       if (options[:username])
         server.username = options[:username]

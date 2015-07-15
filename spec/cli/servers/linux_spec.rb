@@ -13,6 +13,8 @@ vpn-server-1:
   :type: :linux
   :data:
     :ip_address: 225.79.101.15
+    :dns_mode: dynamic
+    :dns_network: 10.8.0.0
     :username: root
     :password: test123
 '
@@ -30,6 +32,8 @@ vpn-server-1:
 :type: :linux
 :data:
   :ip_address: 225.79.101.15
+  :dns_mode: dynamic
+  :dns_network: 10.8.0.0
   :username: root
   :password: test123
 '
@@ -53,7 +57,7 @@ vpn-server-1:
     
     context "New" do
       let(:output) { capture(:stdout) {
-        subject.options = {:ip_address => '0.0.0.0', :username => 'root', :password => 'root'}
+        subject.options = {:ip_address => '0.0.0.0', :username => 'root', :password => 'root', :dns_mode => 'dynamic', :dns_network => '10.8.0.0'}
         subject.add 'test-server'
       } }
 
@@ -63,6 +67,8 @@ test-server:
   :type: :linux
   :data:
     :ip_address: 0.0.0.0
+    :dns_mode: dynamic
+    :dns_network: 10.8.0.0
     :username: root
     :password: root
 '
@@ -85,7 +91,7 @@ test-server:
   
     context "Existing" do
       let(:output) { capture(:stdout) {
-        subject.options = {:ip_address => '0.0.0.1', :username => 'root2', :password => 'root2'}
+        subject.options = {:ip_address => '0.0.0.1', :username => 'root2', :password => 'root2', :dns_mode => 'static', :dns_network => '10.9.0.0'}
         subject.update 'test-server'
       } }
 
@@ -95,6 +101,8 @@ test-server:
   :type: :linux
   :data:
     :ip_address: 0.0.0.1
+    :dns_mode: static
+    :dns_network: 10.9.0.0
     :username: root2
     :password: root2
 '
