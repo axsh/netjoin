@@ -20,11 +20,16 @@ module DucttapeCLI
       if (!database['clients'])
         return
       end
+      
       # If specific client is asked, show that client only, if not, show all
       if (options[:name])
-        puts database['clients'][options[:name]].inspect
+        if (!database['clients'][options[:name]])
+          puts "ERROR : client with name '#{options[:name]}' does not exist" 
+          return
+        end
+        puts database['clients'][options[:name]].to_yaml()
       else
-        puts database['clients'].inspect
+        puts database['clients'].to_yaml()
       end
 
     end
@@ -37,13 +42,15 @@ module DucttapeCLI
 
       # Check for existing client
       if (!database['clients'] or !database['clients'][name])
-        puts "ERROR : client with name '#{name}' doest not exist" 
+        puts "ERROR : client with name '#{name}' does not exist" 
         return
       end
 
       # Update the database gile
       database['clients'].delete(name)
       DucttapeCLI::CLI.writeDatabase(database)
+      
+      database['clients'].to_yaml()
     end
     
     desc "attach", "Attach to VPN Network"
@@ -58,7 +65,7 @@ module DucttapeCLI
       
       if (options[:name])
         if (!database['clients'][options[:name]])
-          puts "ERROR : client with name '#{options[:name]}' doest not exist" 
+          puts "ERROR : client with name '#{options[:name]}' does not exist" 
           return
         else
           self.attach_client(database, options[:name], database['clients'][options[:name]])
@@ -68,6 +75,7 @@ module DucttapeCLI
           self.attach_client(database, name, inst);
         end        
       end
+      
     end
     
     desc "status", "Status of the clients"
@@ -83,7 +91,7 @@ module DucttapeCLI
       # Check for existing client
       if (options[:name])
         if (!database['clients'][options[:name]])
-          puts "ERROR : client with name '#{options[:name]}' doest not exist" 
+          puts "ERROR : client with name '#{options[:name]}' does not exist" 
           return
         else
           puts database['clients'][options[:name]][:status]

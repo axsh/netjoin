@@ -32,10 +32,13 @@ module DucttapeCLI::Client
       # Update the database file
       if(!database['clients'])
         database['clients'] = {}
-      end  
+      end
+
       database['clients'][client.name()] = client.export()
 
       DucttapeCLI::CLI.writeDatabase(database)
+
+      puts client.export_yaml()
     end
     
     desc "update <name>", "Update a linux client"
@@ -54,10 +57,9 @@ module DucttapeCLI::Client
         return
       end
 
-      data = database['clients'][name][:data]
+      db_client = database['clients'][name]      
 
-      client = Ducttape::Clients::Linux.new(name, options[:server], data[:ip_address], data[:username], data[:password])
-      client.status = database['clients'][:status]
+      client = Ducttape::Clients::Linux.retrieve(name, db_client)
       
       # Update the database file
       if (options[:ip_address])
@@ -69,8 +71,12 @@ module DucttapeCLI::Client
       if (options[:password])
         client.password = options[:password]
       end
+
       database['clients'][client.name()] = client.export()
+
       DucttapeCLI::CLI.writeDatabase(database)
+
+      puts client.export_yaml()
     end
 
   end
