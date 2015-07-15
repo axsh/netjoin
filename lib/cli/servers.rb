@@ -21,9 +21,9 @@ module DucttapeCLI
           puts "ERROR : server with name '#{options[:name]}' does not exist" 
           return
         end
-        puts database['servers'][options[:name]]
+        puts database['servers'][options[:name]].to_yaml()
       else
-        puts database['servers']
+        puts database['servers'].to_yaml()
       end
 
     end 
@@ -43,7 +43,7 @@ module DucttapeCLI
       # Update the database gile
       database['servers'].delete(name)
       DucttapeCLI::CLI.writeDatabase(database)
-      puts database['servers']
+      puts database['servers'].to_yaml()
     end
       
     desc "linux SUBCOMMAND ...ARGS", "manage Linux servers"
