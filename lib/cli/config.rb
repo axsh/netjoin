@@ -13,7 +13,7 @@ module DucttapeCLI
       config[:database] = name
       Config.writeConfig(config)
       
-      if (!File.file?(name))
+      if (!File.file?("#{name}.yml"))        
         File.open("#{name}.yml", 'w') {|f| f.write("---") }
       end
       

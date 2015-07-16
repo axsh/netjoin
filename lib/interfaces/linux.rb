@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
 
 require 'net/ssh'
+require 'csv'
 
 require_relative 'base'
 
-module Ducttape::Interfaces  
+module Ducttape::Interfaces
   
   class Linux < Base
   
@@ -48,7 +49,7 @@ END"
           puts "  ERROR"
           puts build
           return false
-        end
+        end        
         return file
       end      
       return false
@@ -70,6 +71,30 @@ END"
         return true
       end
       return false
+    end
+    
+    def self.setVpnIpAddress(server, client)
+      if (!Ducttape::Interfaces::Linux.getVpnIpAddress(server, client))
+        Net::SSH.start(server.ip_address, server.username, :password => server.password) do |ssh|
+          ssh.exec!("echo #{client.name},#{client.vpn_ip_address} >> /etc/openvpn/ipp.txt")
+        end
+      end      
+    end
+    
+    def self.getVpnIpAddress(server, client)
+      Net::SSH.start(server.ip_address, server.username, :password => server.password) do |ssh|
+        ipp = ssh.exec!("cat /etc/openvpn/ipp.txt")
+        if (ipp)
+          csv = CSV.new(ipp)
+          csv.each { |row|
+            name, ip_address = row
+            if (name == client.name())
+              return ip_address
+            end
+          }
+        end
+      end
+      return nil
     end
 
   end

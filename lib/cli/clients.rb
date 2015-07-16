@@ -115,8 +115,8 @@ module DucttapeCLI
           if (:linux === inst[:type])
             
             # Create Client object to work with
-            client = Ducttape::Clients::Linux.new(name, inst[:server], inst[:data][:ip_address], inst[:data][:username], inst[:data][:password])
-            server =  Ducttape::Servers::Linux.new(client.server, serv[:data][:ip_address], serv[:data][:username], serv[:data][:password])
+            client = Ducttape::Clients::Linux.retrieve(name, inst)
+            server =  Ducttape::Servers::Linux.retrieve(client.server, serv)
                 
             client.status = :in_process
 
@@ -146,7 +146,11 @@ module DucttapeCLI
                 client.status = :error
               end
             end
-  
+            
+            if (server.mode === :static)
+              Ducttape::Interfaces::Linux.setVpnIpAddress(server, client)
+            end
+
             # Install certificate
             if(!client.error or client.error === :cert_install_failed)
               puts "  Installing VPN Certificate"
@@ -176,7 +180,7 @@ module DucttapeCLI
             if(!(client.status === :error))
               client.status = :attached
               puts "  Attached!"
-            end          
+            end
           end
           database['clients'][client.name] = client.export
         end

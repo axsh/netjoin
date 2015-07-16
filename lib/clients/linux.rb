@@ -9,12 +9,14 @@ module Ducttape::Clients
     attr_accessor :ip_address
     attr_accessor :username
     attr_accessor :password
+    attr_accessor :vpn_ip_address
     
-    def initialize(name, server, ip_address, username, password, status = :new, error = nil)
-      super(name, server, status, error)
+    def initialize(name, server, ip_address, username, password, vpn_ip_address)
+      super(name, server)
       @ip_address = ip_address
       @username = username
       @password = password
+      @vpn_ip_address = vpn_ip_address
     end
     
     def self.retrieve(name, info)
@@ -27,8 +29,11 @@ module Ducttape::Clients
       ip_address = data[:ip_address]
       username = data[:username]
       password = data[:password]
-
-      client = Linux.new(name, server, ip_address, username, password, status, error)
+      vpn_ip_address = data[:vpn_ip_address]
+        
+      client = Linux.new(name, server, ip_address, username, password, vpn_ip_address)
+      client.status = status
+      client.error = error
 
       return client
     end
@@ -41,7 +46,8 @@ module Ducttape::Clients
       return {
         :ip_address => @ip_address, 
         :username => @username, 
-        :password=> @password
+        :password=> @password,
+        :vpn_ip_address => @vpn_ip_address,
       }
     end
 

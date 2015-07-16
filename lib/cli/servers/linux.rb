@@ -13,8 +13,8 @@ module DucttapeCLI::Server
 
     desc "add <name>","Add server"
     option :ip_address, :required => true
-    option :dns_mode
-    option :dns_network
+    option :mode, :required => true
+    option :network, :required => true
     option :username, :required => true
     option :password, :required => true
     def add(name)
@@ -29,7 +29,7 @@ module DucttapeCLI::Server
       end      
 
       # Create server object to work with
-      server = Ducttape::Servers::Linux.new(name, options[:ip_address], options[:username], options[:password], options[:dns_mode], options[:dns_network])
+      server = Ducttape::Servers::Linux.new(name, options[:ip_address], options[:username], options[:password], options[:mode], options[:network])
 
       # Check for OpenVPN installation on the server
       if (!server.ip_address === '0.0.0.0' and !Ducttape::Interfaces::Linux.checkOpenVpnInstalled(server))
@@ -49,12 +49,12 @@ module DucttapeCLI::Server
     end
     
     desc "update <name>", "Update server"
-    options :name => :string
-    options :ip_address => :string
-    option :dns_mode
-    option :dns_network
-    options :username => :string
-    options :password => :string
+    option :name => :string
+    option :ip_address => :string
+    option :mode => :string
+    option :network => :string
+    option :username => :string
+    option :password => :string
     def update(name)
       # Read database file
       database = DucttapeCLI::CLI.loadDatabase()
@@ -73,11 +73,11 @@ module DucttapeCLI::Server
       if (options[:ip_address])
         server.ip_address = options[:ip_address] 
       end
-      if (options[:dns_mode])
-        server.dns_mode = options[:dns_mode] 
+      if (options[:mode])
+        server.mode = options[:mode] 
       end
-      if (options[:dns_network])
-        server.dns_network = options[:dns_network] 
+      if (options[:network])
+        server.network = options[:network] 
       end
       if (options[:username])
         server.username = options[:username]

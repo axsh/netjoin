@@ -9,11 +9,11 @@ module Ducttape::Clients
     attr_accessor :status
     attr_accessor :error
 
-    def initialize(name, server, status = :new, error = nil)
+    def initialize(name, server)
       @name = name
       @server = server
-      @status = status
-      @error = error
+      @status = :new
+      @error = nil
     end
 
     def getType()

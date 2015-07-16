@@ -14,8 +14,8 @@ servers:
     :type: :linux
     :data:
       :ip_address: 225.79.101.15
-      :dns_mode: dynamic
-      :dns_network: 10.8.0.0
+      :mode: dynamic
+      :network: 10.8.0.0
       :username: root
       :password: test123
 clients:
@@ -28,6 +28,7 @@ clients:
       :ip_address: 88.159.47.22
       :username: root
       :password: test123
+      :vpn_ip_address: 
   vpn-client-99:
     :type: :linux
     :server: vpn-server-1
@@ -37,6 +38,7 @@ clients:
       :ip_address: 204.99.63.105
       :username: root
       :password: test123
+      :vpn_ip_address: 
 '
       end
     end # End context All

@@ -18,6 +18,7 @@ vpn-client-10:
     :ip_address: 88.159.47.22
     :username: root
     :password: test123
+    :vpn_ip_address: 
 vpn-client-99:
   :type: :linux
   :server: vpn-server-1
@@ -27,6 +28,7 @@ vpn-client-99:
     :ip_address: 204.99.63.105
     :username: root
     :password: test123
+    :vpn_ip_address: 
 '
       end
     end # End context All
@@ -47,6 +49,7 @@ vpn-client-99:
   :ip_address: 88.159.47.22
   :username: root
   :password: test123
+  :vpn_ip_address: 
 '
       end
     end # End context Single
@@ -81,6 +84,7 @@ test-client:
     :ip_address: 0.0.0.0
     :username: test-value
     :password: test-value
+    :vpn_ip_address: 
 '
       end
     end # End context new
@@ -117,6 +121,7 @@ test-client:
     :ip_address: 0.0.0.1
     :username: test-value2
     :password: test-value2
+    :vpn_ip_address: 
 '
       end
     end # end context Existing

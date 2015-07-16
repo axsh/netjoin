@@ -13,8 +13,8 @@ vpn-server-1:
   :type: :linux
   :data:
     :ip_address: 225.79.101.15
-    :dns_mode: dynamic
-    :dns_network: 10.8.0.0
+    :mode: dynamic
+    :network: 10.8.0.0
     :username: root
     :password: test123
 '          
@@ -32,8 +32,8 @@ vpn-server-1:
 :type: :linux
 :data:
   :ip_address: 225.79.101.15
-  :dns_mode: dynamic
-  :dns_network: 10.8.0.0
+  :mode: dynamic
+  :network: 10.8.0.0
   :username: root
   :password: test123
 '
