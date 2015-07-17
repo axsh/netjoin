@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 
 require 'csv'
+require 'net/scp'
+require 'net/ssh'
 
 require_relative 'base'
 

@@ -139,7 +139,7 @@ module DucttapeCLI
               end
             end
               
-            if (client.generate_key)
+            if (client.generate_key == 'true')
               # Generate VPN certificate 
               if(!client.error or client.error === :cert_generation_failed)
                 puts "  Generating VPN Certificate"
