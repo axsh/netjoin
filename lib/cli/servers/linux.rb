@@ -91,6 +91,31 @@ module DucttapeCLI::Server
       
       puts server.export_yaml
     end
-        
-   end
+
+    desc "install <name>", "Install server"
+    def install(name)     
+    database = DucttapeCLI::CLI.loadDatabase()
+       
+      # Check for existing server
+      if (!database['servers'] or !database['servers'][name])
+        puts "ERROR : server with name '#{name}' does not exist" 
+        return
+      end
+  
+      info = database['servers'][name]
+  
+      server = Ducttape::Servers::Linux.retrieve(name, info)
+       
+      if (!Ducttape::Interfaces::Linux.checkOpenVpnInstalled(server))
+        if (Ducttape::Interfaces::Linux.installOpenVpn(server))
+          puts "OpenVPN installed!"
+        else
+          puts "OpenVPN installation failed!"
+        end
+      else
+        puts "OpenVPN already installed!"
+      end
+       
+    end
+  end
 end

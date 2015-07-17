@@ -128,8 +128,14 @@ module DucttapeCLI
                 client.error = nil
                 puts "    Installed"
               else
-                puts "    Not installed, aborting!"
-                client.status = :error              
+                puts "    Not installed, trying to install!"
+                if (Ducttape::Interfaces::Linux.installOpenVpn(client))
+                  client.error = nil
+                  puts "    Installed"
+                else
+                  puts "    Failed to install!"
+                  client.status = :error
+                end              
               end
             end
   

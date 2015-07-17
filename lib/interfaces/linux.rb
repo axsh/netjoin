@@ -18,10 +18,25 @@ module Ducttape::Interfaces
       end
       return false
     end
+    
+    def self.installOpenVpn(client)
+      Net::SSH.start(client.ip_address, client.username, :password => client.password) do |ssh|
+        result = ssh.exec!('yum install -y openvpn')
+        if (result.end_with?("Complete!\n"))
+          return true
+        end
+      end
+      return false
+    end
 
     def self.generateCertificate(server, client)
       Net::SSH.start(server.ip_address, server.username, :password => server.password) do |ssh|
-        build = ssh.exec!("cd /etc/openvpn/easy-rsa/ && source ./vars && ./build-key #{client.name}")
+        ls = ssh.exec!("ls /etc/openvpn/easy-rsa/keys/#{client.name}.crt")
+        if(ls == "/etc/openvpn/easy-rsa/keys/#{client.name}.crt\n")
+          puts "    Already generated"
+        else
+          build = ssh.exec!("cd /etc/openvpn/easy-rsa/ && source ./vars && ./build-key #{client.name}")
+        end
         ca = ssh.exec!("cat /etc/openvpn/easy-rsa/keys/ca.crt")
         cert = ssh.exec!("cat /etc/openvpn/easy-rsa/keys/#{client.name}.crt")
         key = ssh.exec!("cat /etc/openvpn/easy-rsa/keys/#{client.name}.key")
