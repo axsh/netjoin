@@ -11,7 +11,7 @@ module DucttapeCLI
   class Clients < Thor
 
     desc "show","Show all clients"
-    options :name => :string
+    option :name, :type => :string
     def show()
 
       # Read database file
@@ -54,7 +54,7 @@ module DucttapeCLI
     end
     
     desc "attach", "Attach to VPN Network"
-    option :name
+    option :name, :type => :string
     def attach()
       # Read database file
       database = DucttapeCLI::CLI.loadDatabase()
@@ -79,7 +79,7 @@ module DucttapeCLI
     end
     
     desc "status", "Status of the clients"
-    option :name
+    option :name, :type => :string
     def status()
       # Read database file
       database = DucttapeCLI::CLI.loadDatabase()
@@ -138,30 +138,44 @@ module DucttapeCLI
                 end              
               end
             end
-  
-            # Generate VPN certificate
-            if(!client.error or client.error === :cert_generation_failed)
-              puts "  Generating VPN Certificate"
-              client.error = :cert_generation_failed
-              ovpn = Ducttape::Interfaces::Linux.generateCertificate(server, client)
-              if(ovpn)
-                puts "    Success"
-                client.error = nil             
-              else
-                puts "    Failed generating certificate"
-                client.status = :error
+              
+            if (client.generate_key)
+              # Generate VPN certificate 
+              if(!client.error or client.error === :cert_generation_failed)
+                puts "  Generating VPN Certificate"
+                client.error = :cert_generation_failed
+                ovpn = Ducttape::Interfaces::Linux.generateCertificate(server, client)
+                if(ovpn)
+                  puts "    Success"
+                  client.error = nil             
+                else
+                  puts "    Failed generating certificate"
+                  client.status = :error
+                end
               end
             end
-            
             if (server.mode === :static)
               Ducttape::Interfaces::Linux.setVpnIpAddress(server, client)
             end
 
+            # Check certificate exists on path
+            if(!client.error or client.error === :cert_file_missing)
+              puts "  Check VPN Certificate"
+              client.error = :cert_file_missing
+              if(File.file?("keys/#{client.name}.ovpn"))
+                puts "    Certificate file found"
+                client.error = nil
+              else
+                puts "    Certificate file not found!"
+                client.status = :error
+              end
+            end
+            
             # Install certificate
             if(!client.error or client.error === :cert_install_failed)
               puts "  Installing VPN Certificate"
               client.error = :cert_install_failed
-              if(Ducttape::Interfaces::Linux.installCertificate(client, ovpn))
+              if(Ducttape::Interfaces::Linux.installCertificate(client))
                 puts "    Success"
                 client.error = nil
               else
@@ -169,7 +183,7 @@ module DucttapeCLI
                 client.status = :error
               end
             end
-  
+
             # Start OpenVPN using the certificate          
             if(!client.error or client.error === :openvpn_not_started)
               puts "  Starting OpenVPN"

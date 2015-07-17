@@ -12,11 +12,11 @@ module DucttapeCLI::Server
     @type = 'linux'
 
     desc "add <name>","Add server"
-    option :ip_address, :required => true
-    option :mode, :required => true
-    option :network, :required => true
-    option :username, :required => true
-    option :password, :required => true
+    option :ip_address, :type => :string, :required => true
+    option :mode, :type => :string, :required => true
+    option :network, :type => :string, :required => true
+    option :username, :type => :string, :required => true
+    option :password, :type => :string, :required => true
     def add(name)
      
       # Read database file
@@ -49,12 +49,12 @@ module DucttapeCLI::Server
     end
     
     desc "update <name>", "Update server"
-    option :name => :string
-    option :ip_address => :string
-    option :mode => :string
-    option :network => :string
-    option :username => :string
-    option :password => :string
+    option :name, :type => :string
+    option :ip_address, :type => :string
+    option :mode, :type => :string
+    option :network, :type => :string
+    option :username, :type => :string
+    option :password, :type => :string
     def update(name)
       # Read database file
       database = DucttapeCLI::CLI.loadDatabase()

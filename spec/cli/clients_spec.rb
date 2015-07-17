@@ -11,7 +11,7 @@ describe DucttapeCLI::Clients do
         expect(output).to eql '---
 vpn-client-10:
   :type: :linux
-  :server: vpn-server
+  :server: vpn-server-1
   :status: :new
   :error: 
   :data:
@@ -19,6 +19,7 @@ vpn-client-10:
     :username: root
     :password: test123
     :vpn_ip_address: 
+    :generate_key: 
 vpn-client-99:
   :type: :linux
   :server: vpn-server-1
@@ -29,6 +30,7 @@ vpn-client-99:
     :username: root
     :password: test123
     :vpn_ip_address: 
+    :generate_key: 
 '     
       end
     end # End context "All"
@@ -42,7 +44,7 @@ vpn-client-99:
       it "show an existing client" do
         expect(output).to eql '---
 :type: :linux
-:server: vpn-server
+:server: vpn-server-1
 :status: :new
 :error: 
 :data:
@@ -50,6 +52,7 @@ vpn-client-99:
   :username: root
   :password: test123
   :vpn_ip_address: 
+  :generate_key: 
 '
       end
     end # End context Single
@@ -109,6 +112,7 @@ test-client:
     :username: test-value2
     :password: test-value2
     :vpn_ip_address: 
+    :generate_key: 
 '          
       end
     end # End context Single

@@ -11,7 +11,7 @@ describe DucttapeCLI::Client::Linux do
         expect(output).to eql '---
 vpn-client-10:
   :type: :linux
-  :server: vpn-server
+  :server: vpn-server-1
   :status: :new
   :error: 
   :data:
@@ -19,6 +19,7 @@ vpn-client-10:
     :username: root
     :password: test123
     :vpn_ip_address: 
+    :generate_key: 
 vpn-client-99:
   :type: :linux
   :server: vpn-server-1
@@ -29,6 +30,7 @@ vpn-client-99:
     :username: root
     :password: test123
     :vpn_ip_address: 
+    :generate_key: 
 '
       end
     end # End context All
@@ -42,7 +44,7 @@ vpn-client-99:
       it "show a single linux client" do
         expect(output).to eql '---
 :type: :linux
-:server: vpn-server
+:server: vpn-server-1
 :status: :new
 :error: 
 :data:
@@ -50,6 +52,7 @@ vpn-client-99:
   :username: root
   :password: test123
   :vpn_ip_address: 
+  :generate_key: 
 '
       end
     end # End context Single
@@ -69,12 +72,12 @@ vpn-client-99:
   context "Add" do
     context "New" do
       let(:output) { capture(:stdout) {
-        subject.options = {:server => 'test-server', :ip_address => '0.0.0.0', :username => 'test-value', :password => 'test-value'}
+        subject.options = {:server => 'test-server', :ip_address => '0.0.0.0', :username => 'test-value', :password => 'test-value', :vpn_ip_address => "10.8.0.50", :generate_key => "true"}
         subject.add 'test-client'
       } }
 
       it "creates a new linux client" do
-        expect(output).to eql '---
+        expect(output).to eql "---
 test-client:
   :type: :linux
   :server: test-server
@@ -84,14 +87,15 @@ test-client:
     :ip_address: 0.0.0.0
     :username: test-value
     :password: test-value
-    :vpn_ip_address: 
-'
+    :vpn_ip_address: 10.8.0.50
+    :generate_key: 'true'
+"
       end
     end # End context new
 
     context "Duplicate" do
       let(:output) { capture(:stdout) {
-        subject.options = {:ip_address => '0.0.0.0', :username => 'test-value', :password => 'test-value'}
+        subject.options = {:ip_address => '0.0.0.0', :username => 'test-value', :server => 'new-server', :password => 'test-value'}
         subject.add 'test-client'
       } }
 
@@ -106,23 +110,24 @@ test-client:
     
     context "Existing" do
       let(:output) { capture(:stdout) {
-        subject.options = {:ip_address => '0.0.0.1', :username => 'test-value2', :password => 'test-value2'}
+        subject.options = {:server => 'test-server2', :ip_address => '0.0.0.1', :username => 'test-value2', :password => 'test-value2', :vpn_ip_address => "10.8.0.52", :generate_key => "false"}
         subject.update 'test-client'
       } }
 
       it "updates an existing client" do
-        expect(output).to eql '---
+        expect(output).to eql "---
 test-client:
   :type: :linux
-  :server: test-server
+  :server: test-server2
   :status: :new
   :error: 
   :data:
     :ip_address: 0.0.0.1
     :username: test-value2
     :password: test-value2
-    :vpn_ip_address: 
-'
+    :vpn_ip_address: 10.8.0.52
+    :generate_key: 'false'
+"
       end
     end # end context Existing
 

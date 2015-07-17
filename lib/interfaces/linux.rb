@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 
-require 'net/ssh'
 require 'csv'
 
 require_relative 'base'
@@ -64,18 +63,17 @@ END"
           puts "  ERROR"
           puts build
           return false
-        end        
+        end
+        DucttapeCLI::CLI.writeFile("keys/#{client.name}.ovpn",file)
         return file
       end      
       return false
     end
 
-    def self.installCertificate(client, ovpn)
-      Net::SSH.start(client.ip_address, client.username, :password => client.password) do |ssh|
-        ssh.exec!("touch /etc/openvpn/#{client.name}.ovpn")
-        ssh.exec!("cat > /etc/openvpn/#{client.name}.ovpn << END
-        #{ovpn}")
-        return true          
+    def self.installCertificate(client)
+      Net::SCP.start(client.ip_address, client.username, :password => client.password) do |scp|
+        scp.upload!("keys/#{client.name}.ovpn", "/etc/openvpn/#{client.name}.ovpn")
+        return true
       end
       return false
     end

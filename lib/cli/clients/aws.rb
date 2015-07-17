@@ -11,11 +11,11 @@ module DucttapeCLI::Client
     @type = 'aws'
     
     desc "add <name>","Add a new AWS client"
-    option :region, :required => true
-    option :vpc, :required => true
-    option :ip_address, :required => true
-    option :access_key, :required => true
-    option :secret_key, :required => true
+    option :region, :type => :string, :required => true
+    option :vpc, :type => :string, :required => true
+    option :ip_address, :type => :string, :required => true
+    option :access_key, :type => :string, :required => true
+    option :secret_key, :type => :string, :required => true
     def add(name)
 
       # Read database file
@@ -49,10 +49,10 @@ module DucttapeCLI::Client
     end
     
     desc "update <name>", "Update an AWS client"
-    options :region => :string
-    options :vpc => :string
-    options :access_key => :string
-    options :secret_key => :string
+    option :region, :type => :string
+    option :vpc, :type => :string
+    option :access_key, :type => :string
+    option :secret_key, :type => :string
     def update(name)
 
       # Read database file

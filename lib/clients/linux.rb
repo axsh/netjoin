@@ -10,13 +10,13 @@ module Ducttape::Clients
     attr_accessor :username
     attr_accessor :password
     attr_accessor :vpn_ip_address
+    attr_accessor :generate_key
     
-    def initialize(name, server, ip_address, username, password, vpn_ip_address = nil)
+    def initialize(name, server, ip_address, username, password)
       super(name, server)
       @ip_address = ip_address
       @username = username
       @password = password
-      @vpn_ip_address = vpn_ip_address
     end
     
     def self.retrieve(name, info)
@@ -30,10 +30,13 @@ module Ducttape::Clients
       username = data[:username]
       password = data[:password]
       vpn_ip_address = data[:vpn_ip_address]
+      generate_key = data[:generate_key]
         
-      client = Linux.new(name, server, ip_address, username, password, vpn_ip_address)
+      client = Linux.new(name, server, ip_address, username, password)
       client.status = status
       client.error = error
+      client.vpn_ip_address = vpn_ip_address
+      client.generate_key = generate_key
 
       return client
     end
@@ -48,6 +51,7 @@ module Ducttape::Clients
         :username => @username, 
         :password=> @password,
         :vpn_ip_address => @vpn_ip_address,
+        :generate_key => @generate_key
       }
     end
 

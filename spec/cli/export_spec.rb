@@ -21,7 +21,7 @@ servers:
 clients:
   vpn-client-10:
     :type: :linux
-    :server: vpn-server
+    :server: vpn-server-1
     :status: :new
     :error: 
     :data:
@@ -29,6 +29,7 @@ clients:
       :username: root
       :password: test123
       :vpn_ip_address: 
+      :generate_key: 
   vpn-client-99:
     :type: :linux
     :server: vpn-server-1
@@ -39,6 +40,7 @@ clients:
       :username: root
       :password: test123
       :vpn_ip_address: 
+      :generate_key: 
 '
       end
     end # End context All

@@ -10,7 +10,7 @@ module DucttapeCLI::Server
     @type = 'base'
 
     desc "show","Show all servers"
-    options :name => :string
+    option :name, :type => :string
     def show()
 
       # Read database file

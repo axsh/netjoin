@@ -10,7 +10,7 @@ module DucttapeCLI::Client
     @type = 'base'
 
     desc "show","Show all clients"
-    options :name => :string
+    option :name, :type => :string
     def show()
 
       # Read database file

@@ -9,7 +9,7 @@ module DucttapeCLI
   class Servers < Thor
 
     desc "show","Show all servers"
-    options :name => :string
+    option :name, :type => :string
     def show()
 
       # Read database file
