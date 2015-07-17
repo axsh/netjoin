@@ -11,11 +11,11 @@ module DucttapeCLI::Client
     @type = 'linux'
     
     desc "add <name>","Add a new linux client"
-    option :server, :required => true
-    option :ip_address, :required => true
-    option :username, :required => true
-    option :password, :required => true
-    option :vpn_ip_address, :required => true
+    option :server => :string, :required => true
+    option :ip_address => :string, :required => true
+    option :username => :string, :required => true
+    option :password => :string, :required => true
+    option :vpn_ip_address => :string
     def add(name)
       
       # Read database file
@@ -25,7 +25,7 @@ module DucttapeCLI::Client
       if (database['clients'] and database['clients'][name])
         puts "ERROR : client with name '#{name}' already exists" 
         return
-      end      
+      end
 
       # Create Client object to work with
       client = Ducttape::Clients::Linux.new(name, options[:server], options[:ip_address], options[:username], options[:password], options[:vpn_ip_address])
@@ -43,11 +43,12 @@ module DucttapeCLI::Client
     end
     
     desc "update <name>", "Update a linux client"
-    options :type => :string
-    options :ip_address => :string
-    options :username => :string
-    options :password => :string
-    options :vpn_ip_address => :string
+    option :type => :string
+    option :server => :string
+    option :ip_address => :string
+    option :username => :string
+    option :password => :string
+    option :vpn_ip_address => :string
     def update(name)
       
       # Read database file

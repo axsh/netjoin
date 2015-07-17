@@ -11,7 +11,7 @@ module Ducttape::Clients
     attr_accessor :password
     attr_accessor :vpn_ip_address
     
-    def initialize(name, server, ip_address, username, password, vpn_ip_address)
+    def initialize(name, server, ip_address, username, password, vpn_ip_address = nil)
       super(name, server)
       @ip_address = ip_address
       @username = username
