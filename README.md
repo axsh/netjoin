@@ -7,25 +7,23 @@ A CLI to allows you to specify and build a VPN network layout. Using the CLI you
 
 First version will only work with Linux clients and OpenVPN. A pre-installed OpenVPN server is required. Ducttape will connect to the server to generate the VPN certificates.
 
-### Prerequisites
-
-* A server running CentOS with OpenVPN installed and configured with Easy-RSA
-
-See guide : https://www.digitalocean.com/community/tutorials/how-to-setup-and-configure-an-openvpn-server-on-centos-6
-
 ## VPN Server
 
 ### Linux - OpenVPN
 
 Set up using following guide : [https://www.digitalocean.com/community/tutorials/how-to-setup-and-configure-an-openvpn-server-on-centos-6]
 
-Remove  ``--interact`` from the ``build-key`` script. 
+Remove  ``--interact`` from the ``build-key`` script.
+
+#### Supported OS :
+
+* CentOS 6.6 
 
 ## VPN Clients
 
-### Linux
+### Linux - OpenVPN
 
-Works with OpenVPN and Easy-RSA
+Works with OpenVPN (optionally with Easy-RSA for key generation)
 
 #### Supported OS :
 
@@ -45,9 +43,22 @@ Initialize ducttape to create the config and database files by the following com
 $ bin/ducttape init
 ```
 
-# Quick introduction
+# Quick start with Easy-RSA
+
+When you just want a quick and simple way of setting up your OpenVPN network
+
+### Prerequisites
+
+* Running server and client on CentOS 6.6 with OpenVPN installed and configured with Easy-RSA
+
+Set up server using following guide : [https://www.digitalocean.com/community/tutorials/how-to-setup-and-configure-an-openvpn-server-on-centos-6]
+
+Remove  ``--interact`` from the ``build-key`` script. 
+
 
 ## Add a server
+
+Server has OpenVPN already installed and configured using the above guide
 
 ```bash
 $ ducttape servers linux add vpn-server-name --ip-address 192.168.122.100 --mode dynamic --network 10.8.0.0/24 --username root --password root
@@ -60,6 +71,51 @@ $ ducttape clients linux add vpn-client-name --server vpn-server-name --ip-addre
 ```
 
 ## Attach the client to the VPN network
+
+Installs OpenVPN, generates certification file, uploads the file to the client and starts OpenVPN using that file 
+
+```bash
+$ ducttape clients attach
+```
+
+# More advanced setup
+
+When you take care of generating the configuration and certification files yourself
+
+### Prerequisites
+
+* Running server and client on CentOS 6.6
+* Have the '<vpn-client-name>.ovpn' file located in `keys` folder
+* Have the server config and certification files ready in `/tmp/` or another folder (edit below line as needed)
+  * server.conf
+  * ca.crt
+  * dh2048.pem
+  * server.crt
+  * server.key
+
+## Add server
+
+```bash
+$ ducttape servers linux add vpn-server --ip-address 192.168.122.100 --mode dynamic --network 10.8.0.0/24 --username root --password root --file-conf /tmp/server.conf --file-ca-crt /tmp/ca.crt --file-pem /tmp/dh2048.pem --file-crt /tmp/server.crt --file-key /tmp/server.key
+```
+
+## Install server
+
+Installs OpenVPN, uploads the configuration and certification files and starts OpenVPN
+
+```bash
+$ ducttape servers linux install vpn-server
+```
+
+## Add client 
+
+```bash
+$ ducttape clients linux add vpn-client-name --server vpn-server-name --ip-address 192.168.122.165 --username root --password root --generate-key true
+```
+
+## Attach client
+
+Installs OpenVPN, uploads the local certification file  to the client and starts OpenVPN using that file 
 
 ```bash
 $ ducttape clients attach
