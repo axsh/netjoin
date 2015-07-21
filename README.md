@@ -85,7 +85,7 @@ When you take care of generating the configuration and certification files yours
 ### Prerequisites
 
 * Running server and client on CentOS 6.6
-* Have the '<vpn-client-name>.ovpn' file located in `keys` folder
+* Have the `<vpn-client-name>.ovpn` file located in `keys` folder
 * Have the server config and certification files ready in `/tmp/` or another folder (edit below line as needed)
   * server.conf
   * ca.crt
