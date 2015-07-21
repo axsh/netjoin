@@ -11,9 +11,7 @@ First version will only work with Linux clients and OpenVPN.
 
 ### Linux - OpenVPN
 
-Set up using following guide : [https://www.digitalocean.com/community/tutorials/how-to-setup-and-configure-an-openvpn-server-on-centos-6]
-
-Remove  ``--interact`` from the ``build-key`` script.
+Works with OpenVPN (optionally with Easy-RSA for key generation)
 
 #### Supported OS :
 
@@ -22,8 +20,6 @@ Remove  ``--interact`` from the ``build-key`` script.
 ## VPN Clients
 
 ### Linux - OpenVPN
-
-Works with OpenVPN (optionally with Easy-RSA for key generation)
 
 #### Supported OS :
 
@@ -54,7 +50,6 @@ When you just want a quick and simple way of setting up your OpenVPN network
 Set up server using following guide : [https://www.digitalocean.com/community/tutorials/how-to-setup-and-configure-an-openvpn-server-on-centos-6]
 
 Remove  ``--interact`` from the ``build-key`` script. 
-
 
 ## Add a server
 
