@@ -5,7 +5,7 @@ A CLI to allows you to specify and build a VPN network layout. Using the CLI you
 
 **Disclaimer** : This CLI does not maintain the VPN network once it has been set up!
 
-First version will only work with Linux clients and OpenVPN. A pre-installed OpenVPN server is required. Ducttape will connect to the server to generate the VPN certificates.
+First version will only work with Linux clients and OpenVPN.
 
 ## VPN Server
 
