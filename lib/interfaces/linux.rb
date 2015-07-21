@@ -9,6 +9,14 @@ require_relative 'base'
 module Ducttape::Interfaces
   
   class Linux < Base
+    
+    def self.uploadFile(client, source, destination)
+      Net::SCP.start(client.ip_address, client.username, :password => client.password) do |scp|
+        scp.upload!(source, destination)
+        return true
+      end
+      return false
+    end
   
     def self.checkOpenVpnInstalled(client)
       Net::SSH.start(client.ip_address, client.username, :password => client.password) do |ssh|
@@ -73,14 +81,18 @@ END"
     end
 
     def self.installCertificate(client)
-      Net::SCP.start(client.ip_address, client.username, :password => client.password) do |scp|
-        scp.upload!("keys/#{client.name}.ovpn", "/etc/openvpn/#{client.name}.ovpn")
+      return Linux.uploadFile(client, "keys/#{client.name}.ovpn", "/etc/openvpn/#{client.name}.ovpn")
+    end
+
+    def self.startOpenVpnServer(client)
+      Net::SSH.start(client.ip_address, client.username, :password => client.password) do |ssh|
+        ssh.exec!("service openvpn restart")
         return true
       end
       return false
     end
-
-    def self.startOpenVPN(client)
+    
+    def self.startOpenVpnClient(client)
       Net::SSH.start(client.ip_address, client.username, :password => client.password) do |ssh|
         ssh.exec!("openvpn --config /etc/openvpn/#{client.name}.ovpn --daemon")
         return true

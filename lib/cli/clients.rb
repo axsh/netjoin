@@ -188,7 +188,7 @@ module DucttapeCLI
             if(!client.error or client.error === :openvpn_not_started)
               puts "  Starting OpenVPN"
               client.error = :openvpn_not_started
-              if(Ducttape::Interfaces::Linux.startOpenVPN(client))
+              if(Ducttape::Interfaces::Linux.startOpenVpnClient(client))
                 puts "    Success"
                 client.error = nil
               else

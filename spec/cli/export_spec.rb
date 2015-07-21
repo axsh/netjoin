@@ -18,6 +18,13 @@ servers:
       :network: 10.8.0.0
       :username: root
       :password: test123
+      :installed: true
+      :configured: true
+      :file_conf: "/tmp/server.conf"
+      :file_ca_crt: "/tmp/ca.crt"
+      :file_pem: "/tmp/dh2048.pem"
+      :file_crt: "/tmp/server.crt"
+      :file_key: "/tmp/server.key"
 clients:
   vpn-client-10:
     :type: :linux
