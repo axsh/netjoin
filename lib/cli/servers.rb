@@ -2,6 +2,7 @@
 
 require 'thor'
 
+require_relative 'servers/aws'
 require_relative 'servers/linux'
 
 module DucttapeCLI
@@ -45,7 +46,9 @@ module DucttapeCLI
       DucttapeCLI::CLI.writeDatabase(database)
       puts database['servers'].to_yaml()
     end
-      
+
+    desc "aws SUBCOMMAND ...ARGS", "manage AWS servers"
+    subcommand "aws", DucttapeCLI::Server::Aws
     desc "linux SUBCOMMAND ...ARGS", "manage Linux servers"
     subcommand "linux", DucttapeCLI::Server::Linux
   

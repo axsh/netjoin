@@ -4,5 +4,6 @@ module Ducttape
   require_relative 'clients/linux'
   require_relative 'interfaces/linux'
   require_relative 'servers/linux'
+  require_relative 'servers/aws'
       
 end

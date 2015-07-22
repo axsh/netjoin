@@ -15,7 +15,7 @@ module Ducttape::Servers
     end
 
     def getExportData()
-      raise NotImplementedError
+      return {}
     end
 
     def export()

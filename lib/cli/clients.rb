@@ -3,7 +3,6 @@
 require 'thor'
 require 'yaml'
 
-require_relative 'clients/aws'
 require_relative 'clients/linux'
 
 module DucttapeCLI
@@ -207,10 +206,7 @@ module DucttapeCLI
         DucttapeCLI::CLI.writeDatabase(database)
       end 
     }
-    
-    # TODO finish implementing AWS Support
-    #desc "aws SUBCOMMAND ...ARGS", "manage AWS clients"
-    #subcommand "aws", DucttapeCLI::Client::Aws
+
     desc "linux SUBCOMMAND ...ARGS", "manage Linux clients"
     subcommand "linux", DucttapeCLI::Client::Linux
 

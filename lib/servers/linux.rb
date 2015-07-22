@@ -19,7 +19,7 @@ module Ducttape::Servers
     attr_accessor :file_crt
     attr_accessor :file_key
     
-    def initialize(name, ip_address, username, password, mode = :dynamic, network = nil)
+    def initialize(name, ip_address = nil, username = nil, password = nil, mode = :dynamic, network = nil)
       super(name)
       @ip_address = ip_address
       @mode = mode
@@ -29,32 +29,24 @@ module Ducttape::Servers
     end
     
     def self.retrieve(name, info)
-
       data = info[:data]
-      
-      ip_address = data[:ip_address]
-      mode = data[:mode]
-      network = data[:network]
-      username = data[:username]
-      password = data[:password]
-      installed = data[:installed]
-      configured = data[:configured]
-      file_conf = data[:file_conf]
-      file_ca_crt = data[:file_ca_crt]
-      file_pem = data[:file_pem]
-      file_crt = data[:file_crt]
-      file_key = data[:file_key]
-
-      client = Linux.new(name, ip_address, username, password, mode, network)
-      client.installed = installed
-      client.configured = configured
-      client.file_conf = file_conf
-      client.file_ca_crt = file_ca_crt
-      client.file_pem = file_pem
-      client.file_crt = file_crt
-      client.file_key = file_key
-
-      return client
+      entity = Linux.new(name)
+      return entity
+    end
+    
+    def self.fill(entity, data)
+      entity.ip_address = data[:ip_address]
+      entity.username = data[:username]
+      entity.password = data[:password]
+      entity.mode = data[:mode]
+      entity.network = data[:network]
+      entity.installed = data[:installed]
+      entity.configured = data[:configured]
+      entity.file_conf = data[:file_conf]
+      entity.file_ca_crt = data[:file_ca_crt]
+      entity.file_pem = data[:file_pem]
+      entity.file_crt = data[:file_crt]
+      entity.file_key = data[:file_key]
     end
 
     def getType()
@@ -62,20 +54,20 @@ module Ducttape::Servers
     end
 
     def getExportData()
-      return {
-        :ip_address => @ip_address,
-        :mode => @mode,
-        :network => @network,
-        :username => @username, 
-        :password=> @password,
-        :installed => @installed,
-        :configured => @configured,
-        :file_conf => @file_conf,
-        :file_ca_crt => @file_ca_crt,
-        :file_pem => @file_pem,
-        :file_crt => @file_crt,
-        :file_key => @file_key,
-      }
+      data = super()
+      data[:ip_address] = @ip_address
+      data[:mode] = @mode
+      data[:network] = @network
+      data[:username] = @username 
+      data[:password] = @password
+      data[:installed] = @installed
+      data[:configured] = @configured
+      data[:file_conf] = @file_conf
+      data[:file_ca_crt] = @file_ca_crt
+      data[:file_pem] = @file_pem
+      data[:file_crt] = @file_crt
+      data[:file_key] = @file_key
+      return data
     end
 
   end
