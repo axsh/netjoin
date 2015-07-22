@@ -54,6 +54,20 @@ module Ducttape::Interfaces
         
     end
     
+    def self.describe(server)
+      ec2 = connectAws(server)
+      
+      if (!ec2)
+        "Not connected!"
+      end
+
+      response = ec2.DescribeInstances(
+        'InstanceId'      => "#{server.instance_id}"    
+      )
+
+      puts response.to_yaml()
+    end
+    
     def self.getStatus(server)
 
       ec2 = connectAws(server)
@@ -91,12 +105,71 @@ module Ducttape::Interfaces
       response = ec2.DescribeInstances(
         'InstanceId'      => "#{server.instance_id}"    
       )
-      
-      ip_address = response["DescribeInstancesResponse"]["reservationSet"]["item"]["instancesSet"]["item"]["ipAddress"]
-        
-      return ip_address
+
+      puts response.to_yaml()
+            
+      server.ip_address = response["DescribeInstancesResponse"]["reservationSet"]["item"]["instancesSet"]["item"]["ipAddress"]
+      server.public_dns_name = response["DescribeInstancesResponse"]["reservationSet"]["item"]["instancesSet"]["item"]["dnsName"]
+      if(!server.ip_address or !server.public_dns_name)
+        return false
+      end
+      return true
     end
     
+    def self.getAuth(client)
+      if (client.key_pem)
+        return { :keys => "" }
+      end
+      return { :password => client.password }
+    end
+    
+    def self.testing(client)
+      puts "testing"
+      Net::SSH.start(client.public_dns_name, client.username, Aws.getAuth(client)) do |ssh|
+        response = ssh.exec!("ifconfig")
+        puts response
+      end
+    end
+    
+    def self.uploadFile(client, source, destination)
+      Net::SCP.start(client.ip_address, client.username, Aws.getAuth(client)) do |scp|
+        scp.upload!(source, destination)
+        return true
+      end
+      return false
+    end
+  
+    def self.checkOpenVpnInstalled(client)
+      Net::SSH.start(client.ip_address, client.username, Aws.getAuth(client)) do |ssh|
+        result = ssh.exec!('rpm -qa | grep openvpn')
+        if (result)
+          return true
+        end
+      end
+      return false
+    end
+    
+    def self.installOpenVpn(client)
+      Net::SSH.start(client.ip_address, client.username, Aws.getAuth(client)) do |ssh|
+        result = ssh.exec!('yum install -y openvpn')
+        if (result.end_with?("Complete!\n"))
+          return true
+        end
+      end
+      return false
+    end
+    
+    def self.installCertificate(client)
+      return Linux.uploadFile(client, "keys/#{client.name}.ovpn", "/etc/openvpn/#{client.name}.ovpn")
+    end
+
+    def self.startOpenVpnServer(client)
+      Net::SSH.start(client.ip_address, client.username, Aws.getAuth(client)) do |ssh|
+        ssh.exec!("service openvpn restart")
+        return true
+      end
+      return false
+    end
   end
   
 end

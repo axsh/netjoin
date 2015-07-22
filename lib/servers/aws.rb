@@ -16,9 +16,11 @@ module Ducttape::Servers
     attr_accessor :instance_id
     attr_accessor :vpc_id
     attr_accessor :private_ip_address
+    attr_accessor :public_dns_name
 
     def initialize(name, region = nil, zone = nil, access_key_id = nil, secret_key = nil, ami = nil, instance_type = nil, key_pair = nil)
       super(name)
+      @username = "ec2-user"
       @region = region
       @zone = zone
       @access_key_id = access_key_id
@@ -42,6 +44,7 @@ module Ducttape::Servers
       entity.instance_id = data[:instance_id]
       entity.vpc_id = data[:vpc_id]
       entity.private_ip_address = data[:private_ip_address]
+      entity.public_dns_name = data[:public_dns_name]
       return entity
     end
 
@@ -61,6 +64,7 @@ module Ducttape::Servers
       data[:instance_id] = @instance_id
       data[:vpc_id] = @vpc_id
       data[:private_ip_address] = @private_ip_address
+      data[:public_dns_name] = @public_dns_name
       return data
     end
 
