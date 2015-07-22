@@ -17,6 +17,7 @@ vpn-server-1:
     :network: 10.8.0.0
     :username: root
     :password: test123
+    :key_pem: 
     :installed: true
     :configured: true
     :file_conf: "/tmp/server.conf"
@@ -43,6 +44,7 @@ vpn-server-1:
   :network: 10.8.0.0
   :username: root
   :password: test123
+  :key_pem: 
   :installed: true
   :configured: true
   :file_conf: "/tmp/server.conf"

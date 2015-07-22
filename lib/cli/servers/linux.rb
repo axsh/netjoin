@@ -36,8 +36,9 @@ module DucttapeCLI::Server
       end      
 
       # Create server object to work with
-      server = Ducttape::Servers::Linux.new(name, options[:ip_address], options[:username], options[:password], options[:mode], options[:network])
+      server = Ducttape::Servers::Linux.new(name, options[:ip_address], options[:username], options[:mode], options[:network])
         
+      server.password = options[:password]
       server.installed = options[:installed]
       server.configured = options[:configured]
       server.file_conf = options[:file_conf]
