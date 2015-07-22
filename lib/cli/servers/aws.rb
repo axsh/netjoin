@@ -17,6 +17,7 @@ module DucttapeCLI::Server
     option :secret_key, :type => :string, :required => true
     option :ami, :type => :string, :required => true
     option :instance_type, :type => :string, :required => true
+    option :key_pair, :type => :string, :required => true
     def add(name)
 
       # Read database file
@@ -29,9 +30,7 @@ module DucttapeCLI::Server
       end      
 
       # Create Server object to work with
-      server = Ducttape::Servers::Aws.new(name, options[:region], options[:zone], options[:access_key_id], options[:secret_key])
-      server.ami = options[:ami]
-      server.instance_type = options[:instance_type]
+      server = Ducttape::Servers::Aws.new(name, options[:region], options[:zone], options[:access_key_id], options[:secret_key], options[:ami], options[:instance_type], options[:key_pair])
 
       # Update the database file
       if(!database['servers'])
@@ -51,6 +50,7 @@ module DucttapeCLI::Server
     option :secret_key, :type => :string
     option :ami, :type => :string
     option :instance_type, :type => :string
+    option :key_pair, :type => :string
     def update(name)
 
       # Read database file
@@ -85,6 +85,9 @@ module DucttapeCLI::Server
       if (options[:instance_type])
         server.instance_type = options[:instance_type]
       end
+      if (options[:key_pair])
+        server.key_pair = options[:key_pair]
+      end
             
       database['servers'][server.name()] = server.export()
       DucttapeCLI::CLI.writeDatabase(database)
@@ -114,6 +117,24 @@ module DucttapeCLI::Server
         puts "Instance already created. skipping!"
       end
       
+      database['servers'][server.name()] = server.export()
+      DucttapeCLI::CLI.writeDatabase(database)
+      
+      puts "Initializing new instance, this will take a few minutes"
+      
+      puts "Check instance running, wait for 30 seconds and check again, abort by ctrl-c, rerun command to continue."
+      
+      status = Ducttape::Interfaces::Aws.getStatus(server)
+      while (!status or status["name"] != "running") do
+        for i in 1..6
+          sleep(5)
+          puts "Waited #{i * 5} seconds"
+        end
+        puts "Checking status"
+        status = Ducttape::Interfaces::Aws.getStatus(server)
+      end
+      puts "Instance running, continuing"
+      
       if (!server.ip_address)
         ip_address = Ducttape::Interfaces::Aws.getPublicIpAddress(server)
         if (!ip_address)
@@ -130,6 +151,30 @@ module DucttapeCLI::Server
       database['servers'][server.name()] = server.export()
       DucttapeCLI::CLI.writeDatabase(database)
 
+    end
+    
+    desc "status <name>", "Status server"
+    def status(name)
+      # Read database file
+      database = DucttapeCLI::CLI.loadDatabase()
+
+      # Check for existing server
+      if (!database['servers'] or !database['servers'][name])
+        puts "ERROR : server with name '#{name}' does not exist" 
+        return
+      end
+
+      info = database['servers'][name]
+
+      server = Ducttape::Servers::Aws.retrieve(name, info)
+      
+      status = Ducttape::Interfaces::Aws.getStatus(server)
+      if(!status)
+        puts "Unable to get status!"
+        return
+      end
+      puts status.to_yaml()
+      
     end
 
   end
