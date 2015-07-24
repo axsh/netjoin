@@ -11,6 +11,7 @@ module Ducttape::Cli::Server
     @type = 'aws'
 
     desc "add <name>","Add a new AWS server"
+    option :password, :type => :string
     option :key_pem, :type => :string
     option :region, :type => :string, :required => true
     option :zone, :type => :string, :required => true
@@ -31,6 +32,11 @@ module Ducttape::Cli::Server
         return
       end
 
+      if(!options[:password] and !options(:key_pem))
+        puts "Missing a password or key file"
+        return
+      end
+
       # Create Server object to work with
       server = Ducttape::Models::Servers::Aws.new(name,
         options[:region],
@@ -42,6 +48,9 @@ module Ducttape::Cli::Server
         options[:key_pair],
         options[:security_groups]
       )
+
+      server.password = options[:password]
+      server.key_pem = options[:key_pem]
 
       # Update the database file
       if(!database['servers'])
