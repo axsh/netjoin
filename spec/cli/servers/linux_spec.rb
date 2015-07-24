@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe DucttapeCLI::Server::Linux do
+describe Ducttape::Cli::Server::Linux do
 
   context "Show" do
      

@@ -4,7 +4,7 @@ require_relative 'base'
 require_relative '../../servers/aws'
 require_relative '../../interfaces/aws'
 
-module DucttapeCLI::Server
+module Ducttape::Cli::Server
     
   class Aws < Base
     
@@ -23,7 +23,7 @@ module DucttapeCLI::Server
     def add(name)
 
       # Read database file
-      database = DucttapeCLI::CLI.loadDatabase()
+      database = Ducttape::Cli::Root.loadDatabase()
 
       # Check for existing server
       if (database['servers'] and database['servers'][name])
@@ -49,7 +49,7 @@ module DucttapeCLI::Server
       end  
       database['servers'][server.name()] = server.export()     
 
-      DucttapeCLI::CLI.writeDatabase(database)
+      Ducttape::Cli::Root.writeDatabase(database)
       
       puts server.export_yaml
     end
@@ -67,7 +67,7 @@ module DucttapeCLI::Server
     def update(name)
 
       # Read database file
-      database = DucttapeCLI::CLI.loadDatabase()
+      database = Ducttape::Cli::Root.loadDatabase()
 
       # Check for existing server
       if (!database['servers'] or !database['servers'][name])
@@ -109,7 +109,7 @@ module DucttapeCLI::Server
       end
             
       database['servers'][server.name()] = server.export()
-      DucttapeCLI::CLI.writeDatabase(database)
+      Ducttape::Cli::Root.writeDatabase(database)
       
       puts server.export_yaml
     end
@@ -118,7 +118,7 @@ module DucttapeCLI::Server
     def create(name)
       
       # Read database file
-      database = DucttapeCLI::CLI.loadDatabase()
+      database = Ducttape::Cli::Root.loadDatabase()
 
       # Check for existing server
       if (!database['servers'] or !database['servers'][name])
@@ -137,7 +137,7 @@ module DucttapeCLI::Server
       end
       
       database['servers'][server.name()] = server.export()
-      DucttapeCLI::CLI.writeDatabase(database)
+      Ducttape::Cli::Root.writeDatabase(database)
       
       puts "Initializing new instance, this will take a few minutes"
       
@@ -165,14 +165,14 @@ module DucttapeCLI::Server
       puts server.export_yaml
       
       database['servers'][server.name()] = server.export()
-      DucttapeCLI::CLI.writeDatabase(database)
+      Ducttape::Cli::Root.writeDatabase(database)
     end
     
     desc "install <name>", "Install and configure server"
     def install(name)
 
       # Read database file
-      database = DucttapeCLI::CLI.loadDatabase()
+      database = Ducttape::Cli::Root.loadDatabase()
 
       # Check for existing server
       if (!database['servers'] or !database['servers'][name])
@@ -205,7 +205,7 @@ module DucttapeCLI::Server
       
       database['servers'][name] = server.export()
       
-      DucttapeCLI::CLI.writeDatabase(database)
+      Ducttape::Cli::Root.writeDatabase(database)
       
       if(!server.installed)
         puts "Server not installed, aborting!"
@@ -265,14 +265,14 @@ module DucttapeCLI::Server
       
       database['servers'][name] = server.export()
       
-      DucttapeCLI::CLI.writeDatabase(database)
+      Ducttape::Cli::Root.writeDatabase(database)
       
     end
     
     desc "status <name>", "Status server"
     def status(name)
       # Read database file
-      database = DucttapeCLI::CLI.loadDatabase()
+      database = Ducttape::Cli::Root.loadDatabase()
 
       # Check for existing server
       if (!database['servers'] or !database['servers'][name])
@@ -296,7 +296,7 @@ module DucttapeCLI::Server
     desc "describe <name>", "describe"
     def describe(name)
       # Read database file
-      database = DucttapeCLI::CLI.loadDatabase()
+      database = Ducttape::Cli::Root.loadDatabase()
     
       # Check for existing server
       if (!database['servers'] or !database['servers'][name])
@@ -311,24 +311,5 @@ module DucttapeCLI::Server
       Ducttape::Interfaces::Aws.describe(server)
       
     end
-
-    desc "testing <name>", "testing"
-    def testing(name)
-      # Read database file
-      database = DucttapeCLI::CLI.loadDatabase()
-    
-      # Check for existing server
-      if (!database['servers'] or !database['servers'][name])
-        puts "ERROR : server with name '#{name}' does not exist" 
-        return
-      end
-    
-      info = database['servers'][name]
-    
-      server = Ducttape::Servers::Aws.retrieve(name, info)
-      
-      Ducttape::Interfaces::Aws.testing(server)      
-    end
   end
-
 end

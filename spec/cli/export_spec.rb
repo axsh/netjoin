@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe DucttapeCLI::CLI do
+describe Ducttape::Cli::Root do
 
   context "Export" do
 

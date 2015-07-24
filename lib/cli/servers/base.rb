@@ -3,7 +3,7 @@
 require 'thor'
 require 'yaml'
 
-module DucttapeCLI::Server
+module Ducttape::Cli::Server
 
   class Base < Thor
 
@@ -14,7 +14,7 @@ module DucttapeCLI::Server
     def show()
 
       # Read database file
-      database = DucttapeCLI::CLI.loadDatabase()
+      database = Ducttape::Cli::Root.loadDatabase()
 
       if(!database['servers'])
         return

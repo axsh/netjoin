@@ -5,7 +5,7 @@ require 'yaml'
 
 require_relative 'base'
 
-module DucttapeCLI::Server
+module Ducttape::Cli::Server
 
   class Linux < Base
     
@@ -27,7 +27,7 @@ module DucttapeCLI::Server
     def add(name)
      
       # Read database file
-      database = DucttapeCLI::CLI.loadDatabase()
+      database = Ducttape::Cli::Root.loadDatabase()
 
       # Check for existing server
       if (database['servers'] and database['servers'][name])
@@ -59,7 +59,7 @@ module DucttapeCLI::Server
       end  
       database['servers'][server.name()] = server.export()
 
-      DucttapeCLI::CLI.writeDatabase(database)
+      Ducttape::Cli::Root.writeDatabase(database)
       
       puts server.export_yaml
     end
@@ -80,7 +80,7 @@ module DucttapeCLI::Server
     option :file_key, :type => :string
     def update(name)
       # Read database file
-      database = DucttapeCLI::CLI.loadDatabase()
+      database = Ducttape::Cli::Root.loadDatabase()
 
       # Check for existing server
       if (!database['servers'] or !database['servers'][name])
@@ -132,14 +132,14 @@ module DucttapeCLI::Server
       
       database['servers'][name] = server.export()
       
-      DucttapeCLI::CLI.writeDatabase(database)
+      Ducttape::Cli::Root.writeDatabase(database)
       
       puts server.export_yaml
     end
 
     desc "install <name>", "Install and configure server"
     def install(name)     
-    database = DucttapeCLI::CLI.loadDatabase()
+    database = Ducttape::Cli::Root.loadDatabase()
        
       # Check for existing server
       if (!database['servers'] or !database['servers'][name])
@@ -165,7 +165,7 @@ module DucttapeCLI::Server
       
       database['servers'][name] = server.export()
       
-      DucttapeCLI::CLI.writeDatabase(database)
+      Ducttape::Cli::Root.writeDatabase(database)
       
       if(!server.configured)
         error = false
@@ -214,7 +214,7 @@ module DucttapeCLI::Server
       
       database['servers'][name] = server.export()
       
-      DucttapeCLI::CLI.writeDatabase(database)
+      Ducttape::Cli::Root.writeDatabase(database)
       
     end
   end

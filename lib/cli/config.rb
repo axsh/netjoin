@@ -3,7 +3,7 @@
 
 require 'thor'
 
-module DucttapeCLI
+module Ducttape::Cli
   
   class Config < Thor
     
@@ -22,11 +22,11 @@ module DucttapeCLI
     
     no_commands {
       def self.loadConfig()
-        DucttapeCLI::CLI.loadFile('config.yml')
+        Ducttape::Cli::Root.loadFile('config.yml')
       end
       
       def self.writeConfig(config)
-        DucttapeCLI::CLI.writeFile('config.yml', config)
+        Ducttape::Cli::Root.writeFile('config.yml', config)
       end
     }
   end

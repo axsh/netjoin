@@ -5,7 +5,7 @@ require 'thor'
 require_relative 'servers/aws'
 require_relative 'servers/linux'
 
-module DucttapeCLI
+module Ducttape::Cli
 
   class Servers < Thor
 
@@ -14,7 +14,7 @@ module DucttapeCLI
     def show()
 
       # Read database file
-      database = DucttapeCLI::CLI.loadDatabase()
+      database = Ducttape::Cli::Root.loadDatabase()
 
       # If specific server is asked, show that server only, if not, show all
       if (options[:name])
@@ -33,7 +33,7 @@ module DucttapeCLI
     def delete(name)
     
       # Read database file
-      database = DucttapeCLI::CLI.loadDatabase()
+      database = Ducttape::Cli::Root.loadDatabase()
     
       # Check for existing server
       if (!database['servers'] or !database['servers'][name])
@@ -43,14 +43,14 @@ module DucttapeCLI
     
       # Update the database gile
       database['servers'].delete(name)
-      DucttapeCLI::CLI.writeDatabase(database)
+      Ducttape::Cli::Root.writeDatabase(database)
       puts database['servers'].to_yaml()
     end
 
     desc "aws SUBCOMMAND ...ARGS", "manage AWS servers"
-    subcommand "aws", DucttapeCLI::Server::Aws
+    subcommand "aws", Ducttape::Cli::Server::Aws
     desc "linux SUBCOMMAND ...ARGS", "manage Linux servers"
-    subcommand "linux", DucttapeCLI::Server::Linux
+    subcommand "linux", Ducttape::Cli::Server::Linux
   
    end
 end

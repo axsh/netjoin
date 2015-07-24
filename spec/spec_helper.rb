@@ -1,25 +1,24 @@
 require 'thor'
 require 'ducttape'
-require 'ducttapeCLI'
 
 def setTestDatabase()
   # Use the test database
-  config = DucttapeCLI::Config.loadConfig()
+  config = Ducttape::Cli::Config.loadConfig()
   @database = config[:database]   
   config[:database] = "database-test"
-  DucttapeCLI::Config.writeConfig(config)
+  Ducttape::Cli::Config.writeConfig(config)
   # Save database content for later
-  @db_content = DucttapeCLI::CLI.loadDatabase()
+  @db_content = Ducttape::Cli::Root.loadDatabase()
 end
 
 def resetDatabase()
   # Reset database content
-  DucttapeCLI::CLI.writeDatabase(@db_content)
+  Ducttape::Cli::Root.writeDatabase(@db_content)
     
   # Change back to previous database used before testing
-  config = DucttapeCLI::Config.loadConfig()
+  config = Ducttape::Cli::Config.loadConfig()
   config[:database] = @database
-  DucttapeCLI::Config.writeConfig(config)
+  Ducttape::Cli::Config.writeConfig(config)
 end
 
 def capture(stream)

@@ -5,7 +5,7 @@ require 'yaml'
 
 require_relative 'clients/linux'
 
-module DucttapeCLI
+module Ducttape::Cli
 
   class Clients < Thor
 
@@ -14,7 +14,7 @@ module DucttapeCLI
     def show()
 
       # Read database file
-      database = DucttapeCLI::CLI.loadDatabase()
+      database = Ducttape::Cli::Root.loadDatabase()
 
       if (!database['clients'])
         return
@@ -37,7 +37,7 @@ module DucttapeCLI
     def delete(name)
 
       # Read database file
-      database = DucttapeCLI::CLI.loadDatabase()
+      database = Ducttape::Cli::Root.loadDatabase()
 
       # Check for existing client
       if (!database['clients'] or !database['clients'][name])
@@ -47,7 +47,7 @@ module DucttapeCLI
 
       # Update the database gile
       database['clients'].delete(name)
-      DucttapeCLI::CLI.writeDatabase(database)
+      Ducttape::Cli::Root.writeDatabase(database)
       
       database['clients'].to_yaml()
     end
@@ -56,7 +56,7 @@ module DucttapeCLI
     option :name, :type => :string
     def attach()
       # Read database file
-      database = DucttapeCLI::CLI.loadDatabase()
+      database = Ducttape::Cli::Root.loadDatabase()
       
       if (!database['clients'])
         return
@@ -81,7 +81,7 @@ module DucttapeCLI
     option :name, :type => :string
     def status()
       # Read database file
-      database = DucttapeCLI::CLI.loadDatabase()
+      database = Ducttape::Cli::Root.loadDatabase()
            
       if (!database['clients'])
         return
@@ -203,12 +203,12 @@ module DucttapeCLI
           end
           database['clients'][client.name] = client.export
         end
-        DucttapeCLI::CLI.writeDatabase(database)
+        Ducttape::Cli::Root.writeDatabase(database)
       end 
     }
 
     desc "linux SUBCOMMAND ...ARGS", "manage Linux clients"
-    subcommand "linux", DucttapeCLI::Client::Linux
+    subcommand "linux", Ducttape::Cli::Client::Linux
 
   end   
 

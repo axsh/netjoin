@@ -5,6 +5,5 @@ require 'thor'
 require 'yaml'
 
 require_relative '../lib/ducttape'
-require_relative '../lib/ducttapeCLI'
 
-DucttapeCLI::CLI.start(ARGV)
+Ducttape::Cli::Root.start(ARGV)

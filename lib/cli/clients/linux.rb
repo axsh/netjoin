@@ -4,7 +4,7 @@ require_relative 'base'
 require_relative '../../clients/linux'
 require_relative '../../interfaces/linux'
 
-module DucttapeCLI::Client
+module Ducttape::Cli::Client
     
   class Linux < Base
     
@@ -20,7 +20,7 @@ module DucttapeCLI::Client
     def add(name)
       
       # Read database file
-      database = DucttapeCLI::CLI.loadDatabase()
+      database = Ducttape::Cli::Root.loadDatabase()
 
       # Check for existing client
       if (database['clients'] and database['clients'][name])
@@ -44,7 +44,7 @@ module DucttapeCLI::Client
 
       database['clients'][client.name()] = client.export()
 
-      DucttapeCLI::CLI.writeDatabase(database)
+      Ducttape::Cli::Root.writeDatabase(database)
 
       puts client.export_yaml()
     end
@@ -59,7 +59,7 @@ module DucttapeCLI::Client
     def update(name)
       
       # Read database file
-      database = DucttapeCLI::CLI.loadDatabase()
+      database = Ducttape::Cli::Root.loadDatabase()
 
       # Check for existing client
       if (!database['clients'] or !database['clients'][name])
@@ -93,7 +93,7 @@ module DucttapeCLI::Client
 
       database['clients'][client.name()] = client.export()
 
-      DucttapeCLI::CLI.writeDatabase(database)
+      Ducttape::Cli::Root.writeDatabase(database)
 
       puts client.export_yaml()
     end
