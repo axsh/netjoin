@@ -8,7 +8,7 @@ module Ducttape::Interfaces
 
   class Aws < Base
 
-    def self.connectAws(server)
+    def self.connect(server)
       if(!server.access_key_id or !server.secret_key)
         puts "Amazon AWS credentials missing, unable to connect!"
         return nil
@@ -22,14 +22,14 @@ module Ducttape::Interfaces
       return RightScale::CloudApi::AWS::EC2::Manager.new(server.access_key_id, server.secret_key, "https://ec2.#{server.region}.amazonaws.com")
     end
 
-    def self.createInstance(server)
+    def self.create_instance(server)
 
       if (!server.zone or !server.ami or !server.instance_type or !server.key_pair)
         puts "Unable to create instance, required parameters missing, please check the following information : zone, ami, instance_type, key_pair !"
         return nil
       end
 
-      ec2 = connectAws(server)
+      ec2 = connect(server)
 
       if (!ec2)
         "Not connected!"
@@ -56,7 +56,7 @@ module Ducttape::Interfaces
     end
 
     def self.describe(server)
-      ec2 = connectAws(server)
+      ec2 = connect(server)
 
       if (!ec2)
         "Not connected!"
@@ -69,9 +69,9 @@ module Ducttape::Interfaces
       puts response.to_yaml()
     end
 
-    def self.getStatus(server)
+    def self.status(server)
 
-      ec2 = connectAws(server)
+      ec2 = connect(server)
 
       if (!ec2)
         "Not connected!"
@@ -88,13 +88,13 @@ module Ducttape::Interfaces
     end
 
 
-    def self.getPublicIpAddress(server)
+    def self.public_ip_address(server)
       if (!server.instance_id)
         puts "Instance ID is missing!"
         return
       end
 
-      ec2 = connectAws(server)
+      ec2 = connect(server)
 
       if (!ec2)
         "Not connected!"
@@ -114,36 +114,23 @@ module Ducttape::Interfaces
       return true
     end
 
-    def self.getAuth(client)
+    def self.auth_param(client)
       if (client.key_pem)
         return :keys => client.key_pem
       end
       return :password => client.password
     end
 
-    def self.testing(client)
-      puts "testing"
-      if(client.ip_address)
-        puts  Aws.getAuth(client)
-        Net::SSH.start(client.ip_address, client.username, Aws.getAuth(client)) do |ssh|
-          response = ssh.exec!("who")
-          puts response
-        end
-      else
-        puts "No IP address, aborting"
-      end
-    end
-
-    def self.uploadFile(client, source, destination)
-      Net::SCP.start(client.ip_address, client.username, Aws.getAuth(client)) do |scp|
+    def self.upload_file(client, source, destination)
+      Net::SCP.start(client.ip_address, client.username, Aws.auth_param(client)) do |scp|
         scp.upload!(source, destination)
         return true
       end
       return false
     end
 
-    def self.moveFile(client, source, destination)
-      Net::SSH.start(client.ip_address, client.username, Aws.getAuth(client)) do |ssh|
+    def self.move_file(client, source, destination)
+      Net::SSH.start(client.ip_address, client.username, Aws.auth_param(client)) do |ssh|
         ssh.open_channel do |channel|
           channel.request_pty do |ch, success|
             if success
@@ -166,8 +153,8 @@ module Ducttape::Interfaces
       end
     end
 
-    def self.checkOpenVpnInstalled(client)
-      Net::SSH.start(client.ip_address, client.username, Aws.getAuth(client)) do |ssh|
+    def self.check_openvpn_installed(client)
+      Net::SSH.start(client.ip_address, client.username, Aws.auth_param(client)) do |ssh|
         result = ssh.exec!('rpm -qa | grep openvpn')
         if (result)
           return true
@@ -176,9 +163,9 @@ module Ducttape::Interfaces
       return false
     end
 
-    def self.installOpenVpn(client)
+    def self.install_openvpn(client)
       installed = false
-      Net::SSH.start(client.ip_address, client.username, Aws.getAuth(client)) do |ssh|
+      Net::SSH.start(client.ip_address, client.username, Aws.auth_param(client)) do |ssh|
         ssh.open_channel do |channel|
           channel.request_pty do |ch, success|
             if success
@@ -204,12 +191,12 @@ module Ducttape::Interfaces
       return installed
     end
 
-    def self.installCertificate(client)
-      return Linux.uploadFile(client, "keys/#{client.name}.ovpn", "/etc/openvpn/#{client.name}.ovpn")
+    def self.install_certificate(client)
+      return Linux.upload_file(client, "keys/#{client.name}.ovpn", "/etc/openvpn/#{client.name}.ovpn")
     end
 
-    def self.startOpenVpnServer(client)
-      Net::SSH.start(client.ip_address, client.username, Aws.getAuth(client)) do |ssh|
+    def self.start_openvpn_server(client)
+      Net::SSH.start(client.ip_address, client.username, Aws.auth_param(client)) do |ssh|
         ssh.exec!("sudo service openvpn restart")
         return true
       end

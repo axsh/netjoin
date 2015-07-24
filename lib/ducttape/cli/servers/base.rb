@@ -13,7 +13,7 @@ module Ducttape::Cli::Server
     def show()
 
       # Read database file
-      database = Ducttape::Cli::Root.loadDatabase()
+      database = Ducttape::Cli::Root.load_database()
 
       if(!database['servers'])
         return

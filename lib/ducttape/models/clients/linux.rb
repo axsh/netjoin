@@ -41,11 +41,11 @@ module Ducttape::Models::Clients
       return client
     end
 
-    def getType()
+    def type()
       return :linux
     end
 
-    def getExportData()
+    def export_data()
       return {
         :ip_address => @ip_address,
         :username => @username,

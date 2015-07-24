@@ -50,11 +50,11 @@ module Ducttape::Models::Servers
       entity.file_key = data[:file_key]
     end
 
-    def getType()
+    def type()
       return :linux
     end
 
-    def getExportData()
+    def export_data()
       data = super()
       data[:ip_address] = @ip_address
       data[:mode] = @mode

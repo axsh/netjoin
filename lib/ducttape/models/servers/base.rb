@@ -10,26 +10,26 @@ module Ducttape::Models::Servers
       @name = name
     end
 
-    def getType()
+    def type()
       return :base
     end
 
-    def getExportData()
+    def export_data()
       return {}
     end
 
     def export()
       return {
-        :type => getType(),
-        :data => getExportData()
+        :type => type(),
+        :data => export_data()
       }
     end
 
     def export_yaml()
       return {
         @name => {
-          :type => getType(),
-          :data => getExportData()
+          :type => type(),
+          :data => export_data()
         }
       }.to_yaml()
     end

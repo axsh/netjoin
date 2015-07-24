@@ -14,7 +14,7 @@ module Ducttape::Cli
     def show()
 
       # Read database file
-      database = Ducttape::Cli::Root.loadDatabase()
+      database = Ducttape::Cli::Root.load_database()
 
       if (!database['clients'])
         return
@@ -37,7 +37,7 @@ module Ducttape::Cli
     def delete(name)
 
       # Read database file
-      database = Ducttape::Cli::Root.loadDatabase()
+      database = Ducttape::Cli::Root.load_database()
 
       # Check for existing client
       if (!database['clients'] or !database['clients'][name])
@@ -47,7 +47,7 @@ module Ducttape::Cli
 
       # Update the database gile
       database['clients'].delete(name)
-      Ducttape::Cli::Root.writeDatabase(database)
+      Ducttape::Cli::Root.write_database(database)
 
       database['clients'].to_yaml()
     end
@@ -56,7 +56,7 @@ module Ducttape::Cli
     option :name, :type => :string
     def attach()
       # Read database file
-      database = Ducttape::Cli::Root.loadDatabase()
+      database = Ducttape::Cli::Root.load_database()
 
       if (!database['clients'])
         return
@@ -81,7 +81,7 @@ module Ducttape::Cli
     option :name, :type => :string
     def status()
       # Read database file
-      database = Ducttape::Cli::Root.loadDatabase()
+      database = Ducttape::Cli::Root.load_database()
 
       if (!database['clients'])
         return
@@ -123,12 +123,12 @@ module Ducttape::Cli
             if(!client.error or client.error === :openvpn_not_installed)
               client.error = :openvpn_not_installed
               puts "  Checking OpenVPN installation"
-              if (Ducttape::Interfaces::Linux.checkOpenVpnInstalled(client))
+              if (Ducttape::Interfaces::Linux.check_openvpn_installed(client))
                 client.error = nil
                 puts "    Installed"
               else
                 puts "    Not installed, trying to install!"
-                if (Ducttape::Interfaces::Linux.installOpenVpn(client))
+                if (Ducttape::Interfaces::Linux.install_openvpn(client))
                   client.error = nil
                   puts "    Installed"
                 else
@@ -143,7 +143,7 @@ module Ducttape::Cli
               if(!client.error or client.error === :cert_generation_failed)
                 puts "  Generating VPN Certificate"
                 client.error = :cert_generation_failed
-                ovpn = Ducttape::Interfaces::Linux.generateCertificate(server, client)
+                ovpn = Ducttape::Interfaces::Linux.generate_certificate(server, client)
                 if(ovpn)
                   puts "    Success"
                   client.error = nil
@@ -154,7 +154,7 @@ module Ducttape::Cli
               end
             end
             if (server.mode === :static)
-              Ducttape::Interfaces::Linux.setVpnIpAddress(server, client)
+              Ducttape::Interfaces::Linux.set_vpn_ip_address(server, client)
             end
 
             # Check certificate exists on path
@@ -174,7 +174,7 @@ module Ducttape::Cli
             if(!client.error or client.error === :cert_install_failed)
               puts "  Installing VPN Certificate"
               client.error = :cert_install_failed
-              if(Ducttape::Interfaces::Linux.installCertificate(client))
+              if(Ducttape::Interfaces::Linux.install_certificate(client))
                 puts "    Success"
                 client.error = nil
               else
@@ -187,7 +187,7 @@ module Ducttape::Cli
             if(!client.error or client.error === :openvpn_not_started)
               puts "  Starting OpenVPN"
               client.error = :openvpn_not_started
-              if(Ducttape::Interfaces::Linux.startOpenVpnClient(client))
+              if(Ducttape::Interfaces::Linux.start_openvpn_client(client))
                 puts "    Success"
                 client.error = nil
               else
@@ -203,7 +203,7 @@ module Ducttape::Cli
           end
           database['clients'][client.name] = client.export
         end
-        Ducttape::Cli::Root.writeDatabase(database)
+        Ducttape::Cli::Root.write_database(database)
       end
     }
 

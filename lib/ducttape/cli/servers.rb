@@ -14,7 +14,7 @@ module Ducttape::Cli
     def show()
 
       # Read database file
-      database = Ducttape::Cli::Root.loadDatabase()
+      database = Ducttape::Cli::Root.load_database()
 
       # If specific server is asked, show that server only, if not, show all
       if (options[:name])
@@ -33,7 +33,7 @@ module Ducttape::Cli
     def delete(name)
 
       # Read database file
-      database = Ducttape::Cli::Root.loadDatabase()
+      database = Ducttape::Cli::Root.load_database()
 
       # Check for existing server
       if (!database['servers'] or !database['servers'][name])
@@ -43,7 +43,7 @@ module Ducttape::Cli
 
       # Update the database gile
       database['servers'].delete(name)
-      Ducttape::Cli::Root.writeDatabase(database)
+      Ducttape::Cli::Root.write_database(database)
       puts database['servers'].to_yaml()
     end
 

@@ -16,21 +16,21 @@ module Ducttape::Models::Clients
       @error = nil
     end
 
-    def getType()
+    def type()
       return :base
     end
 
-    def getExportData()
+    def export_data()
       raise NotImplementedError
     end
 
     def export()
       return {
-        :type => getType(),
+        :type => type(),
         :server => @server,
         :status => @status,
         :error => @error,
-        :data => getExportData()
+        :data => export_data()
       }
     end
 
@@ -38,11 +38,11 @@ module Ducttape::Models::Clients
       return {
         @name => {
 
-          :type => getType(),
+          :type => type(),
           :server => @server,
           :status => @status,
           :error => @error,
-          :data => getExportData()
+          :data => export_data()
         }
       }.to_yaml()
     end

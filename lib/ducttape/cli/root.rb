@@ -14,15 +14,15 @@ module Ducttape::Cli
     desc "init", "init ducttape"
     def init()
       if (!File.file?('config.yml'))
-        dist_config = Root.loadFile('config-dist.yml')
-        Root.writeFile('config.yml', dist_config)
+        dist_config = Root.load_file('config-dist.yml')
+        Root.write_file('config.yml', dist_config)
         puts "Configuration file 'config.yml' created!"
       else
         puts "Configuration file 'config.yml' already exists, skipping!"
       end
       if(!File.file?('database.yml'))
-        dist_database = Root.loadFile('database-dist.yml')
-        Root.writeFile('database.yml', dist_database)
+        dist_database = Root.load_file('database-dist.yml')
+        Root.write_file('database.yml', dist_database)
         puts "Database file 'database.yml' created!"
       else
         puts "Database file 'database.yml' already exists, skipping!"
@@ -32,24 +32,24 @@ module Ducttape::Cli
     desc "export","Export database"
     def export()
       # Read database file
-      database = Root.loadDatabase()
+      database = Root.load_database()
       puts database.to_yaml()
     end
 
-    def self.getFromConfig(name)
-      config = Root.loadFile('config.yml')
+    def self.get_from_config(name)
+      config = Root.load_file('config.yml')
       return database = config[name]
     end
 
-    def self.loadDatabase()
-      return Root.loadFile("#{Root.getFromConfig(:database)}.yml")
+    def self.load_database()
+      return Root.load_file("#{Root.get_from_config(:database)}.yml")
     end
 
-    def self.writeDatabase(database)
-      return Root.writeFile("#{Root.getFromConfig(:database)}.yml", database)
+    def self.write_database(database)
+      return Root.write_file("#{Root.get_from_config(:database)}.yml", database)
     end
 
-    def self.loadFile(name)
+    def self.load_file(name)
       file = YAML.load_file(name)
       if(!file)
         file = {}
@@ -57,7 +57,7 @@ module Ducttape::Cli
       return file
     end
 
-    def self.writeFile(name, data)
+    def self.write_file(name, data)
       File.open(name,'w') do |h|
         h.write data.to_yaml
       end

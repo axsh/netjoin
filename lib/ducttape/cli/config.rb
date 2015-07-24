@@ -9,9 +9,9 @@ module Ducttape::Cli
 
     desc "database <name>", "change the database being used (creates new file when file does not exist yet)"
     def database(name)
-      config = Config.loadConfig()
+      config = Config.load_config()
       config[:database] = name
-      Config.writeConfig(config)
+      Config.write_config(config)
 
       if (!File.file?("#{name}.yml"))
         File.open("#{name}.yml", 'w') {|f| f.write("---") }
@@ -21,12 +21,12 @@ module Ducttape::Cli
     end
 
     no_commands {
-      def self.loadConfig()
-        Ducttape::Cli::Root.loadFile('config.yml')
+      def self.load_config()
+        Ducttape::Cli::Root.load_file('config.yml')
       end
 
-      def self.writeConfig(config)
-        Ducttape::Cli::Root.writeFile('config.yml', config)
+      def self.write_config(config)
+        Ducttape::Cli::Root.write_file('config.yml', config)
       end
     }
   end

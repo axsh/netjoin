@@ -51,11 +51,11 @@ module Ducttape::Models::Servers
       return entity
     end
 
-    def getType()
+    def type()
       return :aws
     end
 
-    def getExportData()
+    def export_data()
       data = super()
       data[:region] = @region
       data[:zone] = @zone

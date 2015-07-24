@@ -23,11 +23,11 @@ module Ducttape::Models::Clients
       @secret_key = secret_key
     end
 
-    def getType()
+    def type()
       return :aws
     end
 
-    def getExportData()
+    def export_data()
       return {
         :region => @region,
         :vpc => @vpc,

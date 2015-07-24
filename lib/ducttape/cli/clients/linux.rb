@@ -20,7 +20,7 @@ module Ducttape::Cli::Client
     def add(name)
 
       # Read database file
-      database = Ducttape::Cli::Root.loadDatabase()
+      database = Ducttape::Cli::Root.load_database()
 
       # Check for existing client
       if (database['clients'] and database['clients'][name])
@@ -44,7 +44,7 @@ module Ducttape::Cli::Client
 
       database['clients'][client.name()] = client.export()
 
-      Ducttape::Cli::Root.writeDatabase(database)
+      Ducttape::Cli::Root.write_database(database)
 
       puts client.export_yaml()
     end
@@ -59,7 +59,7 @@ module Ducttape::Cli::Client
     def update(name)
 
       # Read database file
-      database = Ducttape::Cli::Root.loadDatabase()
+      database = Ducttape::Cli::Root.load_database()
 
       # Check for existing client
       if (!database['clients'] or !database['clients'][name])
@@ -93,7 +93,7 @@ module Ducttape::Cli::Client
 
       database['clients'][client.name()] = client.export()
 
-      Ducttape::Cli::Root.writeDatabase(database)
+      Ducttape::Cli::Root.write_database(database)
 
       puts client.export_yaml()
     end
