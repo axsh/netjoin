@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
 require 'thor'
-require 'yaml'
 
 module Ducttape::Cli::Server
 

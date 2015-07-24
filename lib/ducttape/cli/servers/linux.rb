@@ -1,8 +1,5 @@
 # -*- coding: utf-8 -*-
 
-require 'thor'
-require 'yaml'
-
 require_relative 'base'
 
 module Ducttape::Cli::Server
@@ -36,7 +33,7 @@ module Ducttape::Cli::Server
       end      
 
       # Create server object to work with
-      server = Ducttape::Servers::Linux.new(name, options[:ip_address], options[:username], options[:mode], options[:network])
+      server = Ducttape::Models::Servers::Linux.new(name, options[:ip_address], options[:username], options[:mode], options[:network])
         
       server.password = options[:password]
       server.installed = options[:installed]
@@ -90,7 +87,7 @@ module Ducttape::Cli::Server
 
       info = database['servers'][name]
 
-      server = Ducttape::Servers::Linux.retrieve(name, info)
+      server = Ducttape::Models::Servers::Linux.retrieve(name, info)
       
       # Update the database file
       if (options[:ip_address])
@@ -149,7 +146,7 @@ module Ducttape::Cli::Server
   
       info = database['servers'][name]
   
-      server = Ducttape::Servers::Linux.retrieve(name, info)
+      server = Ducttape::Models::Servers::Linux.retrieve(name, info)
        
       if (!Ducttape::Interfaces::Linux.checkOpenVpnInstalled(server))
         if (Ducttape::Interfaces::Linux.installOpenVpn(server))

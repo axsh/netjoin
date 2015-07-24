@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-module Ducttape::Servers
+module Ducttape::Models::Servers
 
   class Base
 

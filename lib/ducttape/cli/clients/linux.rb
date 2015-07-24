@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 require_relative 'base'
-require_relative '../../clients/linux'
+require_relative '../../models/clients/linux'
 require_relative '../../interfaces/linux'
 
 module Ducttape::Cli::Client
@@ -29,7 +29,7 @@ module Ducttape::Cli::Client
       end
 
       # Create Client object to work with
-      client = Ducttape::Clients::Linux.new(name, options[:server], options[:ip_address], options[:username], options[:password])
+      client = Ducttape::Models::Clients::Linux.new(name, options[:server], options[:ip_address], options[:username], options[:password])
       if(options[:vpn_ip_address])
         client.vpn_ip_address = options[:vpn_ip_address]
       end
@@ -69,7 +69,7 @@ module Ducttape::Cli::Client
 
       info = database['clients'][name]
 
-      client = Ducttape::Clients::Linux.retrieve(name, info)
+      client = Ducttape::Models::Clients::Linux.retrieve(name, info)
       
       # Update the database file
       if (options[:server])

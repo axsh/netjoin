@@ -1,13 +1,22 @@
 # -*- coding: utf-8 -*-
 module Ducttape
   
-  require_relative 'clients/linux'
-  require_relative 'interfaces/linux'
-  require_relative 'servers/linux'
-  require_relative 'servers/aws'
+  module Cli
+  end
   
-  require_relative 'cli/config'
-  require_relative 'cli/clients'
-  require_relative 'cli/servers'
-  require_relative 'cli/root'      
+  module Models
+  end
+    
+  module Interfaces
+  end
+  
+  require_relative 'ducttape/interfaces/linux'
+  require_relative 'ducttape/models/clients/linux'
+  require_relative 'ducttape/models/servers/linux'
+  require_relative 'ducttape/models/servers/aws'
+  
+  require_relative 'ducttape/cli/config'
+  require_relative 'ducttape/cli/clients'
+  require_relative 'ducttape/cli/servers'
+  require_relative 'ducttape/cli/root'      
 end

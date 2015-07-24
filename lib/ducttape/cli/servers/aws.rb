@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 require_relative 'base'
-require_relative '../../servers/aws'
+require_relative '../../models/servers/aws'
 require_relative '../../interfaces/aws'
 
 module Ducttape::Cli::Server
@@ -32,7 +32,7 @@ module Ducttape::Cli::Server
       end      
 
       # Create Server object to work with
-      server = Ducttape::Servers::Aws.new(name, 
+      server = Ducttape::Models::Servers::Aws.new(name, 
         options[:region], 
         options[:zone], 
         options[:access_key_id], 
@@ -77,7 +77,7 @@ module Ducttape::Cli::Server
 
       info = database['servers'][name]
 
-      server = Ducttape::Servers::Aws.retrieve(name, info)
+      server = Ducttape::Models::Servers::Aws.retrieve(name, info)
 
       # Update the database file
       if (options[:key_pem])
@@ -128,7 +128,7 @@ module Ducttape::Cli::Server
 
       info = database['servers'][name]
 
-      server = Ducttape::Servers::Aws.retrieve(name, info)
+      server = Ducttape::Models::Servers::Aws.retrieve(name, info)
       
       if(!server.instance_id)  
         Ducttape::Interfaces::Aws.createInstance(server)
@@ -182,7 +182,7 @@ module Ducttape::Cli::Server
 
       info = database['servers'][name]
 
-      server = Ducttape::Servers::Aws.retrieve(name, info)
+      server = Ducttape::Models::Servers::Aws.retrieve(name, info)
 
       status = Ducttape::Interfaces::Aws.getStatus(server)["instanceStatus"]["status"]
         
@@ -282,7 +282,7 @@ module Ducttape::Cli::Server
 
       info = database['servers'][name]
 
-      server = Ducttape::Servers::Aws.retrieve(name, info)
+      server = Ducttape::Models::Servers::Aws.retrieve(name, info)
       
       status = Ducttape::Interfaces::Aws.getStatus(server)
       if(!status)
@@ -306,7 +306,7 @@ module Ducttape::Cli::Server
     
       info = database['servers'][name]
     
-      server = Ducttape::Servers::Aws.retrieve(name, info)
+      server = Ducttape::Models::Servers::Aws.retrieve(name, info)
       
       Ducttape::Interfaces::Aws.describe(server)
       
