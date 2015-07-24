@@ -13,7 +13,8 @@ module Ducttape::Cli::Server
     option :mode, :type => :string, :required => true
     option :network, :type => :string, :required => true
     option :username, :type => :string, :required => true
-    option :password, :type => :string, :required => true
+    option :password, :type => :string
+    option :key_pem, :type => :string
     option :installed, :type => :boolean
     option :configured, :type => :boolean
     option :file_conf, :type => :string
@@ -32,10 +33,16 @@ module Ducttape::Cli::Server
         return
       end
 
+      if(!options[:password] and !options(:key_pem))
+        puts "Missing a password or key file"
+        return
+      end
+
       # Create server object to work with
       server = Ducttape::Models::Servers::Linux.new(name, options[:ip_address], options[:username], options[:mode], options[:network])
 
       server.password = options[:password]
+      server.key_pem = options[:key_pem]
       server.installed = options[:installed]
       server.configured = options[:configured]
       server.file_conf = options[:file_conf]
@@ -68,6 +75,7 @@ module Ducttape::Cli::Server
     option :network, :type => :string
     option :username, :type => :string
     option :password, :type => :string
+    option :key_pem, :type => :string
     option :installed, :type => :boolean
     option :configured, :type => :boolean
     option :file_conf, :type => :string
@@ -104,6 +112,9 @@ module Ducttape::Cli::Server
       end
       if (options[:password])
         server.password = options[:password]
+      end
+      if (options[:key_pem])
+        server.key_pem = options[:key_pem]
       end
       if (options[:installed])
         server.installed = options[:installed]

@@ -14,7 +14,8 @@ module Ducttape::Cli::Client
     option :server, :type => :string, :required => true
     option :ip_address, :type => :string, :required => true
     option :username, :type => :string, :required => true
-    option :password, :type => :string, :required => true
+    option :password, :type => :string
+    option :key_pem, :type => :string
     option :vpn_ip_address, :type => :string
     option :generate_key, :type => :string
     def add(name)
@@ -28,8 +29,15 @@ module Ducttape::Cli::Client
         return
       end
 
+      if(!options[:password] and !options(:key_pem))
+        puts "Missing a password or key file"
+        return
+      end
+
       # Create Client object to work with
-      client = Ducttape::Models::Clients::Linux.new(name, options[:server], options[:ip_address], options[:username], options[:password])
+      client = Ducttape::Models::Clients::Linux.new(name, options[:server], options[:ip_address], options[:username])
+      client.password = options[:password]
+      client.key_pem = options[:key_pem]
       if(options[:vpn_ip_address])
         client.vpn_ip_address = options[:vpn_ip_address]
       end
@@ -53,6 +61,7 @@ module Ducttape::Cli::Client
     option :server, :type => :string
     option :ip_address, :type => :string
     option :username, :type => :string
+    option :password, :type => :string
     option :password, :type => :string
     option :vpn_ip_address, :type => :string
     option :generate_key, :type => :string
@@ -83,6 +92,9 @@ module Ducttape::Cli::Client
       end
       if (options[:password])
         client.password = options[:password]
+      end
+      if (options[:key_pem])
+        client.key_pem = options[:key_pem]
       end
       if(options[:vpn_ip_address])
         client.vpn_ip_address = options[:vpn_ip_address]

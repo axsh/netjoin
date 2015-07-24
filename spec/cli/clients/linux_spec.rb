@@ -18,6 +18,7 @@ vpn-client-10:
     :ip_address: 88.159.47.22
     :username: root
     :password: test123
+    :key_pem:#{' '}
     :vpn_ip_address:#{' '}
     :generate_key:#{' '}
 vpn-client-99:
@@ -28,7 +29,8 @@ vpn-client-99:
   :data:
     :ip_address: 204.99.63.105
     :username: root
-    :password: test123
+    :password:#{' '}
+    :key_pem: \"/tmp/user.pem\"
     :vpn_ip_address:#{' '}
     :generate_key:#{' '}
 "
@@ -51,6 +53,7 @@ vpn-client-99:
   :ip_address: 88.159.47.22
   :username: root
   :password: test123
+  :key_pem:#{' '}
   :vpn_ip_address:#{' '}
   :generate_key:#{' '}
 "
@@ -72,7 +75,7 @@ vpn-client-99:
   context "Add" do
     context "New" do
       let(:output) { capture(:stdout) {
-        subject.options = {:server => 'test-server', :ip_address => '0.0.0.0', :username => 'test-value', :password => 'test-value', :vpn_ip_address => "10.8.0.50", :generate_key => "true"}
+        subject.options = {:server => 'test-server', :ip_address => '0.0.0.0', :username => 'test-value', :password => 'test-value', :key_pem => '/tmp/user.pem', :vpn_ip_address => "10.8.0.50", :generate_key => "true"}
         subject.add 'test-client'
       } }
 
@@ -87,6 +90,7 @@ test-client:
     :ip_address: 0.0.0.0
     :username: test-value
     :password: test-value
+    :key_pem: \"/tmp/user.pem\"
     :vpn_ip_address: 10.8.0.50
     :generate_key: 'true'
 "
@@ -110,7 +114,7 @@ test-client:
 
     context "Existing" do
       let(:output) { capture(:stdout) {
-        subject.options = {:server => 'test-server2', :ip_address => '0.0.0.1', :username => 'test-value2', :password => 'test-value2', :vpn_ip_address => "10.8.0.52", :generate_key => "false"}
+        subject.options = {:server => 'test-server2', :ip_address => '0.0.0.1', :username => 'test-value2', :password => 'test-value2', :key_pem => '/tmp/user2.pem', :vpn_ip_address => "10.8.0.52", :generate_key => "false"}
         subject.update 'test-client'
       } }
 
@@ -125,6 +129,7 @@ test-client:
     :ip_address: 0.0.0.1
     :username: test-value2
     :password: test-value2
+    :key_pem: \"/tmp/user2.pem\"
     :vpn_ip_address: 10.8.0.52
     :generate_key: 'false'
 "

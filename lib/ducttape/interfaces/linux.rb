@@ -10,8 +10,15 @@ module Ducttape::Interfaces
 
   class Linux < Base
 
+    def self.auth_param(client)
+      if (client.key_pem)
+        return :keys => client.key_pem
+      end
+      return :password => client.password
+    end
+
     def self.upload_file(client, source, destination)
-      Net::SCP.start(client.ip_address, client.username, :password => client.password) do |scp|
+      Net::SCP.start(client.ip_address, client.username, Linux.auth_param(client)) do |scp|
         scp.upload!(source, destination)
         return true
       end
@@ -19,7 +26,7 @@ module Ducttape::Interfaces
     end
 
     def self.check_openvpn_installed(client)
-      Net::SSH.start(client.ip_address, client.username, :password => client.password) do |ssh|
+      Net::SSH.start(client.ip_address, client.username, Linux.auth_param(client)) do |ssh|
         result = ssh.exec!('rpm -qa | grep openvpn')
         if (result)
           return true
@@ -29,7 +36,7 @@ module Ducttape::Interfaces
     end
 
     def self.install_openvpn(client)
-      Net::SSH.start(client.ip_address, client.username, :password => client.password) do |ssh|
+      Net::SSH.start(client.ip_address, client.username, Linux.auth_param(client)) do |ssh|
         result = ssh.exec!('yum install -y openvpn')
         if (result.end_with?("Complete!\n"))
           return true
@@ -39,7 +46,7 @@ module Ducttape::Interfaces
     end
 
     def self.generate_certificate(server, client)
-      Net::SSH.start(server.ip_address, server.username, :password => server.password) do |ssh|
+      Net::SSH.start(server.ip_address, server.username, Linux.auth_param(client)) do |ssh|
         ls = ssh.exec!("ls /etc/openvpn/easy-rsa/keys/#{client.name}.crt")
         if(ls == "/etc/openvpn/easy-rsa/keys/#{client.name}.crt\n")
           puts "    Already generated"
@@ -85,7 +92,7 @@ END"
     end
 
     def self.start_openvpn_server(client)
-      Net::SSH.start(client.ip_address, client.username, :password => client.password) do |ssh|
+      Net::SSH.start(client.ip_address, client.username, Linux.auth_param(client)) do |ssh|
         ssh.exec!("service openvpn restart")
         return true
       end
@@ -93,7 +100,7 @@ END"
     end
 
     def self.start_openvpn_client(client)
-      Net::SSH.start(client.ip_address, client.username, :password => client.password) do |ssh|
+      Net::SSH.start(client.ip_address, client.username, Linux.auth_param(client)) do |ssh|
         ssh.exec!("openvpn --config /etc/openvpn/#{client.name}.ovpn --daemon")
         return true
       end
@@ -102,14 +109,14 @@ END"
 
     def self.set_vpn_ip_address(server, client)
       if (!Ducttape::Interfaces::Linux.get_vpn_ip_address(server, client))
-        Net::SSH.start(server.ip_address, server.username, :password => server.password) do |ssh|
+        Net::SSH.start(server.ip_address, server.username, Linux.auth_param(client)) do |ssh|
           ssh.exec!("echo #{client.name},#{client.vpn_ip_address} >> /etc/openvpn/ipp.txt")
         end
       end
     end
 
     def self.get_vpn_ip_address(server, client)
-      Net::SSH.start(server.ip_address, server.username, :password => server.password) do |ssh|
+      Net::SSH.start(server.ip_address, server.username, Linux.auth_param(client)) do |ssh|
         ipp = ssh.exec!("cat /etc/openvpn/ipp.txt")
         if (ipp)
           csv = CSV.new(ipp)

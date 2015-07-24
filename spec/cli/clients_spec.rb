@@ -18,6 +18,7 @@ vpn-client-10:
     :ip_address: 88.159.47.22
     :username: root
     :password: test123
+    :key_pem:#{' '}
     :vpn_ip_address:#{' '}
     :generate_key:#{' '}
 vpn-client-99:
@@ -28,7 +29,8 @@ vpn-client-99:
   :data:
     :ip_address: 204.99.63.105
     :username: root
-    :password: test123
+    :password:#{' '}
+    :key_pem: \"/tmp/user.pem\"
     :vpn_ip_address:#{' '}
     :generate_key:#{' '}
 "
@@ -51,6 +53,7 @@ vpn-client-99:
   :ip_address: 88.159.47.22
   :username: root
   :password: test123
+  :key_pem:#{' '}
   :vpn_ip_address:#{' '}
   :generate_key:#{' '}
 "
@@ -111,6 +114,7 @@ test-client:
     :ip_address: 0.0.0.1
     :username: test-value2
     :password: test-value2
+    :key_pem:#{' '}
     :vpn_ip_address:#{' '}
     :generate_key:#{' '}
 "

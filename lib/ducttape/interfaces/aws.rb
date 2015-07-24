@@ -18,8 +18,8 @@ module Ducttape::Interfaces
         puts "Region missing, unable to connect!"
         return nil
       end
-
-      return RightScale::CloudApi::AWS::EC2::Manager.new(server.access_key_id, server.secret_key, "https://ec2.#{server.region}.amazonaws.com")
+      url = "https://ec2.#{server.region}.amazonaws.com"
+      return RightScale::CloudApi::AWS::EC2::Manager.new(server.access_key_id, server.secret_key, url)
     end
 
     def self.create_instance(server)
@@ -49,9 +49,10 @@ module Ducttape::Interfaces
 
       puts response.to_yaml()
 
-      server.instance_id = response["RunInstancesResponse"]["instancesSet"]["item"]["instanceId"]
-      server.vpc_id = response["RunInstancesResponse"]["instancesSet"]["item"]["vpcId"]
-      server.private_ip_address = response["RunInstancesResponse"]["instancesSet"]["item"]["privateIpAddress"]
+      instance = response["RunInstancesResponse"]["instancesSet"]["item"]
+      server.instance_id = instance["instanceId"]
+      server.vpc_id = instance["vpcId"]
+      server.private_ip_address = instance["privateIpAddress"]
 
     end
 
@@ -106,8 +107,9 @@ module Ducttape::Interfaces
 
       puts response.to_yaml()
 
-      server.ip_address = response["DescribeInstancesResponse"]["reservationSet"]["item"]["instancesSet"]["item"]["ipAddress"]
-      server.public_dns_name = response["DescribeInstancesResponse"]["reservationSet"]["item"]["instancesSet"]["item"]["dnsName"]
+      instance = response["DescribeInstancesResponse"]["reservationSet"]["item"]["instancesSet"]["item"]
+      server.ip_address = instance["ipAddress"]
+      server.public_dns_name = instance["dnsName"]
       if(!server.ip_address or !server.public_dns_name)
         return false
       end

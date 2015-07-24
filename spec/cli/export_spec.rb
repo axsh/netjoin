@@ -18,7 +18,7 @@ servers:
       :network: 10.8.0.0
       :username: root
       :password: test123
-      :key_pem:#{' '}
+      :key_pem: \"/tmp/user.pem\"
       :installed: true
       :configured: true
       :file_conf: \"/tmp/server.conf\"
@@ -36,6 +36,7 @@ clients:
       :ip_address: 88.159.47.22
       :username: root
       :password: test123
+      :key_pem:#{' '}
       :vpn_ip_address:#{' '}
       :generate_key:#{' '}
   vpn-client-99:
@@ -46,7 +47,8 @@ clients:
     :data:
       :ip_address: 204.99.63.105
       :username: root
-      :password: test123
+      :password:#{' '}
+      :key_pem: \"/tmp/user.pem\"
       :vpn_ip_address:#{' '}
       :generate_key:#{' '}
 "
