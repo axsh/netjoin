@@ -8,30 +8,30 @@ describe Ducttape::Cli::Client::Linux do
       let(:output) { capture(:stdout) { subject.show } }
 
       it "shows all linux clients" do
-        expect(output).to eql '---
+        expect(output).to eql "---
 vpn-client-10:
   :type: :linux
   :server: vpn-server-1
   :status: :new
-  :error: 
+  :error:#{' '}
   :data:
     :ip_address: 88.159.47.22
     :username: root
     :password: test123
-    :vpn_ip_address: 
-    :generate_key: 
+    :vpn_ip_address:#{' '}
+    :generate_key:#{' '}
 vpn-client-99:
   :type: :linux
   :server: vpn-server-1
   :status: :new
-  :error: 
+  :error:#{' '}
   :data:
     :ip_address: 204.99.63.105
     :username: root
     :password: test123
-    :vpn_ip_address: 
-    :generate_key: 
-'
+    :vpn_ip_address:#{' '}
+    :generate_key:#{' '}
+"
       end
     end # End context All
 
@@ -42,18 +42,18 @@ vpn-client-99:
       } }
 
       it "show a single linux client" do
-        expect(output).to eql '---
+        expect(output).to eql "---
 :type: :linux
 :server: vpn-server-1
 :status: :new
-:error: 
+:error:#{' '}
 :data:
   :ip_address: 88.159.47.22
   :username: root
   :password: test123
-  :vpn_ip_address: 
-  :generate_key: 
-'
+  :vpn_ip_address:#{' '}
+  :generate_key:#{' '}
+"
       end
     end # End context Single
 
@@ -68,7 +68,7 @@ vpn-client-99:
       end
     end # End context Non-existing
   end # End context Show
-    
+
   context "Add" do
     context "New" do
       let(:output) { capture(:stdout) {
@@ -82,7 +82,7 @@ test-client:
   :type: :linux
   :server: test-server
   :status: :new
-  :error: 
+  :error:#{' '}
   :data:
     :ip_address: 0.0.0.0
     :username: test-value
@@ -103,11 +103,11 @@ test-client:
         expect(output).to eql "ERROR : client with name 'test-client' already exists\n"
       end
     end # End context Duplicate
-    
-  end # End context Add 
+
+  end # End context Add
 
   context "Update" do
-    
+
     context "Existing" do
       let(:output) { capture(:stdout) {
         subject.options = {:server => 'test-server2', :ip_address => '0.0.0.1', :username => 'test-value2', :password => 'test-value2', :vpn_ip_address => "10.8.0.52", :generate_key => "false"}
@@ -120,7 +120,7 @@ test-client:
   :type: :linux
   :server: test-server2
   :status: :new
-  :error: 
+  :error:#{' '}
   :data:
     :ip_address: 0.0.0.1
     :username: test-value2
@@ -141,7 +141,7 @@ test-client:
         expect(output).to eql "ERROR : client with name 'test-client2' does not exist\n"
       end
     end # End context Non-existing
-    
+
   end # End context Update
 
 end

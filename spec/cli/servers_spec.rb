@@ -8,7 +8,7 @@ describe Ducttape::Cli::Servers do
       let(:output) { capture(:stdout) { subject.show } }
 
       it "shows all servers" do
-        expect(output).to eql '---
+        expect(output).to eql "---
 vpn-server-1:
   :type: :linux
   :data:
@@ -17,15 +17,15 @@ vpn-server-1:
     :network: 10.8.0.0
     :username: root
     :password: test123
-    :key_pem: 
+    :key_pem:#{' '}
     :installed: true
     :configured: true
-    :file_conf: "/tmp/server.conf"
-    :file_ca_crt: "/tmp/ca.crt"
-    :file_pem: "/tmp/dh2048.pem"
-    :file_crt: "/tmp/server.crt"
-    :file_key: "/tmp/server.key"
-'          
+    :file_conf: \"/tmp/server.conf\"
+    :file_ca_crt: \"/tmp/ca.crt\"
+    :file_pem: \"/tmp/dh2048.pem\"
+    :file_crt: \"/tmp/server.crt\"
+    :file_key: \"/tmp/server.key\"
+"
       end
     end # End context All
 
@@ -36,7 +36,7 @@ vpn-server-1:
       } }
 
       it "shows an existing server" do
-        expect(output).to eql '---
+        expect(output).to eql "---
 :type: :linux
 :data:
   :ip_address: 225.79.101.15
@@ -44,15 +44,15 @@ vpn-server-1:
   :network: 10.8.0.0
   :username: root
   :password: test123
-  :key_pem: 
+  :key_pem:#{' '}
   :installed: true
   :configured: true
-  :file_conf: "/tmp/server.conf"
-  :file_ca_crt: "/tmp/ca.crt"
-  :file_pem: "/tmp/dh2048.pem"
-  :file_crt: "/tmp/server.crt"
-  :file_key: "/tmp/server.key"
-'
+  :file_conf: \"/tmp/server.conf\"
+  :file_ca_crt: \"/tmp/ca.crt\"
+  :file_pem: \"/tmp/dh2048.pem\"
+  :file_crt: \"/tmp/server.crt\"
+  :file_key: \"/tmp/server.key\"
+"
       end
     end # End context Single
 
@@ -66,16 +66,16 @@ vpn-server-1:
         expect(output).to eql "ERROR : server with name 'test-server2' does not exist\n"
       end
     end # End context Non-existing
-    
+
   end
-  
+
   context "Delete" do
 
     context "Existing" do
       let(:output) { capture(:stdout) { subject.delete 'test-server' } }
 
       it "deletes an existing server" do
-        expect(output).to_not include '{:type=>:linux, :data=>{:ip_address=>"0.0.0.1", :username=>"root2", :password=>"root2"}}'          
+        expect(output).to_not include '{:type=>:linux, :data=>{:ip_address=>"0.0.0.1", :username=>"root2", :password=>"root2"}}'
       end
     end # End context Existing
 
