@@ -5,11 +5,11 @@ require_relative '../../models/clients/linux'
 require_relative '../../interfaces/linux'
 
 module Ducttape::Cli::Client
-    
+
   class Linux < Base
-    
+
     @type = 'linux'
-    
+
     desc "add <name>","Add a new linux client"
     option :server, :type => :string, :required => true
     option :ip_address, :type => :string, :required => true
@@ -18,13 +18,13 @@ module Ducttape::Cli::Client
     option :vpn_ip_address, :type => :string
     option :generate_key, :type => :string
     def add(name)
-      
+
       # Read database file
       database = Ducttape::Cli::Root.loadDatabase()
 
       # Check for existing client
       if (database['clients'] and database['clients'][name])
-        puts "ERROR : client with name '#{name}' already exists" 
+        puts "ERROR : client with name '#{name}' already exists"
         return
       end
 
@@ -34,9 +34,9 @@ module Ducttape::Cli::Client
         client.vpn_ip_address = options[:vpn_ip_address]
       end
       if(options[:generate_key])
-        client.generate_key = options[:generate_key] 
+        client.generate_key = options[:generate_key]
       end
-     
+
       # Update the database file
       if(!database['clients'])
         database['clients'] = {}
@@ -48,7 +48,7 @@ module Ducttape::Cli::Client
 
       puts client.export_yaml()
     end
-    
+
     desc "update <name>", "Update a linux client"
     option :server, :type => :string
     option :ip_address, :type => :string
@@ -57,26 +57,26 @@ module Ducttape::Cli::Client
     option :vpn_ip_address, :type => :string
     option :generate_key, :type => :string
     def update(name)
-      
+
       # Read database file
       database = Ducttape::Cli::Root.loadDatabase()
 
       # Check for existing client
       if (!database['clients'] or !database['clients'][name])
-        puts "ERROR : client with name '#{name}' does not exist" 
+        puts "ERROR : client with name '#{name}' does not exist"
         return
       end
 
       info = database['clients'][name]
 
       client = Ducttape::Models::Clients::Linux.retrieve(name, info)
-      
+
       # Update the database file
       if (options[:server])
-        client.server = options[:server] 
+        client.server = options[:server]
       end
       if (options[:ip_address])
-        client.ip_address = options[:ip_address] 
+        client.ip_address = options[:ip_address]
       end
       if (options[:username])
         client.username = options[:username]
@@ -88,7 +88,7 @@ module Ducttape::Cli::Client
         client.vpn_ip_address = options[:vpn_ip_address]
       end
       if(options[:generate_key])
-        client.generate_key = options[:generate_key] 
+        client.generate_key = options[:generate_key]
       end
 
       database['clients'][client.name()] = client.export()

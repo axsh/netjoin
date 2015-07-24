@@ -18,7 +18,7 @@ module Ducttape::Cli::Server
       if(!database['servers'])
         return
       end
-      
+
       # If specific server is asked, show that server only, if not, show all
        if (options[:name])
          if (database['servers'][options[:name]])
@@ -26,22 +26,22 @@ module Ducttape::Cli::Server
              puts database['servers'][options[:name]].to_yaml()
              return
            else
-            puts "ERROR : server with name '#{options[:name]}' does not exist" 
+            puts "ERROR : server with name '#{options[:name]}' does not exist"
             return
           end
         else
-          puts "ERROR : server with name '#{options[:name]}' does not exist" 
+          puts "ERROR : server with name '#{options[:name]}' does not exist"
           return
         end
       end
-      
+
       # Remove servers from database that do not match type
       database['servers'].each do |key, value|
         if (!(value[:type].to_s === type()))
           database['servers'].delete(key)
         end
       end
-      
+
       puts database['servers'].to_yaml()
     end
 
@@ -52,8 +52,8 @@ module Ducttape::Cli::Server
 
       def type
         self.class.type
-      end  
+      end
     }
-        
+
    end
 end

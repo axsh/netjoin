@@ -5,5 +5,5 @@ module Ducttape::Interfaces
   class Base
 
   end
-  
+
 end

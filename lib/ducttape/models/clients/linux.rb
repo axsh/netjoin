@@ -2,8 +2,8 @@
 
 require_relative 'base'
 
-module Ducttape::Models::Clients  
-  
+module Ducttape::Models::Clients
+
   class Linux < Base
 
     attr_accessor :ip_address
@@ -11,14 +11,14 @@ module Ducttape::Models::Clients
     attr_accessor :password
     attr_accessor :vpn_ip_address
     attr_accessor :generate_key
-    
+
     def initialize(name, server, ip_address, username, password)
       super(name, server)
       @ip_address = ip_address
       @username = username
       @password = password
     end
-    
+
     def self.retrieve(name, info)
 
       server = info[:server]
@@ -31,7 +31,7 @@ module Ducttape::Models::Clients
       password = data[:password]
       vpn_ip_address = data[:vpn_ip_address]
       generate_key = data[:generate_key]
-        
+
       client = Linux.new(name, server, ip_address, username, password)
       client.status = status
       client.error = error
@@ -47,8 +47,8 @@ module Ducttape::Models::Clients
 
     def getExportData()
       return {
-        :ip_address => @ip_address, 
-        :username => @username, 
+        :ip_address => @ip_address,
+        :username => @username,
         :password=> @password,
         :vpn_ip_address => @vpn_ip_address,
         :generate_key => @generate_key

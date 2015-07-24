@@ -21,16 +21,16 @@ module Ducttape::Models::Servers
     def export()
       return {
         :type => getType(),
-        :data => getExportData() 
+        :data => getExportData()
       }
     end
-    
+
     def export_yaml()
-      return { 
+      return {
         @name => {
           :type => getType(),
           :data => getExportData()
-        } 
+        }
       }.to_yaml()
     end
 

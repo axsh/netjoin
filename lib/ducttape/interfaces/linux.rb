@@ -7,9 +7,9 @@ require 'net/ssh'
 require_relative 'base'
 
 module Ducttape::Interfaces
-  
+
   class Linux < Base
-    
+
     def self.uploadFile(client, source, destination)
       Net::SCP.start(client.ip_address, client.username, :password => client.password) do |scp|
         scp.upload!(source, destination)
@@ -17,7 +17,7 @@ module Ducttape::Interfaces
       end
       return false
     end
-  
+
     def self.checkOpenVpnInstalled(client)
       Net::SSH.start(client.ip_address, client.username, :password => client.password) do |ssh|
         result = ssh.exec!('rpm -qa | grep openvpn')
@@ -27,7 +27,7 @@ module Ducttape::Interfaces
       end
       return false
     end
-    
+
     def self.installOpenVpn(client)
       Net::SSH.start(client.ip_address, client.username, :password => client.password) do |ssh|
         result = ssh.exec!('yum install -y openvpn')
@@ -76,7 +76,7 @@ END"
         end
         DucttapeCLI::CLI.writeFile("keys/#{client.name}.ovpn",file)
         return file
-      end      
+      end
       return false
     end
 
@@ -91,7 +91,7 @@ END"
       end
       return false
     end
-    
+
     def self.startOpenVpnClient(client)
       Net::SSH.start(client.ip_address, client.username, :password => client.password) do |ssh|
         ssh.exec!("openvpn --config /etc/openvpn/#{client.name}.ovpn --daemon")
@@ -99,15 +99,15 @@ END"
       end
       return false
     end
-    
+
     def self.setVpnIpAddress(server, client)
       if (!Ducttape::Interfaces::Linux.getVpnIpAddress(server, client))
         Net::SSH.start(server.ip_address, server.username, :password => server.password) do |ssh|
           ssh.exec!("echo #{client.name},#{client.vpn_ip_address} >> /etc/openvpn/ipp.txt")
         end
-      end      
+      end
     end
-    
+
     def self.getVpnIpAddress(server, client)
       Net::SSH.start(server.ip_address, server.username, :password => server.password) do |ssh|
         ipp = ssh.exec!("cat /etc/openvpn/ipp.txt")

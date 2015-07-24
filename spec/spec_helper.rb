@@ -4,7 +4,7 @@ require 'ducttape'
 def setTestDatabase()
   # Use the test database
   config = Ducttape::Cli::Config.loadConfig()
-  @database = config[:database]   
+  @database = config[:database]
   config[:database] = "database-test"
   Ducttape::Cli::Config.writeConfig(config)
   # Save database content for later
@@ -14,7 +14,7 @@ end
 def resetDatabase()
   # Reset database content
   Ducttape::Cli::Root.writeDatabase(@db_content)
-    
+
   # Change back to previous database used before testing
   config = Ducttape::Cli::Config.loadConfig()
   config[:database] = @database

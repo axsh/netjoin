@@ -5,7 +5,7 @@ require_relative 'base'
 module Ducttape::Cli::Server
 
   class Linux < Base
-    
+
     @type = 'linux'
 
     desc "add <name>","Add server"
@@ -22,7 +22,7 @@ module Ducttape::Cli::Server
     option :file_crt, :type => :string
     option :file_key, :type => :string
     def add(name)
-     
+
       # Read database file
       database = Ducttape::Cli::Root.loadDatabase()
 
@@ -30,11 +30,11 @@ module Ducttape::Cli::Server
       if (database['servers'] and database['servers'][name])
         puts "ERROR : server with name '#{name}' already exists"
         return
-      end      
+      end
 
       # Create server object to work with
       server = Ducttape::Models::Servers::Linux.new(name, options[:ip_address], options[:username], options[:mode], options[:network])
-        
+
       server.password = options[:password]
       server.installed = options[:installed]
       server.configured = options[:configured]
@@ -49,18 +49,18 @@ module Ducttape::Cli::Server
         puts "OpenVPN not installed on the server, aborting!"
         return
       end
-      
+
       # Update the database file
       if(!database['servers'])
         database['servers'] = {}
-      end  
+      end
       database['servers'][server.name()] = server.export()
 
       Ducttape::Cli::Root.writeDatabase(database)
-      
+
       puts server.export_yaml
     end
-    
+
     desc "update <name>", "Update server"
     option :name, :type => :string
     option :ip_address, :type => :string
@@ -81,23 +81,23 @@ module Ducttape::Cli::Server
 
       # Check for existing server
       if (!database['servers'] or !database['servers'][name])
-        puts "ERROR : server with name '#{name}' does not exist" 
+        puts "ERROR : server with name '#{name}' does not exist"
         return
       end
 
       info = database['servers'][name]
 
       server = Ducttape::Models::Servers::Linux.retrieve(name, info)
-      
+
       # Update the database file
       if (options[:ip_address])
-        server.ip_address = options[:ip_address] 
+        server.ip_address = options[:ip_address]
       end
       if (options[:mode])
-        server.mode = options[:mode] 
+        server.mode = options[:mode]
       end
       if (options[:network])
-        server.network = options[:network] 
+        server.network = options[:network]
       end
       if (options[:username])
         server.username = options[:username]
@@ -126,28 +126,28 @@ module Ducttape::Cli::Server
       if (options[:file_key])
         server.file_key = options[:file_key]
       end
-      
+
       database['servers'][name] = server.export()
-      
+
       Ducttape::Cli::Root.writeDatabase(database)
-      
+
       puts server.export_yaml
     end
 
     desc "install <name>", "Install and configure server"
-    def install(name)     
+    def install(name)
     database = Ducttape::Cli::Root.loadDatabase()
-       
+
       # Check for existing server
       if (!database['servers'] or !database['servers'][name])
-        puts "ERROR : server with name '#{name}' does not exist" 
+        puts "ERROR : server with name '#{name}' does not exist"
         return
       end
-  
+
       info = database['servers'][name]
-  
+
       server = Ducttape::Models::Servers::Linux.retrieve(name, info)
-       
+
       if (!Ducttape::Interfaces::Linux.checkOpenVpnInstalled(server))
         if (Ducttape::Interfaces::Linux.installOpenVpn(server))
           puts "OpenVPN installed!"
@@ -159,11 +159,11 @@ module Ducttape::Cli::Server
       else
         puts "OpenVPN already installed!"
       end
-      
+
       database['servers'][name] = server.export()
-      
+
       Ducttape::Cli::Root.writeDatabase(database)
-      
+
       if(!server.configured)
         error = false
         if(File.file?(server.file_conf))
@@ -205,14 +205,14 @@ module Ducttape::Cli::Server
       else
         puts "OpenVPN already configured!"
       end
-      
+
       puts "Restarting OpenVPN"
       Ducttape::Interfaces::Linux.startOpenVpnServer(server)
-      
+
       database['servers'][name] = server.export()
-      
+
       Ducttape::Cli::Root.writeDatabase(database)
-      
+
     end
   end
 end

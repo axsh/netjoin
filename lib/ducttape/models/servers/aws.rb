@@ -2,7 +2,7 @@
 
 require_relative 'linux'
 
-module Ducttape::Models::Servers  
+module Ducttape::Models::Servers
 
   class Aws < Linux
 
@@ -31,7 +31,7 @@ module Ducttape::Models::Servers
       @key_pair = key_pair
       @security_groups = security_groups
     end
-    
+
     def self.retrieve(name, info)
       data = info[:data]
       entity = Aws.new(name)

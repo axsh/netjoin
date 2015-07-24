@@ -30,19 +30,19 @@ module Ducttape::Models::Clients
         :server => @server,
         :status => @status,
         :error => @error,
-        :data => getExportData() 
+        :data => getExportData()
       }
     end
-    
+
     def export_yaml()
       return {
         @name => {
-  
+
           :type => getType(),
           :server => @server,
           :status => @status,
           :error => @error,
-          :data => getExportData() 
+          :data => getExportData()
         }
       }.to_yaml()
     end

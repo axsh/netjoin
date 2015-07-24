@@ -5,11 +5,11 @@ require_relative '../../models/servers/aws'
 require_relative '../../interfaces/aws'
 
 module Ducttape::Cli::Server
-    
+
   class Aws < Base
-    
+
     @type = 'aws'
-    
+
     desc "add <name>","Add a new AWS server"
     option :key_pem, :type => :string
     option :region, :type => :string, :required => true
@@ -27,33 +27,33 @@ module Ducttape::Cli::Server
 
       # Check for existing server
       if (database['servers'] and database['servers'][name])
-        puts "ERROR : server with name '#{name}' already exists" 
+        puts "ERROR : server with name '#{name}' already exists"
         return
-      end      
+      end
 
       # Create Server object to work with
-      server = Ducttape::Models::Servers::Aws.new(name, 
-        options[:region], 
-        options[:zone], 
-        options[:access_key_id], 
-        options[:secret_key], 
-        options[:ami], 
+      server = Ducttape::Models::Servers::Aws.new(name,
+        options[:region],
+        options[:zone],
+        options[:access_key_id],
+        options[:secret_key],
+        options[:ami],
         options[:instance_type],
-        options[:key_pair], 
+        options[:key_pair],
         options[:security_groups]
       )
 
       # Update the database file
       if(!database['servers'])
         database['servers'] = {}
-      end  
-      database['servers'][server.name()] = server.export()     
+      end
+      database['servers'][server.name()] = server.export()
 
       Ducttape::Cli::Root.writeDatabase(database)
-      
+
       puts server.export_yaml
     end
-    
+
     desc "update <name>", "Update an AWS server"
     option :key_pem, :type => :string
     option :region, :type => :string
@@ -71,7 +71,7 @@ module Ducttape::Cli::Server
 
       # Check for existing server
       if (!database['servers'] or !database['servers'][name])
-        puts "ERROR : server with name '#{name}' does not exist" 
+        puts "ERROR : server with name '#{name}' does not exist"
         return
       end
 
@@ -90,7 +90,7 @@ module Ducttape::Cli::Server
         server.zone = options[:zone]
       end
       if (options[:access_key_id])
-        server.access_key = options[:access_key_id] 
+        server.access_key = options[:access_key_id]
       end
       if (options[:secret_key])
         server.secret_key = options[:secret_key]
@@ -107,42 +107,42 @@ module Ducttape::Cli::Server
       if (options[:security_groups])
         server.security_groups = options[:security_groups]
       end
-            
+
       database['servers'][server.name()] = server.export()
       Ducttape::Cli::Root.writeDatabase(database)
-      
+
       puts server.export_yaml
     end
-    
+
     desc "create <name>", "Run server"
     def create(name)
-      
+
       # Read database file
       database = Ducttape::Cli::Root.loadDatabase()
 
       # Check for existing server
       if (!database['servers'] or !database['servers'][name])
-        puts "ERROR : server with name '#{name}' does not exist" 
+        puts "ERROR : server with name '#{name}' does not exist"
         return
       end
 
       info = database['servers'][name]
 
       server = Ducttape::Models::Servers::Aws.retrieve(name, info)
-      
-      if(!server.instance_id)  
+
+      if(!server.instance_id)
         Ducttape::Interfaces::Aws.createInstance(server)
       else
         puts "Instance already created. skipping!"
       end
-      
+
       database['servers'][server.name()] = server.export()
       Ducttape::Cli::Root.writeDatabase(database)
-      
+
       puts "Initializing new instance, this will take a few minutes"
-      
+
       puts "Check instance running, wait for 30 seconds and check again, abort by ctrl-c, rerun command to continue."
-      
+
       status = Ducttape::Interfaces::Aws.getStatus(server)["instanceState"]
       while (!status or status["name"] != "running") do
         for i in 1..6
@@ -153,21 +153,21 @@ module Ducttape::Cli::Server
         status = Ducttape::Interfaces::Aws.getStatus(server)["instanceState"]
       end
       puts "Instance running, continuing"
-      
+
       if (!server.ip_address or !server.public_dns_name)
         if (!Ducttape::Interfaces::Aws.getPublicIpAddress(server))
-          puts "Public IP address or public DNS name not found!"        
+          puts "Public IP address or public DNS name not found!"
         end
       else
         puts "Public IP address already known!"
       end
-      
+
       puts server.export_yaml
-      
+
       database['servers'][server.name()] = server.export()
       Ducttape::Cli::Root.writeDatabase(database)
     end
-    
+
     desc "install <name>", "Install and configure server"
     def install(name)
 
@@ -176,7 +176,7 @@ module Ducttape::Cli::Server
 
       # Check for existing server
       if (!database['servers'] or !database['servers'][name])
-        puts "ERROR : server with name '#{name}' does not exist" 
+        puts "ERROR : server with name '#{name}' does not exist"
         return
       end
 
@@ -185,12 +185,12 @@ module Ducttape::Cli::Server
       server = Ducttape::Models::Servers::Aws.retrieve(name, info)
 
       status = Ducttape::Interfaces::Aws.getStatus(server)["instanceStatus"]["status"]
-        
+
       if(status != "ok")
         puts "Instance not ready, please try again later"
         return
       end
-      
+
       if (!server.installed or !Ducttape::Interfaces::Aws.checkOpenVpnInstalled(server))
         if (Ducttape::Interfaces::Aws.installOpenVpn(server))
           puts "OpenVPN installed!"
@@ -202,16 +202,16 @@ module Ducttape::Cli::Server
       else
         puts "OpenVPN already installed!"
       end
-      
+
       database['servers'][name] = server.export()
-      
+
       Ducttape::Cli::Root.writeDatabase(database)
-      
+
       if(!server.installed)
         puts "Server not installed, aborting!"
         return
       end
-      
+
       if(!server.configured)
         error = false
         if(File.file?(server.file_conf))
@@ -249,7 +249,7 @@ module Ducttape::Cli::Server
           puts "File missing 'file_key' at #{server.file_key}"
           error = true
         end
-        
+
         if (!error)
           server.configured = true
           puts "OpenVPN configured!"
@@ -259,16 +259,16 @@ module Ducttape::Cli::Server
       else
         puts "OpenVPN already configured!"
       end
-      
+
       puts "Restarting OpenVPN"
       Ducttape::Interfaces::Aws.startOpenVpnServer(server)
-      
+
       database['servers'][name] = server.export()
-      
+
       Ducttape::Cli::Root.writeDatabase(database)
-      
+
     end
-    
+
     desc "status <name>", "Status server"
     def status(name)
       # Read database file
@@ -276,40 +276,40 @@ module Ducttape::Cli::Server
 
       # Check for existing server
       if (!database['servers'] or !database['servers'][name])
-        puts "ERROR : server with name '#{name}' does not exist" 
+        puts "ERROR : server with name '#{name}' does not exist"
         return
       end
 
       info = database['servers'][name]
 
       server = Ducttape::Models::Servers::Aws.retrieve(name, info)
-      
+
       status = Ducttape::Interfaces::Aws.getStatus(server)
       if(!status)
         puts "Unable to get status!"
         return
       end
       puts status.to_yaml()
-      
+
     end
 
     desc "describe <name>", "describe"
     def describe(name)
       # Read database file
       database = Ducttape::Cli::Root.loadDatabase()
-    
+
       # Check for existing server
       if (!database['servers'] or !database['servers'][name])
-        puts "ERROR : server with name '#{name}' does not exist" 
+        puts "ERROR : server with name '#{name}' does not exist"
         return
       end
-    
+
       info = database['servers'][name]
-    
+
       server = Ducttape::Models::Servers::Aws.retrieve(name, info)
-      
+
       Ducttape::Interfaces::Aws.describe(server)
-      
+
     end
   end
 end
