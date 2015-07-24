@@ -13,12 +13,13 @@ module Ducttape::Servers
     attr_accessor :ami
     attr_accessor :instance_type
     attr_accessor :key_pair
+    attr_accessor :security_groups
     attr_accessor :instance_id
     attr_accessor :vpc_id
     attr_accessor :private_ip_address
     attr_accessor :public_dns_name
 
-    def initialize(name, region = nil, zone = nil, access_key_id = nil, secret_key = nil, ami = nil, instance_type = nil, key_pair = nil)
+    def initialize(name, region = nil, zone = nil, access_key_id = nil, secret_key = nil, ami = nil, instance_type = nil, key_pair = nil, security_groups = [])
       super(name)
       @username = "ec2-user"
       @region = region
@@ -28,6 +29,7 @@ module Ducttape::Servers
       @ami = ami
       @instance_type = instance_type
       @key_pair = key_pair
+      @security_groups = security_groups
     end
     
     def self.retrieve(name, info)
@@ -41,6 +43,7 @@ module Ducttape::Servers
       entity.ami  = data[:ami]
       entity.instance_type  = data[:instance_type]
       entity.key_pair  = data[:key_pair]
+      entity.security_groups  = data[:security_groups]
       entity.instance_id = data[:instance_id]
       entity.vpc_id = data[:vpc_id]
       entity.private_ip_address = data[:private_ip_address]
@@ -61,6 +64,7 @@ module Ducttape::Servers
       data[:ami] = @ami
       data[:instance_type] = @instance_type
       data[:key_pair] = @key_pair
+      data[:security_groups] = @security_groups
       data[:instance_id] = @instance_id
       data[:vpc_id] = @vpc_id
       data[:private_ip_address] = @private_ip_address

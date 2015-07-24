@@ -19,6 +19,7 @@ module DucttapeCLI::Server
     option :ami, :type => :string, :required => true
     option :instance_type, :type => :string, :required => true
     option :key_pair, :type => :string, :required => true
+    option :security_groups, :type => :array, :required => true
     def add(name)
 
       # Read database file
@@ -31,7 +32,16 @@ module DucttapeCLI::Server
       end      
 
       # Create Server object to work with
-      server = Ducttape::Servers::Aws.new(name, options[:region], options[:zone], options[:access_key_id], options[:secret_key], options[:ami], options[:instance_type], options[:key_pair])
+      server = Ducttape::Servers::Aws.new(name, 
+        options[:region], 
+        options[:zone], 
+        options[:access_key_id], 
+        options[:secret_key], 
+        options[:ami], 
+        options[:instance_type],
+        options[:key_pair], 
+        options[:security_groups]
+      )
 
       # Update the database file
       if(!database['servers'])
@@ -53,6 +63,7 @@ module DucttapeCLI::Server
     option :ami, :type => :string
     option :instance_type, :type => :string
     option :key_pair, :type => :string
+    option :security_groups, :type => :array
     def update(name)
 
       # Read database file
@@ -93,6 +104,9 @@ module DucttapeCLI::Server
       if (options[:key_pair])
         server.key_pair = options[:key_pair]
       end
+      if (options[:security_groups])
+        server.security_groups = options[:security_groups]
+      end
             
       database['servers'][server.name()] = server.export()
       DucttapeCLI::CLI.writeDatabase(database)
@@ -129,14 +143,14 @@ module DucttapeCLI::Server
       
       puts "Check instance running, wait for 30 seconds and check again, abort by ctrl-c, rerun command to continue."
       
-      status = Ducttape::Interfaces::Aws.getStatus(server)
+      status = Ducttape::Interfaces::Aws.getStatus(server)["instanceState"]
       while (!status or status["name"] != "running") do
         for i in 1..6
           sleep(5)
           puts "Waited #{i * 5} seconds"
         end
         puts "Checking status"
-        status = Ducttape::Interfaces::Aws.getStatus(server)
+        status = Ducttape::Interfaces::Aws.getStatus(server)["instanceState"]
       end
       puts "Instance running, continuing"
       
@@ -155,81 +169,99 @@ module DucttapeCLI::Server
     end
     
     desc "install <name>", "Install and configure server"
-    def install(name)     
-    database = DucttapeCLI::CLI.loadDatabase()
-       
+    def install(name)
+
+      # Read database file
+      database = DucttapeCLI::CLI.loadDatabase()
+
       # Check for existing server
       if (!database['servers'] or !database['servers'][name])
         puts "ERROR : server with name '#{name}' does not exist" 
         return
       end
-  
+
       info = database['servers'][name]
-  
+
       server = Ducttape::Servers::Aws.retrieve(name, info)
+
+      status = Ducttape::Interfaces::Aws.getStatus(server)["instanceStatus"]["status"]
+        
+      if(status != "ok")
+        puts "Instance not ready, please try again later"
+        return
+      end
       
-      Ducttape::Interface::Aws.testing(server)
-       
-#      if (!Ducttape::Interfaces::Aws.checkOpenVpnInstalled(server))
-#        if (Ducttape::Interfaces::Aws.installOpenVpn(server))
-#          puts "OpenVPN installed!"
-#          server.installed = true
-#        else
-#          puts "OpenVPN installation failed!"
-#          server.installed = false
-#        end
-#      else
-#        puts "OpenVPN already installed!"
-#      end
-#      
-#      database['servers'][name] = server.export()
-#      
-#      DucttapeCLI::CLI.writeDatabase(database)
-#      
-#      if(!server.configured)
-#        error = false
-#        if(File.file?(server.file_conf))
-#          Ducttape::Interfaces::Aws.uploadFile(server, server.file_conf, "/etc/openvpn/server.conf")
-#        else
-#          puts "File missing 'file_conf' at #{server.file_conf}"
-#          error = true
-#        end
-#        if(File.file?(server.file_ca_crt))
-#          Ducttape::Interfaces::Aws.uploadFile(server, server.file_ca_crt, "/etc/openvpn/ca.crt")
-#        else
-#          puts "File missing 'file_ca_crt' at #{server.file_ca_cert}"
-#          error = true
-#        end
-#        if(File.file?(server.file_pem))
-#          Ducttape::Interfaces::AwsuploadFile(server, server.file_pem, "/etc/openvpn/server.pem")
-#        else
-#          puts "File missing 'file_pem' at #{server.file_pem}"
-#          error = true
-#        end
-#        if(File.file?(server.file_crt))
-#          Ducttape::Interfaces::Aws.uploadFile(server, server.file_crt, "/etc/openvpn/server.crt")
-#        else
-#          puts "File missing 'file_crt' at #{server.file_crt}"
-#          error = true
-#        end
-#        if(File.file?(server.file_key))
-#          Ducttape::Interfaces::Aws.uploadFile(server, server.file_key, "/etc/openvpn/server.key")
-#        else
-#          puts "File missing 'file_key' at #{server.file_key}"
-#          error = true
-#        end
-#        if (!error)
-#          server.configured = true
-#          puts "OpenVPN configured!"
-#        else
-#          puts "OpenVPN configuration failed!"
-#        end
-#      else
-#        puts "OpenVPN already configured!"
-#      end
-#      
-#      puts "Restarting OpenVPN"
-#      Ducttape::Interfaces::Aws.startOpenVpnServer(server)
+      if (!server.installed or !Ducttape::Interfaces::Aws.checkOpenVpnInstalled(server))
+        if (Ducttape::Interfaces::Aws.installOpenVpn(server))
+          puts "OpenVPN installed!"
+          server.installed = true
+        else
+          puts "OpenVPN installation failed!"
+          server.installed = false
+        end
+      else
+        puts "OpenVPN already installed!"
+      end
+      
+      database['servers'][name] = server.export()
+      
+      DucttapeCLI::CLI.writeDatabase(database)
+      
+      if(!server.installed)
+        puts "Server not installed, aborting!"
+        return
+      end
+      
+      if(!server.configured)
+        error = false
+        if(File.file?(server.file_conf))
+          Ducttape::Interfaces::Aws.uploadFile(server, server.file_conf, "server.conf")
+          Ducttape::Interfaces::Aws.moveFile(server, "server.conf", "/etc/openvpn/server.conf")
+        else
+          puts "File missing 'file_conf' at #{server.file_conf}"
+          error = true
+        end
+        if(File.file?(server.file_ca_crt))
+          Ducttape::Interfaces::Aws.uploadFile(server, server.file_ca_crt, "ca.crt")
+          Ducttape::Interfaces::Aws.moveFile(server, "ca.crt", "/etc/openvpn/ca.crt")
+        else
+          puts "File missing 'file_ca_crt' at #{server.file_ca_cert}"
+          error = true
+        end
+        if(File.file?(server.file_pem))
+          Ducttape::Interfaces::Aws.uploadFile(server, server.file_pem, "server.pem")
+          Ducttape::Interfaces::Aws.moveFile(server, "server.pem", "/etc/openvpn/server.pem")
+        else
+          puts "File missing 'file_pem' at #{server.file_pem}"
+          error = true
+        end
+        if(File.file?(server.file_crt))
+          Ducttape::Interfaces::Aws.uploadFile(server, server.file_crt, "server.crt")
+          Ducttape::Interfaces::Aws.moveFile(server, "server.crt", "/etc/openvpn/server.crt")
+        else
+          puts "File missing 'file_crt' at #{server.file_crt}"
+          error = true
+        end
+        if(File.file?(server.file_key))
+          Ducttape::Interfaces::Aws.uploadFile(server, server.file_key, "server.key")
+          Ducttape::Interfaces::Aws.moveFile(server, "server.key", "/etc/openvpn/server.key")
+        else
+          puts "File missing 'file_key' at #{server.file_key}"
+          error = true
+        end
+        
+        if (!error)
+          server.configured = true
+          puts "OpenVPN configured!"
+        else
+          puts "OpenVPN configuration failed!"
+        end
+      else
+        puts "OpenVPN already configured!"
+      end
+      
+      puts "Restarting OpenVPN"
+      Ducttape::Interfaces::Aws.startOpenVpnServer(server)
       
       database['servers'][name] = server.export()
       
@@ -260,26 +292,7 @@ module DucttapeCLI::Server
       puts status.to_yaml()
       
     end
-    
-    desc "testing <name>", "testing"
-    def testing(name)
-      # Read database file
-      database = DucttapeCLI::CLI.loadDatabase()
 
-      # Check for existing server
-      if (!database['servers'] or !database['servers'][name])
-        puts "ERROR : server with name '#{name}' does not exist" 
-        return
-      end
-
-      info = database['servers'][name]
-
-      server = Ducttape::Servers::Aws.retrieve(name, info)
-      
-      Ducttape::Interfaces::Aws.testing(server)
-      
-    end
-        
     desc "describe <name>", "describe"
     def describe(name)
       # Read database file
@@ -297,6 +310,24 @@ module DucttapeCLI::Server
       
       Ducttape::Interfaces::Aws.describe(server)
       
+    end
+
+    desc "testing <name>", "testing"
+    def testing(name)
+      # Read database file
+      database = DucttapeCLI::CLI.loadDatabase()
+    
+      # Check for existing server
+      if (!database['servers'] or !database['servers'][name])
+        puts "ERROR : server with name '#{name}' does not exist" 
+        return
+      end
+    
+      info = database['servers'][name]
+    
+      server = Ducttape::Servers::Aws.retrieve(name, info)
+      
+      Ducttape::Interfaces::Aws.testing(server)      
     end
   end
 

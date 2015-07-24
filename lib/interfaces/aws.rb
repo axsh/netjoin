@@ -41,6 +41,7 @@ module Ducttape::Interfaces
           'MaxCount'           => 1,
           'KeyName'            => "#{server.key_pair}",
           'InstanceType'       => "#{server.instance_type}",
+          'SecurityGroupId'    => server.security_groups,
           'Placement'          => {
              'AvailabilityZone' => "#{server.zone}",
              'Tenancy'          => 'default' }
@@ -80,13 +81,10 @@ module Ducttape::Interfaces
         'InstanceId'      => "#{server.instance_id}"    
       )
 
-      puts response.to_yaml()
-
       if !(response["DescribeInstanceStatusResponse"]["instanceStatusSet"])
         return nil
       end      
-      state = response["DescribeInstanceStatusResponse"]["instanceStatusSet"]["item"]["instanceState"]
-      return state
+      return response["DescribeInstanceStatusResponse"]["instanceStatusSet"]["item"]
     end
     
     
@@ -118,16 +116,21 @@ module Ducttape::Interfaces
     
     def self.getAuth(client)
       if (client.key_pem)
-        return { :keys => "" }
+        return :keys => client.key_pem
       end
-      return { :password => client.password }
+      return :password => client.password
     end
     
     def self.testing(client)
       puts "testing"
-      Net::SSH.start(client.public_dns_name, client.username, Aws.getAuth(client)) do |ssh|
-        response = ssh.exec!("ifconfig")
-        puts response
+      if(client.ip_address)
+        puts  Aws.getAuth(client)
+        Net::SSH.start(client.ip_address, client.username, Aws.getAuth(client)) do |ssh|
+          response = ssh.exec!("who")
+          puts response
+        end
+      else
+        puts "No IP address, aborting"
       end
     end
     
@@ -137,6 +140,30 @@ module Ducttape::Interfaces
         return true
       end
       return false
+    end
+    
+    def self.moveFile(client, source, destination)
+      Net::SSH.start(client.ip_address, client.username, Aws.getAuth(client)) do |ssh|
+        ssh.open_channel do |channel|
+          channel.request_pty do |ch, success|
+            if success
+              puts "Successfully obtained pty"
+            else
+              puts "Could not obtain pty"
+            end
+          end
+
+          channel.exec("sudo mv #{source} #{destination}") do |ch, success|
+            abort "Could not execute commands!" unless success
+            channel.on_data do |ch, data|
+              puts ch.exec("sudo ls /etc/openvpn")              
+            end
+            channel.on_extended_data do |ch, type, data|
+              puts "stderr: #{data}"
+            end
+          end
+        end
+      end
     end
   
     def self.checkOpenVpnInstalled(client)
@@ -150,13 +177,31 @@ module Ducttape::Interfaces
     end
     
     def self.installOpenVpn(client)
+      installed = false
       Net::SSH.start(client.ip_address, client.username, Aws.getAuth(client)) do |ssh|
-        result = ssh.exec!('yum install -y openvpn')
-        if (result.end_with?("Complete!\n"))
-          return true
+        ssh.open_channel do |channel|
+          channel.request_pty do |ch, success|
+            if success
+              puts "Successfully obtained pty"
+            else
+              puts "Could not obtain pty"
+            end
+          end
+
+          channel.exec('sudo yum install -y openvpn') do |ch, success|
+            abort "Could not execute commands!" unless success
+            channel.on_data do |ch, data|
+              if (data.include?("Complete!") or data.include?("Nothing to do"))
+                installed = true
+              end
+            end
+            channel.on_extended_data do |ch, type, data|
+              puts "stderr: #{data}"
+            end
+          end
         end
       end
-      return false
+      return installed
     end
     
     def self.installCertificate(client)
@@ -165,7 +210,7 @@ module Ducttape::Interfaces
 
     def self.startOpenVpnServer(client)
       Net::SSH.start(client.ip_address, client.username, Aws.getAuth(client)) do |ssh|
-        ssh.exec!("service openvpn restart")
+        ssh.exec!("sudo service openvpn restart")
         return true
       end
       return false
