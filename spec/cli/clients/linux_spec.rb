@@ -33,6 +33,30 @@ vpn-client-99:
     :key_pem: \"/tmp/user.pem\"
     :vpn_ip_address:#{' '}
     :generate_key:#{' '}
+aws-client-01:
+  :type: :linux
+  :server: aws-server-1
+  :status: :new
+  :error:#{' '}
+  :data:
+    :ip_address: 188.59.47.122
+    :username: root
+    :password: test123
+    :key_pem:#{' '}
+    :vpn_ip_address:#{' '}
+    :generate_key:#{' '}
+aws-client-02:
+  :type: :linux
+  :server: aws-server-1
+  :status: :new
+  :error:#{' '}
+  :data:
+    :ip_address: 214.93.163.15
+    :username: root
+    :password:#{' '}
+    :key_pem: \"/tmp/user.pem\"
+    :vpn_ip_address:#{' '}
+    :generate_key:#{' '}
 "
       end
     end # End context All

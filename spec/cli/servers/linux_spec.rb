@@ -22,7 +22,7 @@ vpn-server-1:
     :configured: true
     :file_conf: \"/tmp/server.conf\"
     :file_ca_crt: \"/tmp/ca.crt\"
-    :file_pem: \"/tmp/dh2048.pem\"
+    :file_pem: \"/tmp/server.pem\"
     :file_crt: \"/tmp/server.crt\"
     :file_key: \"/tmp/server.key\"
 "
@@ -49,7 +49,7 @@ vpn-server-1:
   :configured: true
   :file_conf: \"/tmp/server.conf\"
   :file_ca_crt: \"/tmp/ca.crt\"
-  :file_pem: \"/tmp/dh2048.pem\"
+  :file_pem: \"/tmp/server.pem\"
   :file_crt: \"/tmp/server.crt\"
   :file_key: \"/tmp/server.key\"
 "
@@ -74,7 +74,7 @@ vpn-server-1:
     context "New" do
       let(:output) { capture(:stdout) {
         subject.options = {:ip_address => '0.0.0.0', :username => 'root', :password => 'root', :mode => 'dynamic', :network => '10.8.0.0',
-            :file_conf => "/tmp/server.conf", :file_ca_crt => "/tmp/ca.crt", :file_pem => "/tmp/dh2048.pem", :file_crt => "/tmp/server.crt", :file_key => "/tmp/server.key"
+            :file_conf => "/tmp/server.conf", :file_ca_crt => "/tmp/ca.crt", :file_pem => "/tmp/server.pem", :file_crt => "/tmp/server.crt", :file_key => "/tmp/server.key"
         }
         subject.add 'test-server'
       } }
@@ -94,7 +94,7 @@ test-server:
     :configured:#{' '}
     :file_conf: \"/tmp/server.conf\"
     :file_ca_crt: \"/tmp/ca.crt\"
-    :file_pem: \"/tmp/dh2048.pem\"
+    :file_pem: \"/tmp/server.pem\"
     :file_crt: \"/tmp/server.crt\"
     :file_key: \"/tmp/server.key\"
 "
@@ -118,7 +118,7 @@ test-server:
     context "Existing" do
       let(:output) { capture(:stdout) {
         subject.options = {:ip_address => '0.0.0.1', :username => 'root2', :password => 'root2', :mode => 'static', :network => '10.9.0.0',
-            :file_conf => "/tmp/server-2.conf", :file_ca_crt => "/tmp/ca-2.crt", :file_pem => "/tmp/dh2048-2.pem", :file_crt => "/tmp/server-2.crt", :file_key => "/tmp/server-2.key"
+            :file_conf => "/tmp/server-2.conf", :file_ca_crt => "/tmp/ca-2.crt", :file_pem => "/tmp/server-2.pem", :file_crt => "/tmp/server-2.crt", :file_key => "/tmp/server-2.key"
         }
         subject.update 'test-server'
       } }
@@ -138,7 +138,7 @@ test-server:
     :configured:#{' '}
     :file_conf: \"/tmp/server-2.conf\"
     :file_ca_crt: \"/tmp/ca-2.crt\"
-    :file_pem: \"/tmp/dh2048-2.pem\"
+    :file_pem: \"/tmp/server-2.pem\"
     :file_crt: \"/tmp/server-2.crt\"
     :file_key: \"/tmp/server-2.key\"
 "

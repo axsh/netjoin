@@ -11,16 +11,23 @@ module Ducttape::Cli::Server
     @type = 'aws'
 
     desc "add <name>","Add a new AWS server"
-    option :password, :type => :string
-    option :key_pem, :type => :string
-    option :region, :type => :string, :required => true
-    option :zone, :type => :string, :required => true
     option :access_key_id, :type => :string, :required => true
-    option :secret_key, :type => :string, :required => true
     option :ami, :type => :string, :required => true
+    option :configured, :type => :string
+    option :file_ca_crt, :type => :string
+    option :file_conf, :type => :string
+    option :file_crt, :type => :string
+    option :file_key, :type => :string
+    option :file_pem, :type => :string
+    option :installed, :type => :string
     option :instance_type, :type => :string, :required => true
     option :key_pair, :type => :string, :required => true
+    option :key_pem, :type => :string
+    option :password, :type => :string
+    option :region, :type => :string, :required => true
+    option :secret_key, :type => :string, :required => true
     option :security_groups, :type => :array, :required => true
+    option :zone, :type => :string, :required => true
     def add(name)
 
       # Read database file
@@ -32,7 +39,7 @@ module Ducttape::Cli::Server
         return
       end
 
-      if(!options[:password] and !options(:key_pem))
+      if((!options[:password]) and !options[:key_pem])
         puts "Missing a password or key file"
         return
       end
@@ -49,8 +56,27 @@ module Ducttape::Cli::Server
         options[:security_groups]
       )
 
-      server.password = options[:password]
+      if (options[:configured])
+        if(options[:configured] === "false")
+          server.configured = false
+        else
+          server.configured = true
+        end
+      end
+      server.file_ca_crt = options[:file_ca_crt]
+      server.file_conf = options[:file_conf]
+      server.file_crt = options[:file_crt]
+      server.file_key = options[:file_key]
+      server.file_pem = options[:file_pem]
+      if (options[:installed])
+        if(options[:installed] === "false")
+          server.installed = false
+        else
+          server.installed = true
+        end
+      end
       server.key_pem = options[:key_pem]
+      server.password = options[:password]
 
       # Update the database file
       if(!database['servers'])
@@ -64,15 +90,23 @@ module Ducttape::Cli::Server
     end
 
     desc "update <name>", "Update an AWS server"
-    option :key_pem, :type => :string
-    option :region, :type => :string
-    option :zone, :type => :string
     option :access_key_id, :type => :string
-    option :secret_key, :type => :string
     option :ami, :type => :string
+    option :configured, :type => :string
+    option :file_ca_crt, :type => :string
+    option :file_conf, :type => :string
+    option :file_crt, :type => :string
+    option :file_key, :type => :string
+    option :file_pem, :type => :string
+    option :installed, :type => :string
     option :instance_type, :type => :string
     option :key_pair, :type => :string
+    option :key_pem, :type => :string
+    option :password, :type => :string
+    option :region, :type => :string
+    option :secret_key, :type => :string
     option :security_groups, :type => :array
+    option :zone, :type => :string
     def update(name)
 
       # Read database file
@@ -89,23 +123,40 @@ module Ducttape::Cli::Server
       server = Ducttape::Models::Servers::Aws.retrieve(name, info)
 
       # Update the database file
-      if (options[:key_pem])
-        server.key_pem = options[:key_pem]
-      end
-      if (options[:region])
-        server.region = options[:region]
-      end
-      if (options[:zone])
-        server.zone = options[:zone]
-      end
       if (options[:access_key_id])
-        server.access_key = options[:access_key_id]
-      end
-      if (options[:secret_key])
-        server.secret_key = options[:secret_key]
+        server.access_key_id = options[:access_key_id]
       end
       if (options[:ami])
         server.ami = options[:ami]
+      end
+      if (options[:configured])
+        if(options[:configured] === "false")
+          server.configured = false
+        else
+          server.configured = true
+        end
+      end
+      if (options[:file_ca_crt])
+        server.file_ca_crt = options[:file_ca_crt]
+      end
+      if (options[:file_conf])
+        server.file_conf = options[:file_conf]
+      end
+      if (options[:file_crt])
+        server.file_crt = options[:file_crt]
+      end
+      if (options[:file_key])
+        server.file_key = options[:file_key]
+      end
+      if (options[:file_pem])
+        server.file_pem = options[:file_pem]
+      end
+      if (options[:installed])
+        if(options[:installed] === "false")
+          server.installed = false
+        else
+          server.installed = true
+        end
       end
       if (options[:instance_type])
         server.instance_type = options[:instance_type]
@@ -113,8 +164,23 @@ module Ducttape::Cli::Server
       if (options[:key_pair])
         server.key_pair = options[:key_pair]
       end
+      if (options[:key_pem])
+        server.key_pem = options[:key_pem]
+      end
+      if (options[:password])
+        server.password = options[:password]
+      end
+      if (options[:region])
+        server.region = options[:region]
+      end
+      if (options[:secret_key])
+        server.secret_key = options[:secret_key]
+      end
       if (options[:security_groups])
         server.security_groups = options[:security_groups]
+      end
+      if (options[:zone])
+        server.zone = options[:zone]
       end
 
       database['servers'][server.name()] = server.export()
