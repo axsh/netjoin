@@ -67,7 +67,7 @@ module Ducttape::Interfaces
         'InstanceId'      => "#{server.instance_id}"
       )
 
-      puts response.to_yaml()
+      return response
     end
 
     def self.status(server)

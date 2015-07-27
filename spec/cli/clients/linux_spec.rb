@@ -15,48 +15,48 @@ vpn-client-10:
   :status: :new
   :error:#{' '}
   :data:
-    :ip_address: 88.159.47.22
-    :username: root
-    :password: test123
-    :key_pem:#{' '}
-    :vpn_ip_address:#{' '}
     :generate_key:#{' '}
+    :ip_address: 88.159.47.22
+    :key_pem:#{' '}
+    :password: test123
+    :username: root
+    :vpn_ip_address:#{' '}
 vpn-client-99:
   :type: :linux
   :server: vpn-server-1
   :status: :new
   :error:#{' '}
   :data:
-    :ip_address: 204.99.63.105
-    :username: root
-    :password:#{' '}
-    :key_pem: \"/tmp/user.pem\"
-    :vpn_ip_address:#{' '}
     :generate_key:#{' '}
+    :ip_address: 204.99.63.105
+    :key_pem: \"/tmp/user.pem\"
+    :password:#{' '}
+    :username: root
+    :vpn_ip_address:#{' '}
 aws-client-01:
   :type: :linux
   :server: aws-server-1
   :status: :new
   :error:#{' '}
   :data:
-    :ip_address: 188.59.47.122
-    :username: root
-    :password: test123
-    :key_pem:#{' '}
-    :vpn_ip_address:#{' '}
     :generate_key:#{' '}
+    :ip_address: 188.59.47.122
+    :key_pem:#{' '}
+    :password: test123
+    :username: root
+    :vpn_ip_address:#{' '}
 aws-client-02:
   :type: :linux
   :server: aws-server-1
   :status: :new
   :error:#{' '}
   :data:
-    :ip_address: 214.93.163.15
-    :username: root
-    :password:#{' '}
-    :key_pem: \"/tmp/user.pem\"
-    :vpn_ip_address:#{' '}
     :generate_key:#{' '}
+    :ip_address: 214.93.163.15
+    :key_pem: \"/tmp/user.pem\"
+    :password:#{' '}
+    :username: root
+    :vpn_ip_address:#{' '}
 "
       end
     end # End context All
@@ -74,12 +74,12 @@ aws-client-02:
 :status: :new
 :error:#{' '}
 :data:
-  :ip_address: 88.159.47.22
-  :username: root
-  :password: test123
-  :key_pem:#{' '}
-  :vpn_ip_address:#{' '}
   :generate_key:#{' '}
+  :ip_address: 88.159.47.22
+  :key_pem:#{' '}
+  :password: test123
+  :username: root
+  :vpn_ip_address:#{' '}
 "
       end
     end # End context Single
@@ -99,7 +99,15 @@ aws-client-02:
   context "Add" do
     context "New" do
       let(:output) { capture(:stdout) {
-        subject.options = {:server => 'test-server', :ip_address => '0.0.0.0', :username => 'test-value', :password => 'test-value', :key_pem => '/tmp/user.pem', :vpn_ip_address => "10.8.0.50", :generate_key => "true"}
+        subject.options = {
+          :generate_key => "true",
+          :ip_address => '0.0.0.0',
+          :key_pem => '/tmp/user.pem',
+          :password => 'test-value',
+          :server => 'test-server',
+          :username => 'test-value',
+          :vpn_ip_address => "10.8.0.50",
+        }
         subject.add 'test-client'
       } }
 
@@ -111,12 +119,12 @@ test-client:
   :status: :new
   :error:#{' '}
   :data:
-    :ip_address: 0.0.0.0
-    :username: test-value
-    :password: test-value
-    :key_pem: \"/tmp/user.pem\"
-    :vpn_ip_address: 10.8.0.50
     :generate_key: 'true'
+    :ip_address: 0.0.0.0
+    :key_pem: \"/tmp/user.pem\"
+    :password: test-value
+    :username: test-value
+    :vpn_ip_address: 10.8.0.50
 "
       end
     end # End context new
@@ -150,12 +158,12 @@ test-client:
   :status: :new
   :error:#{' '}
   :data:
-    :ip_address: 0.0.0.1
-    :username: test-value2
-    :password: test-value2
-    :key_pem: \"/tmp/user2.pem\"
-    :vpn_ip_address: 10.8.0.52
     :generate_key: 'false'
+    :ip_address: 0.0.0.1
+    :key_pem: \"/tmp/user2.pem\"
+    :password: test-value2
+    :username: test-value2
+    :vpn_ip_address: 10.8.0.52
 "
       end
     end # end context Existing

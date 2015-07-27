@@ -6,19 +6,19 @@ module Ducttape::Models::Servers
 
   class Linux < Base
 
-    attr_accessor :ip_address
-    attr_accessor :mode
-    attr_accessor :network
-    attr_accessor :username
-    attr_accessor :password
-    attr_accessor :key_pem
-    attr_accessor :installed
     attr_accessor :configured
-    attr_accessor :file_conf
     attr_accessor :file_ca_crt
-    attr_accessor :file_pem
+    attr_accessor :file_conf
     attr_accessor :file_crt
     attr_accessor :file_key
+    attr_accessor :file_pem
+    attr_accessor :installed
+    attr_accessor :ip_address
+    attr_accessor :key_pem
+    attr_accessor :mode
+    attr_accessor :network
+    attr_accessor :password
+    attr_accessor :username
 
     def initialize(name, ip_address = nil, username = nil, mode = :dynamic, network = nil)
       super(name)
@@ -35,19 +35,19 @@ module Ducttape::Models::Servers
     end
 
     def self.fill(entity, data)
-      entity.ip_address = data[:ip_address]
-      entity.username = data[:username]
-      entity.password = data[:password]
-      entity.key_pem = data[:key_pem]
-      entity.mode = data[:mode]
-      entity.network = data[:network]
-      entity.installed = data[:installed]
       entity.configured = data[:configured]
-      entity.file_conf = data[:file_conf]
       entity.file_ca_crt = data[:file_ca_crt]
-      entity.file_pem = data[:file_pem]
+      entity.file_conf = data[:file_conf]
       entity.file_crt = data[:file_crt]
       entity.file_key = data[:file_key]
+      entity.file_pem = data[:file_pem]
+      entity.installed = data[:installed]
+      entity.key_pem = data[:key_pem]
+      entity.ip_address = data[:ip_address]
+      entity.mode = data[:mode]
+      entity.network = data[:network]
+      entity.password = data[:password]
+      entity.username = data[:username]
     end
 
     def type()
@@ -56,19 +56,19 @@ module Ducttape::Models::Servers
 
     def export_data()
       data = super()
-      data[:ip_address] = @ip_address
-      data[:mode] = @mode
-      data[:network] = @network
-      data[:username] = @username
-      data[:password] = @password
-      data[:key_pem] = @key_pem
-      data[:installed] = @installed
       data[:configured] = @configured
-      data[:file_conf] = @file_conf
       data[:file_ca_crt] = @file_ca_crt
-      data[:file_pem] = @file_pem
+      data[:file_conf] = @file_conf
       data[:file_crt] = @file_crt
       data[:file_key] = @file_key
+      data[:file_pem] = @file_pem
+      data[:installed] = @installed
+      data[:ip_address] = @ip_address
+      data[:key_pem] = @key_pem
+      data[:mode] = @mode
+      data[:network] = @network
+      data[:password] = @password
+      data[:username] = @username
       return data
     end
 

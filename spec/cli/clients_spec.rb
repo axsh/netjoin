@@ -15,48 +15,48 @@ vpn-client-10:
   :status: :new
   :error:#{' '}
   :data:
-    :ip_address: 88.159.47.22
-    :username: root
-    :password: test123
-    :key_pem:#{' '}
-    :vpn_ip_address:#{' '}
     :generate_key:#{' '}
+    :ip_address: 88.159.47.22
+    :key_pem:#{' '}
+    :password: test123
+    :username: root
+    :vpn_ip_address:#{' '}
 vpn-client-99:
   :type: :linux
   :server: vpn-server-1
   :status: :new
   :error:#{' '}
   :data:
-    :ip_address: 204.99.63.105
-    :username: root
-    :password:#{' '}
-    :key_pem: \"/tmp/user.pem\"
-    :vpn_ip_address:#{' '}
     :generate_key:#{' '}
+    :ip_address: 204.99.63.105
+    :key_pem: \"/tmp/user.pem\"
+    :password:#{' '}
+    :username: root
+    :vpn_ip_address:#{' '}
 aws-client-01:
   :type: :linux
   :server: aws-server-1
   :status: :new
   :error:#{' '}
   :data:
-    :ip_address: 188.59.47.122
-    :username: root
-    :password: test123
-    :key_pem:#{' '}
-    :vpn_ip_address:#{' '}
     :generate_key:#{' '}
+    :ip_address: 188.59.47.122
+    :key_pem:#{' '}
+    :password: test123
+    :username: root
+    :vpn_ip_address:#{' '}
 aws-client-02:
   :type: :linux
   :server: aws-server-1
   :status: :new
   :error:#{' '}
   :data:
-    :ip_address: 214.93.163.15
-    :username: root
-    :password:#{' '}
-    :key_pem: \"/tmp/user.pem\"
-    :vpn_ip_address:#{' '}
     :generate_key:#{' '}
+    :ip_address: 214.93.163.15
+    :key_pem: \"/tmp/user.pem\"
+    :password:#{' '}
+    :username: root
+    :vpn_ip_address:#{' '}
 "
       end
     end # End context "All"
@@ -74,12 +74,12 @@ aws-client-02:
 :status: :new
 :error:#{' '}
 :data:
-  :ip_address: 88.159.47.22
-  :username: root
-  :password: test123
-  :key_pem:#{' '}
-  :vpn_ip_address:#{' '}
   :generate_key:#{' '}
+  :ip_address: 88.159.47.22
+  :key_pem:#{' '}
+  :password: test123
+  :username: root
+  :vpn_ip_address:#{' '}
 "
       end
     end # End context Single
@@ -139,12 +139,12 @@ test-client:
   :status: :new
   :error:#{' '}
   :data:
-    :ip_address: 0.0.0.1
-    :username: test-value2
-    :password: test-value2
-    :key_pem:#{' '}
-    :vpn_ip_address:#{' '}
     :generate_key:#{' '}
+    :ip_address: 0.0.0.1
+    :key_pem:#{' '}
+    :password: test-value2
+    :username: test-value2
+    :vpn_ip_address:#{' '}
 "
       end
     end # End context Single

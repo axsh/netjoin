@@ -57,18 +57,18 @@ module Ducttape::Models::Servers
 
     def export_data()
       data = super()
-      data[:region] = @region
-      data[:zone] = @zone
       data[:access_key_id] = @access_key_id
-      data[:secret_key] = @secret_key
       data[:ami] = @ami
+      data[:instance_id] = @instance_id
       data[:instance_type] = @instance_type
       data[:key_pair] = @key_pair
-      data[:security_groups] = @security_groups
-      data[:instance_id] = @instance_id
-      data[:vpc_id] = @vpc_id
       data[:private_ip_address] = @private_ip_address
       data[:public_dns_name] = @public_dns_name
+      data[:region] = @region
+      data[:secret_key] = @secret_key
+      data[:security_groups] = @security_groups
+      data[:vpc_id] = @vpc_id
+      data[:zone] = @zone
       return data
     end
 

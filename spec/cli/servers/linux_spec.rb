@@ -12,19 +12,19 @@ describe Ducttape::Cli::Server::Linux do
 vpn-server-1:
   :type: :linux
   :data:
-    :ip_address: 225.79.101.15
-    :mode: dynamic
-    :network: 10.8.0.0
-    :username: root
-    :password: test123
-    :key_pem: \"/tmp/user.pem\"
-    :installed: true
     :configured: true
-    :file_conf: \"/tmp/server.conf\"
     :file_ca_crt: \"/tmp/ca.crt\"
-    :file_pem: \"/tmp/server.pem\"
+    :file_conf: \"/tmp/server.conf\"
     :file_crt: \"/tmp/server.crt\"
     :file_key: \"/tmp/server.key\"
+    :file_pem: \"/tmp/server.pem\"
+    :installed: true
+    :ip_address: 225.79.101.15
+    :key_pem: \"/tmp/user.pem\"
+    :mode: dynamic
+    :network: 10.8.0.0
+    :password: test123
+    :username: root
 "
       end
     end # End context All
@@ -39,19 +39,19 @@ vpn-server-1:
         expect(output).to include "---
 :type: :linux
 :data:
-  :ip_address: 225.79.101.15
-  :mode: dynamic
-  :network: 10.8.0.0
-  :username: root
-  :password: test123
-  :key_pem: \"/tmp/user.pem\"
-  :installed: true
   :configured: true
-  :file_conf: \"/tmp/server.conf\"
   :file_ca_crt: \"/tmp/ca.crt\"
-  :file_pem: \"/tmp/server.pem\"
+  :file_conf: \"/tmp/server.conf\"
   :file_crt: \"/tmp/server.crt\"
   :file_key: \"/tmp/server.key\"
+  :file_pem: \"/tmp/server.pem\"
+  :installed: true
+  :ip_address: 225.79.101.15
+  :key_pem: \"/tmp/user.pem\"
+  :mode: dynamic
+  :network: 10.8.0.0
+  :password: test123
+  :username: root
 "
       end
     end # End context Single
@@ -73,8 +73,17 @@ vpn-server-1:
 
     context "New" do
       let(:output) { capture(:stdout) {
-        subject.options = {:ip_address => '0.0.0.0', :username => 'root', :password => 'root', :mode => 'dynamic', :network => '10.8.0.0',
-            :file_conf => "/tmp/server.conf", :file_ca_crt => "/tmp/ca.crt", :file_pem => "/tmp/server.pem", :file_crt => "/tmp/server.crt", :file_key => "/tmp/server.key"
+        subject.options = {
+          :file_ca_crt => "/tmp/ca.crt",
+          :file_conf => "/tmp/server.conf",
+          :file_crt => "/tmp/server.crt",
+          :file_key => "/tmp/server.key",
+          :file_pem => "/tmp/server.pem",
+          :ip_address => '0.0.0.0',
+          :mode => 'dynamic',
+          :network => '10.8.0.0',
+          :password => 'root',
+          :username => 'root',
         }
         subject.add 'test-server'
       } }
@@ -84,26 +93,30 @@ vpn-server-1:
 test-server:
   :type: :linux
   :data:
-    :ip_address: 0.0.0.0
-    :mode: dynamic
-    :network: 10.8.0.0
-    :username: root
-    :password: root
-    :key_pem:#{' '}
-    :installed:#{' '}
     :configured:#{' '}
-    :file_conf: \"/tmp/server.conf\"
     :file_ca_crt: \"/tmp/ca.crt\"
-    :file_pem: \"/tmp/server.pem\"
+    :file_conf: \"/tmp/server.conf\"
     :file_crt: \"/tmp/server.crt\"
     :file_key: \"/tmp/server.key\"
+    :file_pem: \"/tmp/server.pem\"
+    :installed:#{' '}
+    :ip_address: 0.0.0.0
+    :key_pem:#{' '}
+    :mode: dynamic
+    :network: 10.8.0.0
+    :password: root
+    :username: root
 "
       end
     end # End context News
 
     context "Duplicate" do
       let(:output) { capture(:stdout) {
-        subject.options = {:ip_address => '0.0.0.0', :username => 'root', :password => 'root'}
+        subject.options = {
+          :ip_address => '0.0.0.0',
+            :username => 'root',
+            :password => 'root'
+        }
         subject.add 'test-server'
       } }
 
@@ -117,8 +130,17 @@ test-server:
 
     context "Existing" do
       let(:output) { capture(:stdout) {
-        subject.options = {:ip_address => '0.0.0.1', :username => 'root2', :password => 'root2', :mode => 'static', :network => '10.9.0.0',
-            :file_conf => "/tmp/server-2.conf", :file_ca_crt => "/tmp/ca-2.crt", :file_pem => "/tmp/server-2.pem", :file_crt => "/tmp/server-2.crt", :file_key => "/tmp/server-2.key"
+        subject.options = {
+          :file_ca_crt => "/tmp/ca-2.crt",
+          :file_conf => "/tmp/server-2.conf",
+          :file_crt => "/tmp/server-2.crt",
+          :file_key => "/tmp/server-2.key",
+          :file_pem => "/tmp/server-2.pem",
+          :ip_address => '0.0.0.1',
+          :mode => 'static',
+          :network => '10.9.0.0',
+          :password => 'root2',
+          :username => 'root2',
         }
         subject.update 'test-server'
       } }
@@ -128,19 +150,19 @@ test-server:
 test-server:
   :type: :linux
   :data:
-    :ip_address: 0.0.0.1
-    :mode: static
-    :network: 10.9.0.0
-    :username: root2
-    :password: root2
-    :key_pem:#{' '}
-    :installed:#{' '}
     :configured:#{' '}
-    :file_conf: \"/tmp/server-2.conf\"
     :file_ca_crt: \"/tmp/ca-2.crt\"
-    :file_pem: \"/tmp/server-2.pem\"
+    :file_conf: \"/tmp/server-2.conf\"
     :file_crt: \"/tmp/server-2.crt\"
     :file_key: \"/tmp/server-2.key\"
+    :file_pem: \"/tmp/server-2.pem\"
+    :installed:#{' '}
+    :ip_address: 0.0.0.1
+    :key_pem:#{' '}
+    :mode: static
+    :network: 10.9.0.0
+    :password: root2
+    :username: root2
 "
       end
     end # End context Existing

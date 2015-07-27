@@ -12,49 +12,49 @@ describe Ducttape::Cli::Servers do
 vpn-server-1:
   :type: :linux
   :data:
-    :ip_address: 225.79.101.15
-    :mode: dynamic
-    :network: 10.8.0.0
-    :username: root
-    :password: test123
-    :key_pem: \"/tmp/user.pem\"
-    :installed: true
     :configured: true
-    :file_conf: \"/tmp/server.conf\"
     :file_ca_crt: \"/tmp/ca.crt\"
-    :file_pem: \"/tmp/server.pem\"
+    :file_conf: \"/tmp/server.conf\"
     :file_crt: \"/tmp/server.crt\"
     :file_key: \"/tmp/server.key\"
+    :file_pem: \"/tmp/server.pem\"
+    :installed: true
+    :ip_address: 225.79.101.15
+    :key_pem: \"/tmp/user.pem\"
+    :mode: dynamic
+    :network: 10.8.0.0
+    :password: test123
+    :username: root
 aws-server-1:
   :type: :aws
   :data:
-    :ip_address: 55.29.16.157
-    :mode: :dynamic
-    :network:#{' '}
-    :username: ec2-user
-    :password:#{' '}
-    :key_pem: \"/tmp/ec2_test.pem\"
-    :installed: true
     :configured: true
-    :file_conf: \"/tmp/server.conf\"
     :file_ca_crt: \"/tmp/ca.crt\"
-    :file_pem: \"/tmp/server.pem\"
+    :file_conf: \"/tmp/server.conf\"
     :file_crt: \"/tmp/server.crt\"
     :file_key: \"/tmp/server.key\"
-    :region: us-west-2
-    :zone: us-west-2a
+    :file_pem: \"/tmp/server.pem\"
+    :installed: true
+    :ip_address: 55.29.16.157
+    :key_pem: \"/tmp/ec2_test.pem\"
+    :mode: :dynamic
+    :network:#{' '}
+    :password:#{' '}
+    :username: ec2-user
     :access_key_id: AMAZONAWSEC2ACCESKEY
-    :secret_key: AmazonAwsEC2SecretKey
     :ami: ami-12345678
+    :instance_id: i-12345678
     :instance_type: t2.micro
     :key_pair: aws_keypair_name
+    :private_ip_address: 172.32.45.159
+    :public_dns_name: ec2-55-19-16-157.us-west-2.compute.amazonaws.com
+    :region: us-west-2
+    :secret_key: AmazonAwsEC2SecretKey
     :security_groups:
     - sg-12345678
     - sg-87654321
-    :instance_id: i-12345678
     :vpc_id: vpc-87654321f
-    :private_ip_address: 172.32.45.159
-    :public_dns_name: ec2-55-19-16-157.us-west-2.compute.amazonaws.com
+    :zone: us-west-2a
 "
       end
     end # End context All
@@ -69,19 +69,19 @@ aws-server-1:
         expect(output).to eql "---
 :type: :linux
 :data:
-  :ip_address: 225.79.101.15
-  :mode: dynamic
-  :network: 10.8.0.0
-  :username: root
-  :password: test123
-  :key_pem: \"/tmp/user.pem\"
-  :installed: true
   :configured: true
-  :file_conf: \"/tmp/server.conf\"
   :file_ca_crt: \"/tmp/ca.crt\"
-  :file_pem: \"/tmp/server.pem\"
+  :file_conf: \"/tmp/server.conf\"
   :file_crt: \"/tmp/server.crt\"
   :file_key: \"/tmp/server.key\"
+  :file_pem: \"/tmp/server.pem\"
+  :installed: true
+  :ip_address: 225.79.101.15
+  :key_pem: \"/tmp/user.pem\"
+  :mode: dynamic
+  :network: 10.8.0.0
+  :password: test123
+  :username: root
 "
       end
     end # End context Single

@@ -26,12 +26,12 @@ module Ducttape::Models::Clients
       data = info[:data]
 
       client = Linux.new(name, server, data[:ip_address], data[:username])
-      client.password= data[:password]
-      client.key_pem = info[:key_pem]
-      client.status = info[:status]
       client.error = info[:error]
-      client.vpn_ip_address = data[:vpn_ip_address]
       client.generate_key = data[:generate_key]
+      client.key_pem = info[:key_pem]
+      client.password= data[:password]
+      client.status = info[:status]
+      client.vpn_ip_address = data[:vpn_ip_address]
 
       return client
     end
@@ -42,12 +42,12 @@ module Ducttape::Models::Clients
 
     def export_data()
       return {
+        :generate_key => @generate_key,
         :ip_address => @ip_address,
-        :username => @username,
-        :password => @password,
         :key_pem => @key_pem,
+        :password => @password,
+        :username => @username,
         :vpn_ip_address => @vpn_ip_address,
-        :generate_key => @generate_key
       }
     end
 

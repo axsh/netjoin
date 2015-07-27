@@ -29,7 +29,6 @@ module Ducttape::Cli::Server
     option :security_groups, :type => :array, :required => true
     option :zone, :type => :string, :required => true
     def add(name)
-
       # Read database file
       database = Ducttape::Cli::Root.load_database()
 
@@ -39,6 +38,7 @@ module Ducttape::Cli::Server
         return
       end
 
+      # Check for a way to log in
       if((!options[:password]) and !options[:key_pem])
         puts "Missing a password or key file"
         return
@@ -108,7 +108,6 @@ module Ducttape::Cli::Server
     option :security_groups, :type => :array
     option :zone, :type => :string
     def update(name)
-
       # Read database file
       database = Ducttape::Cli::Root.load_database()
 
@@ -118,8 +117,8 @@ module Ducttape::Cli::Server
         return
       end
 
+      # Get server
       info = database['servers'][name]
-
       server = Ducttape::Models::Servers::Aws.retrieve(name, info)
 
       # Update the database file
@@ -183,6 +182,13 @@ module Ducttape::Cli::Server
         server.zone = options[:zone]
       end
 
+      # Check for a way to log in
+      if(!options[:password] and !options(:key_pem))
+        puts "Missing a password or key file"
+        return
+      end
+
+      # Write database file
       database['servers'][server.name()] = server.export()
       Ducttape::Cli::Root.write_database(database)
 
@@ -191,7 +197,6 @@ module Ducttape::Cli::Server
 
     desc "create <name>", "Run server"
     def create(name)
-
       # Read database file
       database = Ducttape::Cli::Root.load_database()
 
@@ -201,25 +206,27 @@ module Ducttape::Cli::Server
         return
       end
 
+      # Get server
       info = database['servers'][name]
-
       server = Ducttape::Models::Servers::Aws.retrieve(name, info)
 
+      # Check if server has already been created on AWS
       if(!server.instance_id)
+        puts "Initializing new instance, this will take a few minutes"
         Ducttape::Interfaces::Aws.create_instance(server)
       else
         puts "Instance already created. skipping!"
       end
 
+      # Save instance creation information
       database['servers'][server.name()] = server.export()
       Ducttape::Cli::Root.write_database(database)
 
-      puts "Initializing new instance, this will take a few minutes"
-
-      puts "Check instance running, wait for 30 seconds and check again, abort by ctrl-c, rerun command to continue."
+      puts "Checking for running instance, wait for 30 seconds and check again, abort by ctrl-c, rerun command to continue."
 
       status = Ducttape::Interfaces::Aws.status(server)["instanceState"]
       while (!status or status["name"] != "running") do
+        puts "Instance not running or busy initializing!"
         for i in 1..6
           sleep(5)
           puts "Waited #{i * 5} seconds"
@@ -229,6 +236,7 @@ module Ducttape::Cli::Server
       end
       puts "Instance running, continuing"
 
+      # Retrieve public IP Address
       if (!server.ip_address or !server.public_dns_name)
         if (!Ducttape::Interfaces::Aws.public_ip_address(server))
           puts "Public IP address or public DNS name not found!"
@@ -237,15 +245,15 @@ module Ducttape::Cli::Server
         puts "Public IP address already known!"
       end
 
-      puts server.export_yaml
-
+      # Write database file
       database['servers'][server.name()] = server.export()
       Ducttape::Cli::Root.write_database(database)
+
+      puts server.export_yaml
     end
 
     desc "install <name>", "Install and configure server"
     def install(name)
-
       # Read database file
       database = Ducttape::Cli::Root.load_database()
 
@@ -256,16 +264,16 @@ module Ducttape::Cli::Server
       end
 
       info = database['servers'][name]
-
       server = Ducttape::Models::Servers::Aws.retrieve(name, info)
-
       status = Ducttape::Interfaces::Aws.status(server)["instanceStatus"]["status"]
 
+      # Check if instance is ready
       if(status != "ok")
         puts "Instance not ready, please try again later"
         return
       end
 
+      # Check OpenVPN installation, install if missing
       if (!server.installed or !Ducttape::Interfaces::Aws.check_openvpn_installed(server))
         if (Ducttape::Interfaces::Aws.install_openvpn(server))
           puts "OpenVPN installed!"
@@ -278,15 +286,17 @@ module Ducttape::Cli::Server
         puts "OpenVPN already installed!"
       end
 
+      # Save current progress
       database['servers'][name] = server.export()
-
       Ducttape::Cli::Root.write_database(database)
 
+      # If installation failed, abort here
       if(!server.installed)
         puts "Server not installed, aborting!"
         return
       end
 
+      # If server is not yet configured, do it now
       if(!server.configured)
         error = false
         if(File.file?(server.file_conf))
@@ -335,13 +345,18 @@ module Ducttape::Cli::Server
         puts "OpenVPN already configured!"
       end
 
-      puts "Restarting OpenVPN"
-      Ducttape::Interfaces::Aws.start_openvpn_server(server)
-
+      # Save current progress
       database['servers'][name] = server.export()
-
       Ducttape::Cli::Root.write_database(database)
 
+      puts "Restarting OpenVPN"
+      if(Ducttape::Interfaces::Aws.start_openvpn_server(server))
+        puts "  OpenVPN restart : success!"
+      else
+        puts "  OpenVPN restart : failed!"
+      end
+
+      puts server.export_yaml
     end
 
     desc "status <name>", "Status server"
@@ -356,16 +371,15 @@ module Ducttape::Cli::Server
       end
 
       info = database['servers'][name]
-
       server = Ducttape::Models::Servers::Aws.retrieve(name, info)
-
       status = Ducttape::Interfaces::Aws.status(server)
+
       if(!status)
         puts "Unable to get status!"
         return
       end
-      puts status.to_yaml()
 
+      puts status.to_yaml()
     end
 
     desc "describe <name>", "describe"
@@ -380,11 +394,10 @@ module Ducttape::Cli::Server
       end
 
       info = database['servers'][name]
-
       server = Ducttape::Models::Servers::Aws.retrieve(name, info)
+      response = Ducttape::Interfaces::Aws.describe(server)
 
-      Ducttape::Interfaces::Aws.describe(server)
-
+      puts response.to_yaml()
     end
   end
 end

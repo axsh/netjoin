@@ -12,33 +12,33 @@ describe Ducttape::Cli::Server::Aws do
 aws-server-1:
   :type: :aws
   :data:
-    :ip_address: 55.29.16.157
-    :mode: :dynamic
-    :network:#{' '}
-    :username: ec2-user
-    :password:#{' '}
-    :key_pem: \"/tmp/ec2_test.pem\"
-    :installed: true
     :configured: true
-    :file_conf: \"/tmp/server.conf\"
     :file_ca_crt: \"/tmp/ca.crt\"
-    :file_pem: \"/tmp/server.pem\"
+    :file_conf: \"/tmp/server.conf\"
     :file_crt: \"/tmp/server.crt\"
     :file_key: \"/tmp/server.key\"
-    :region: us-west-2
-    :zone: us-west-2a
+    :file_pem: \"/tmp/server.pem\"
+    :installed: true
+    :ip_address: 55.29.16.157
+    :key_pem: \"/tmp/ec2_test.pem\"
+    :mode: :dynamic
+    :network:#{' '}
+    :password:#{' '}
+    :username: ec2-user
     :access_key_id: AMAZONAWSEC2ACCESKEY
-    :secret_key: AmazonAwsEC2SecretKey
     :ami: ami-12345678
+    :instance_id: i-12345678
     :instance_type: t2.micro
     :key_pair: aws_keypair_name
+    :private_ip_address: 172.32.45.159
+    :public_dns_name: ec2-55-19-16-157.us-west-2.compute.amazonaws.com
+    :region: us-west-2
+    :secret_key: AmazonAwsEC2SecretKey
     :security_groups:
     - sg-12345678
     - sg-87654321
-    :instance_id: i-12345678
     :vpc_id: vpc-87654321f
-    :private_ip_address: 172.32.45.159
-    :public_dns_name: ec2-55-19-16-157.us-west-2.compute.amazonaws.com
+    :zone: us-west-2a
 "
       end
     end # End context All
@@ -53,33 +53,33 @@ aws-server-1:
         expect(output).to include "---
 :type: :aws
 :data:
-  :ip_address: 55.29.16.157
-  :mode: :dynamic
-  :network:#{' '}
-  :username: ec2-user
-  :password:#{' '}
-  :key_pem: \"/tmp/ec2_test.pem\"
-  :installed: true
   :configured: true
-  :file_conf: \"/tmp/server.conf\"
   :file_ca_crt: \"/tmp/ca.crt\"
-  :file_pem: \"/tmp/server.pem\"
+  :file_conf: \"/tmp/server.conf\"
   :file_crt: \"/tmp/server.crt\"
   :file_key: \"/tmp/server.key\"
-  :region: us-west-2
-  :zone: us-west-2a
+  :file_pem: \"/tmp/server.pem\"
+  :installed: true
+  :ip_address: 55.29.16.157
+  :key_pem: \"/tmp/ec2_test.pem\"
+  :mode: :dynamic
+  :network:#{' '}
+  :password:#{' '}
+  :username: ec2-user
   :access_key_id: AMAZONAWSEC2ACCESKEY
-  :secret_key: AmazonAwsEC2SecretKey
   :ami: ami-12345678
+  :instance_id: i-12345678
   :instance_type: t2.micro
   :key_pair: aws_keypair_name
+  :private_ip_address: 172.32.45.159
+  :public_dns_name: ec2-55-19-16-157.us-west-2.compute.amazonaws.com
+  :region: us-west-2
+  :secret_key: AmazonAwsEC2SecretKey
   :security_groups:
   - sg-12345678
   - sg-87654321
-  :instance_id: i-12345678
   :vpc_id: vpc-87654321f
-  :private_ip_address: 172.32.45.159
-  :public_dns_name: ec2-55-19-16-157.us-west-2.compute.amazonaws.com
+  :zone: us-west-2a
 "
       end
     end # End context Single
@@ -128,33 +128,33 @@ aws-server-1:
 test-server-aws:
   :type: :aws
   :data:
-    :ip_address:#{' '}
-    :mode: :dynamic
-    :network:#{' '}
-    :username: ec2-user
-    :password: password
-    :key_pem: \"/tmp/amazon.pem\"
-    :installed: true
     :configured: true
-    :file_conf: \"/tmp/server.conf\"
     :file_ca_crt: \"/tmp/ca.crt\"
-    :file_pem: \"/tmp/server.pem\"
+    :file_conf: \"/tmp/server.conf\"
     :file_crt: \"/tmp/server.crt\"
     :file_key: \"/tmp/server.key\"
-    :region: us-west-1
-    :zone: us-west-1b
+    :file_pem: \"/tmp/server.pem\"
+    :installed: true
+    :ip_address:#{' '}
+    :key_pem: \"/tmp/amazon.pem\"
+    :mode: :dynamic
+    :network:#{' '}
+    :password: password
+    :username: ec2-user
     :access_key_id: AmazonAwsEc2AccessKeyId
-    :secret_key: AmazonEwsEc2SectretKey
     :ami: ami-12345678
+    :instance_id:#{' '}
     :instance_type: t2.micro
     :key_pair: aws_keypair_name
+    :private_ip_address:#{' '}
+    :public_dns_name:#{' '}
+    :region: us-west-1
+    :secret_key: AmazonEwsEc2SectretKey
     :security_groups:
     - sg-12345678
     - sg-87654321
-    :instance_id:#{' '}
     :vpc_id:#{' '}
-    :private_ip_address:#{' '}
-    :public_dns_name:#{' '}
+    :zone: us-west-1b
 "
       end
     end # End context News
@@ -220,33 +220,33 @@ test-server-aws:
 test-server-aws:
   :type: :aws
   :data:
-    :ip_address:#{' '}
-    :mode: :dynamic
-    :network:#{' '}
-    :username: ec2-user
-    :password: password-2
-    :key_pem: \"/tmp/amazon-2.pem\"
-    :installed: false
     :configured: false
-    :file_conf: \"/tmp/server-2.conf\"
     :file_ca_crt: \"/tmp/ca-2.crt\"
-    :file_pem: \"/tmp/server-2.pem\"
+    :file_conf: \"/tmp/server-2.conf\"
     :file_crt: \"/tmp/server-2.crt\"
     :file_key: \"/tmp/server-2.key\"
-    :region: us-west-2
-    :zone: us-west-2b
+    :file_pem: \"/tmp/server-2.pem\"
+    :installed: false
+    :ip_address:#{' '}
+    :key_pem: \"/tmp/amazon-2.pem\"
+    :mode: :dynamic
+    :network:#{' '}
+    :password: password-2
+    :username: ec2-user
     :access_key_id: AmazonAwsEc2AccessKeyId-2
-    :secret_key: AmazonEwsEc2SectretKey-2
     :ami: ami-87654321
+    :instance_id:#{' '}
     :instance_type: t2.mini
     :key_pair: aws-keypair_name-2
+    :private_ip_address:#{' '}
+    :public_dns_name:#{' '}
+    :region: us-west-2
+    :secret_key: AmazonEwsEc2SectretKey-2
     :security_groups:
     - sg-12345678-2
     - sg-87654321-2
-    :instance_id:#{' '}
     :vpc_id:#{' '}
-    :private_ip_address:#{' '}
-    :public_dns_name:#{' '}
+    :zone: us-west-2b
 "
       end
     end # End context Existing
