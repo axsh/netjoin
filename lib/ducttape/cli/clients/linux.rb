@@ -36,10 +36,16 @@ module Ducttape::Cli::Client
 
       # Create Client object to work with
       client = Ducttape::Models::Clients::Linux.new(name, options[:server], options[:ip_address], options[:username])
-      client.generate_key = options[:generate_key]
-      client.key_pem = options[:key_pem]
-      client.password = options[:password]
-      client.vpn_ip_address = options[:vpn_ip_address]
+      if (options[:generate_key])
+        if(options[:generate_key] === "false")
+          client.generate_key = false
+        else
+          client.generate_key = true
+        end
+      end
+      client.key_pem = options[:key_pem] if options[:key_pem]
+      client.password = options[:password] if options[:password]
+      client.vpn_ip_address = options[:vpn_ip_address] if options[:vpn_ip_address]
 
       # Update the database file
       if(!database['clients'])
@@ -76,30 +82,22 @@ module Ducttape::Cli::Client
       client = Ducttape::Models::Clients::Linux.retrieve(name, info)
 
       # Update the database file
-      if(options[:generate_key])
-        client.generate_key = options[:generate_key]
+      if (options[:generate_key])
+        if(options[:generate_key] === "false")
+          client.generate_key = false
+        else
+          client.generate_key = true
+        end
       end
-      if (options[:ip_address])
-        client.ip_address = options[:ip_address]
-      end
-      if (options[:key_pem])
-        client.key_pem = options[:key_pem]
-      end
-      if (options[:password])
-        client.password = options[:password]
-      end
-      if (options[:server])
-        client.server = options[:server]
-      end
-      if (options[:username])
-        client.username = options[:username]
-      end
-      if(options[:vpn_ip_address])
-        client.vpn_ip_address = options[:vpn_ip_address]
-      end
+      client.ip_address = options[:ip_address] if options[:ip_address]
+      client.key_pem = options[:key_pem] if options[:key_pem]
+      client.password = options[:password] if options[:password]
+      client.server = options[:server] if options[:server]
+      client.username = options[:username] if options[:username]
+      client.vpn_ip_address = options[:vpn_ip_address] if options[:vpn_ip_address]
 
       # Check for a way to log in
-      if(!options[:password] and !options(:key_pem))
+      if(!client.password and !client.key_pem)
         puts "Missing a password or key file"
         return
       end

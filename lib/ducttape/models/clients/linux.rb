@@ -24,7 +24,6 @@ module Ducttape::Models::Clients
     def self.retrieve(name, info)
       server = info[:server]
       data = info[:data]
-
       client = Linux.new(name, server, data[:ip_address], data[:username])
       client.error = info[:error]
       client.generate_key = data[:generate_key]

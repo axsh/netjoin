@@ -31,6 +31,7 @@ module Ducttape::Models::Servers
     def self.retrieve(name, info)
       data = info[:data]
       entity = Linux.new(name)
+      fill(entity, data)
       return entity
     end
 

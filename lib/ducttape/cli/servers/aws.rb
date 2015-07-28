@@ -63,11 +63,11 @@ module Ducttape::Cli::Server
           server.configured = true
         end
       end
-      server.file_ca_crt = options[:file_ca_crt]
-      server.file_conf = options[:file_conf]
-      server.file_crt = options[:file_crt]
-      server.file_key = options[:file_key]
-      server.file_pem = options[:file_pem]
+      server.file_ca_crt = options[:file_ca_crt] if options[:file_ca_crt]
+      server.file_conf = options[:file_conf] if options[:file_conf]
+      server.file_crt = options[:file_crt] if options[:file_crt]
+      server.file_key = options[:file_key] if options[:file_key]
+      server.file_pem = options[:file_pem] if options[:file_pem]
       if (options[:installed])
         if(options[:installed] === "false")
           server.installed = false
@@ -75,8 +75,8 @@ module Ducttape::Cli::Server
           server.installed = true
         end
       end
-      server.key_pem = options[:key_pem]
-      server.password = options[:password]
+      server.key_pem = options[:key_pem] if options[:key_pem]
+      server.password = options[:password] if options[:password]
 
       # Update the database file
       if(!database['servers'])
@@ -122,12 +122,8 @@ module Ducttape::Cli::Server
       server = Ducttape::Models::Servers::Aws.retrieve(name, info)
 
       # Update the database file
-      if (options[:access_key_id])
-        server.access_key_id = options[:access_key_id]
-      end
-      if (options[:ami])
-        server.ami = options[:ami]
-      end
+      server.access_key_id = options[:access_key_id] if options[:access_key_id]
+      server.ami = options[:ami] if options[:ami]
       if (options[:configured])
         if(options[:configured] === "false")
           server.configured = false
@@ -135,21 +131,11 @@ module Ducttape::Cli::Server
           server.configured = true
         end
       end
-      if (options[:file_ca_crt])
-        server.file_ca_crt = options[:file_ca_crt]
-      end
-      if (options[:file_conf])
-        server.file_conf = options[:file_conf]
-      end
-      if (options[:file_crt])
-        server.file_crt = options[:file_crt]
-      end
-      if (options[:file_key])
-        server.file_key = options[:file_key]
-      end
-      if (options[:file_pem])
-        server.file_pem = options[:file_pem]
-      end
+      server.file_ca_crt = options[:file_ca_crt] if options[:file_ca_crt]
+      server.file_conf = options[:file_conf] if options[:file_conf]
+      server.file_crt = options[:file_crt] if options[:file_crt]
+      server.file_key = options[:file_key] if options[:file_key]
+      server.file_pem = options[:file_pem] if options[:file_pem]
       if (options[:installed])
         if(options[:installed] === "false")
           server.installed = false
@@ -157,30 +143,14 @@ module Ducttape::Cli::Server
           server.installed = true
         end
       end
-      if (options[:instance_type])
-        server.instance_type = options[:instance_type]
-      end
-      if (options[:key_pair])
-        server.key_pair = options[:key_pair]
-      end
-      if (options[:key_pem])
-        server.key_pem = options[:key_pem]
-      end
-      if (options[:password])
-        server.password = options[:password]
-      end
-      if (options[:region])
-        server.region = options[:region]
-      end
-      if (options[:secret_key])
-        server.secret_key = options[:secret_key]
-      end
-      if (options[:security_groups])
-        server.security_groups = options[:security_groups]
-      end
-      if (options[:zone])
-        server.zone = options[:zone]
-      end
+      server.instance_type = options[:instance_type] if options[:instance_type]
+      server.key_pair = options[:key_pair] if options[:key_pair]
+      server.key_pem = options[:key_pem] if options[:key_pem]
+      server.password = options[:password] if options[:password]
+      server.region = options[:region] if options[:region]
+      server.secret_key = options[:secret_key] if options[:secret_key]
+      server.security_groups = options[:security_groups] if options[:security_groups]
+      server.zone = options[:zone] if options[:zone]
 
       # Check for a way to log in
       if(!options[:password] and !options(:key_pem))

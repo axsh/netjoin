@@ -114,8 +114,8 @@ module Ducttape::Cli
           if (:linux === inst[:type])
 
             # Create Client object to work with
-            client = Ducttape::Clients::Linux.retrieve(name, inst)
-            server =  Ducttape::Servers::Linux.retrieve(client.server, serv)
+            client = Ducttape::Models::Clients::Linux.retrieve(name, inst)
+            server =  Ducttape::Models::Servers::Linux.retrieve(client.server, serv)
 
             client.status = :in_process
 
@@ -137,8 +137,7 @@ module Ducttape::Cli
                 end
               end
             end
-
-            if (client.generate_key == 'true')
+            if (client.generate_key == true)
               # Generate VPN certificate
               if(!client.error or client.error === :cert_generation_failed)
                 puts "  Generating VPN Certificate"
@@ -151,6 +150,8 @@ module Ducttape::Cli
                   puts "    Failed generating certificate"
                   client.status = :error
                 end
+              else
+                puts "  VPN Certificate already generated!"
               end
             end
             if (server.mode === :static)
