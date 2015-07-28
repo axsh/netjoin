@@ -9,21 +9,20 @@ module Ducttape::Cli::Server
     @type = 'linux'
 
     desc "add <name>","Add server"
-    option :ip_address, :type => :string, :required => true
-    option :mode, :type => :string, :required => true
-    option :network, :type => :string, :required => true
-    option :username, :type => :string, :required => true
-    option :password, :type => :string
-    option :key_pem, :type => :string
-    option :installed, :type => :boolean
-    option :configured, :type => :boolean
-    option :file_conf, :type => :string
+    option :configured, :type => :string
     option :file_ca_crt, :type => :string
-    option :file_pem, :type => :string
+    option :file_conf, :type => :string
     option :file_crt, :type => :string
     option :file_key, :type => :string
+    option :file_pem, :type => :string
+    option :key_pem, :type => :string
+    option :installed, :type => :string
+    option :ip_address, :type => :string, :required => true
+    option :mode, :type => :string
+    option :network, :type => :string
+    option :password, :type => :string
+    option :username, :type => :string, :required => true
     def add(name)
-
       # Read database file
       database = Ducttape::Cli::Root.load_database()
 
@@ -39,17 +38,31 @@ module Ducttape::Cli::Server
       end
 
       # Create server object to work with
-      server = Ducttape::Models::Servers::Linux.new(name, options[:ip_address], options[:username], options[:mode], options[:network])
+      server = Ducttape::Models::Servers::Linux.new(name, options[:ip_address], options[:username])
 
-      server.password = options[:password]
-      server.key_pem = options[:key_pem]
-      server.installed = options[:installed]
-      server.configured = options[:configured]
-      server.file_conf = options[:file_conf]
+      if (options[:configured])
+        if(options[:configured] === "false")
+          server.configured = false
+        else
+          server.configured = true
+        end
+      end
       server.file_ca_crt = options[:file_ca_crt]
-      server.file_pem = options[:file_pem]
+      server.file_conf = options[:file_conf]
       server.file_crt = options[:file_crt]
       server.file_key = options[:file_key]
+      server.file_pem = options[:file_pem]
+      server.key_pem = options[:key_pem]
+      if (options[:installed])
+        if(options[:installed] === "false")
+          server.installed = false
+        else
+          server.installed = true
+        end
+      end
+      server.mode = options[:mode]
+      server.network = options[:network]
+      server.password = options[:password]
 
       # Check for OpenVPN installation on the server
       if (!server.ip_address === '0.0.0.0' and !Ducttape::Interfaces::Linux.check_openvpn_installed(server))
@@ -62,27 +75,25 @@ module Ducttape::Cli::Server
         database['servers'] = {}
       end
       database['servers'][server.name()] = server.export()
-
       Ducttape::Cli::Root.write_database(database)
 
       puts server.export_yaml
     end
 
     desc "update <name>", "Update server"
-    option :name, :type => :string
+    option :configured, :type => :string
+    option :file_ca_crt, :type => :string
+    option :file_conf, :type => :string
+    option :file_crt, :type => :string
+    option :file_key, :type => :string
+    option :file_pem, :type => :string
+    option :key_pem, :type => :string
+    option :installed, :type => :string
     option :ip_address, :type => :string
     option :mode, :type => :string
     option :network, :type => :string
-    option :username, :type => :string
     option :password, :type => :string
-    option :key_pem, :type => :string
-    option :installed, :type => :boolean
-    option :configured, :type => :boolean
-    option :file_conf, :type => :string
-    option :file_ca_crt, :type => :string
-    option :file_pem, :type => :string
-    option :file_crt, :type => :string
-    option :file_key, :type => :string
+    option :username, :type => :string
     def update(name)
       # Read database file
       database = Ducttape::Cli::Root.load_database()
@@ -98,6 +109,38 @@ module Ducttape::Cli::Server
       server = Ducttape::Models::Servers::Linux.retrieve(name, info)
 
       # Update the database file
+      if (options[:configured])
+        if(options[:configured] === "false")
+          server.configured = false
+        else
+          server.configured = true
+        end
+      end
+      if (options[:file_ca_crt])
+        server.file_ca_crt = options[:file_ca_crt]
+      end
+      if (options[:file_conf])
+        server.file_conf = options[:file_conf]
+      end
+      if (options[:file_crt])
+        server.file_crt = options[:file_crt]
+      end
+      if (options[:file_key])
+        server.file_key = options[:file_key]
+      end
+      if (options[:file_pem])
+        server.file_pem = options[:file_pem]
+      end
+      if (options[:key_pem])
+        server.key_pem = options[:key_pem]
+      end
+      if (options[:installed])
+        if(options[:installed] === "false")
+          server.installed = false
+        else
+          server.installed = true
+        end
+      end
       if (options[:ip_address])
         server.ip_address = options[:ip_address]
       end
@@ -107,39 +150,14 @@ module Ducttape::Cli::Server
       if (options[:network])
         server.network = options[:network]
       end
-      if (options[:username])
-        server.username = options[:username]
-      end
       if (options[:password])
         server.password = options[:password]
       end
-      if (options[:key_pem])
-        server.key_pem = options[:key_pem]
-      end
-      if (options[:installed])
-        server.installed = options[:installed]
-      end
-      if (options[:configured])
-        server.configured = options[:configured]
-      end
-      if (options[:file_conf])
-        server.file_conf = options[:file_conf]
-      end
-      if (options[:file_ca_crt])
-        server.file_ca_crt = options[:file_ca_crt]
-      end
-      if (options[:file_pem])
-        server.file_pem = options[:file_pem]
-      end
-      if (options[:file_crt])
-        server.file_crt = options[:file_crt]
-      end
-      if (options[:file_key])
-        server.file_key = options[:file_key]
+      if (options[:username])
+        server.username = options[:username]
       end
 
       database['servers'][name] = server.export()
-
       Ducttape::Cli::Root.write_database(database)
 
       puts server.export_yaml

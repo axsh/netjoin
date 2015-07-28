@@ -116,23 +116,8 @@ module Ducttape::Interfaces
       return true
     end
 
-    def self.auth_param(client)
-      if (client.key_pem)
-        return :keys => client.key_pem
-      end
-      return :password => client.password
-    end
-
-    def self.upload_file(client, source, destination)
-      Net::SCP.start(client.ip_address, client.username, Aws.auth_param(client)) do |scp|
-        scp.upload!(source, destination)
-        return true
-      end
-      return false
-    end
-
-    def self.move_file(client, source, destination)
-      Net::SSH.start(client.ip_address, client.username, Aws.auth_param(client)) do |ssh|
+     def self.move_file(client, source, destination)
+      Net::SSH.start(client.ip_address, client.username, Base.auth_param(client)) do |ssh|
         ssh.open_channel do |channel|
           channel.request_pty do |ch, success|
             if success
@@ -156,7 +141,7 @@ module Ducttape::Interfaces
     end
 
     def self.check_openvpn_installed(client)
-      Net::SSH.start(client.ip_address, client.username, Aws.auth_param(client)) do |ssh|
+      Net::SSH.start(client.ip_address, client.username, Base.auth_param(client)) do |ssh|
         result = ssh.exec!('rpm -qa | grep openvpn')
         if (result)
           return true
@@ -167,7 +152,7 @@ module Ducttape::Interfaces
 
     def self.install_openvpn(client)
       installed = false
-      Net::SSH.start(client.ip_address, client.username, Aws.auth_param(client)) do |ssh|
+      Net::SSH.start(client.ip_address, client.username, Base.auth_param(client)) do |ssh|
         ssh.open_channel do |channel|
           channel.request_pty do |ch, success|
             if success
@@ -194,11 +179,11 @@ module Ducttape::Interfaces
     end
 
     def self.install_certificate(client)
-      return Linux.upload_file(client, "keys/#{client.name}.ovpn", "/etc/openvpn/#{client.name}.ovpn")
+      return Base.upload_file(client, "keys/#{client.name}.ovpn", "/etc/openvpn/#{client.name}.ovpn")
     end
 
     def self.start_openvpn_server(client)
-      Net::SSH.start(client.ip_address, client.username, Aws.auth_param(client)) do |ssh|
+      Net::SSH.start(client.ip_address, client.username, Base.auth_param(client)) do |ssh|
         ssh.exec!("sudo service openvpn restart")
         return true
       end

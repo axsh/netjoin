@@ -148,6 +148,21 @@ test-client:
       end
     end # End context Duplicate
 
+    context "Missing parameters" do
+      let(:output) { capture(:stdout) {
+        subject.options = {
+          :ip_address => '',
+          :server => '',
+          :username => '',
+      }
+        subject.add 'test-client-param'
+      } }
+
+      it "show the missing required parameters" do
+        expect(output).to eql "No value provided for required options '--ip-address', '--server', '--username'\n"
+      end
+    end # End context Missing paramters
+
     context "Missing auth info" do
       let(:output) { capture(:stdout) {
         subject.options = {
@@ -157,10 +172,10 @@ test-client:
           :username => 'test-value',
           :vpn_ip_address => "10.8.0.50",
         }
-        subject.add 'test-client-2'
+        subject.add 'test-client-missing'
       } }
 
-      it "fails to create an already existing client" do
+      it "show error message for missing auth information" do
         expect(output).to eql "ERROR : Missing a password or key file\n"
       end
     end # End context Missing auth info

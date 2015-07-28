@@ -132,6 +132,20 @@ test-server:
       end
     end # End context Duplicate
 
+    context "Missing parameters" do
+      let(:output) { capture(:stdout) {
+        subject.options = {
+          :ip_address => '',
+          :username => '',
+        }
+        subject.add 'test-server-param'
+      } }
+
+      it "Shows required parameters" do
+        expect(output).to eql "No value provided for required options '--ip-address', '--username'\n"
+      end
+    end # End context Missing parameters
+
     context "Missing auth info" do
       let(:output) { capture(:stdout) {
         subject.options = {
@@ -144,10 +158,10 @@ test-server:
           :network => '10.8.0.0',
           :username => 'root',
         }
-        subject.add 'test-server-2'
+        subject.add 'test-server-missing'
       } }
 
-      it "fails to create an already existing client" do
+      it "show error message for missing auth information" do
         expect(output).to eql "ERROR : Missing a password or key file\n"
       end
     end # End context Missing auth info
