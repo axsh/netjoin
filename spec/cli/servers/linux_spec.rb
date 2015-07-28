@@ -113,9 +113,16 @@ test-server:
     context "Duplicate" do
       let(:output) { capture(:stdout) {
         subject.options = {
+          :file_ca_crt => "/tmp/ca.crt",
+          :file_conf => "/tmp/server.conf",
+          :file_crt => "/tmp/server.crt",
+          :file_key => "/tmp/server.key",
+          :file_pem => "/tmp/server.pem",
           :ip_address => '0.0.0.0',
-            :username => 'root',
-            :password => 'root'
+          :mode => 'dynamic',
+          :network => '10.8.0.0',
+          :password => 'root',
+          :username => 'root',
         }
         subject.add 'test-server'
       } }
@@ -124,6 +131,27 @@ test-server:
         expect(output).to eql "ERROR : server with name 'test-server' already exists\n"
       end
     end # End context Duplicate
+
+    context "Missing auth info" do
+      let(:output) { capture(:stdout) {
+        subject.options = {
+          :file_ca_crt => "/tmp/ca.crt",
+          :file_conf => "/tmp/server.conf",
+          :file_crt => "/tmp/server.crt",
+          :file_key => "/tmp/server.key",
+          :ip_address => '0.0.0.0',
+          :mode => 'dynamic',
+          :network => '10.8.0.0',
+          :username => 'root',
+        }
+        subject.add 'test-server-2'
+      } }
+
+      it "fails to create an already existing client" do
+        expect(output).to eql "ERROR : Missing a password or key file\n"
+      end
+    end # End context Missing auth info
+
   end # End context Add
 
   context "Update" do

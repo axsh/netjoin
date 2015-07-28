@@ -33,8 +33,8 @@ module Ducttape::Cli::Server
         return
       end
 
-      if(!options[:password] and !options(:key_pem))
-        puts "Missing a password or key file"
+      if(!options[:password] and !options[:key_pem])
+        puts "ERROR : Missing a password or key file"
         return
       end
 

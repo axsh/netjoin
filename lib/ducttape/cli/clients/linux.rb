@@ -29,8 +29,8 @@ module Ducttape::Cli::Client
       end
 
       # Check for a way to log in
-      if(!options[:password] and !options(:key_pem))
-        puts "Missing a password or key file"
+      if(!options[:password] and !options[:key_pem])
+        puts "ERROR : Missing a password or key file"
         return
       end
 

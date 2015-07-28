@@ -40,7 +40,7 @@ module Ducttape::Cli::Server
 
       # Check for a way to log in
       if((!options[:password]) and !options[:key_pem])
-        puts "Missing a password or key file"
+        puts "ERROR : Missing a password or key file"
         return
       end
 

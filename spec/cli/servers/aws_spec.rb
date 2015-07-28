@@ -187,6 +187,34 @@ test-server-aws:
         expect(output).to eql "ERROR : server with name 'test-server-aws' already exists\n"
       end
     end # End context Duplicate
+
+    context "Missing auth info" do
+      let(:output) { capture(:stdout) {
+        subject.options = {
+          :access_key_id => 'AmazonAwsEc2AccessKeyId',
+          :ami => 'ami-12345678',
+          :configured => 'true',
+          :file_ca_crt => '/tmp/ca.crt',
+          :file_conf => '/tmp/server.conf',
+          :file_crt => '/tmp/server.crt',
+          :file_key => '/tmp/server.key',
+          :file_pem => '/tmp/server.pem',
+          :installed => 'true',
+          :instance_type => 't2.micro',
+          :key_pair => 'key_pair_name',
+          :region => 'us-west-1',
+          :secret_key => 'AmazonEwsEc2SectretKey',
+          :security_groups => ['sg-12345678', 'sg-87654321'],
+          :zone => 'us-west-1b',
+        }
+        subject.add 'test-server-aws-2'
+      } }
+
+      it "fails to create an already existing client" do
+        expect(output).to eql "ERROR : Missing a password or key file\n"
+      end
+    end # End context Missing auth info
+
   end # End context Add
 
   context "Update" do

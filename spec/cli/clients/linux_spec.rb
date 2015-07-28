@@ -131,7 +131,15 @@ test-client:
 
     context "Duplicate" do
       let(:output) { capture(:stdout) {
-        subject.options = {:ip_address => '0.0.0.0', :username => 'test-value', :server => 'new-server', :password => 'test-value'}
+        subject.options = {
+          :generate_key => "true",
+          :ip_address => '0.0.0.0',
+          :key_pem => '/tmp/user.pem',
+          :password => 'test-value',
+          :server => 'test-server',
+          :username => 'test-value',
+          :vpn_ip_address => "10.8.0.50",
+        }
         subject.add 'test-client'
       } }
 
@@ -139,6 +147,23 @@ test-client:
         expect(output).to eql "ERROR : client with name 'test-client' already exists\n"
       end
     end # End context Duplicate
+
+    context "Missing auth info" do
+      let(:output) { capture(:stdout) {
+        subject.options = {
+          :generate_key => "true",
+          :ip_address => '0.0.0.0',
+          :server => 'test-server',
+          :username => 'test-value',
+          :vpn_ip_address => "10.8.0.50",
+        }
+        subject.add 'test-client-2'
+      } }
+
+      it "fails to create an already existing client" do
+        expect(output).to eql "ERROR : Missing a password or key file\n"
+      end
+    end # End context Missing auth info
 
   end # End context Add
 
