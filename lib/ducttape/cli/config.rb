@@ -32,7 +32,7 @@ module Ducttape::Cli
       end
 
       def self.write_config(config)
-        Ducttape::Cli::Root.write_file('config.yml', config)
+        Ducttape::Cli::Root.write_file('config.yml', config.to_yaml)
       end
     }
   end

@@ -68,13 +68,13 @@ verb 3
 <key>
 #{key}
 </key>
-END"
+"
         if (!ca or !cert or !key)
           puts "  ERROR"
           puts build
           return false
         end
-        DucttapeCLI::CLI.write_file("keys/#{client.name}.ovpn",file)
+        Ducttape::Cli::Root.write_file("keys/#{client.name}.ovpn",file)
         return file
       end
       return false
@@ -94,6 +94,7 @@ END"
 
     def self.start_openvpn_client(client)
       Net::SSH.start(client.ip_address, client.username, Base.auth_param(client)) do |ssh|
+        ssh.exec!("service openvpn restart")
         ssh.exec!("openvpn --config /etc/openvpn/#{client.name}.ovpn --daemon")
         return true
       end

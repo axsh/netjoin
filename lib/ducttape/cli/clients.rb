@@ -137,6 +137,9 @@ module Ducttape::Cli
                 end
               end
             end
+
+            Ducttape::Cli::Root.write_database(database)
+
             if (client.generate_key == true)
               # Generate VPN certificate
               if(!client.error or client.error === :cert_generation_failed)
@@ -154,9 +157,14 @@ module Ducttape::Cli
                 puts "  VPN Certificate already generated!"
               end
             end
+
+            Ducttape::Cli::Root.write_database(database)
+
             if (server.mode === :static)
               Ducttape::Interfaces::Linux.set_vpn_ip_address(server, client)
             end
+
+            Ducttape::Cli::Root.write_database(database)
 
             # Check certificate exists on path
             if(!client.error or client.error === :cert_file_missing)
@@ -171,6 +179,8 @@ module Ducttape::Cli
               end
             end
 
+            Ducttape::Cli::Root.write_database(database)
+
             # Install certificate
             if(!client.error or client.error === :cert_install_failed)
               puts "  Installing VPN Certificate"
@@ -184,6 +194,8 @@ module Ducttape::Cli
               end
             end
 
+            Ducttape::Cli::Root.write_database(database)
+
             # Start OpenVPN using the certificate
             if(!client.error or client.error === :openvpn_not_started)
               puts "  Starting OpenVPN"
@@ -196,6 +208,8 @@ module Ducttape::Cli
                 client.status = :error
               end
             end
+
+            Ducttape::Cli::Root.write_database(database)
 
             if(!(client.status === :error))
               client.status = :attached

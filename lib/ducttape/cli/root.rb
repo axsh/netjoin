@@ -15,14 +15,14 @@ module Ducttape::Cli
     def init()
       if (!File.file?('config.yml'))
         dist_config = Root.load_file('config-dist.yml')
-        Root.write_file('config.yml', dist_config)
+        Root.write_file('config.yml', dist_config.to_yaml)
         puts "Configuration file 'config.yml' created!"
       else
         puts "Configuration file 'config.yml' already exists, skipping!"
       end
       if(!File.file?('database.yml'))
         dist_database = Root.load_file('database-dist.yml')
-        Root.write_file('database.yml', dist_database)
+        Root.write_file('database.yml', dist_database.to_yaml)
         puts "Database file 'database.yml' created!"
       else
         puts "Database file 'database.yml' already exists, skipping!"
@@ -46,7 +46,7 @@ module Ducttape::Cli
     end
 
     def self.write_database(database)
-      return Root.write_file("#{Root.get_from_config(:database)}.yml", database)
+      return Root.write_file("#{Root.get_from_config(:database)}.yml", database.to_yaml)
     end
 
     def self.load_file(name)
@@ -59,7 +59,7 @@ module Ducttape::Cli
 
     def self.write_file(name, data)
       File.open(name,'w') do |h|
-        h.write data.to_yaml
+        h.write data
       end
     end
   end
