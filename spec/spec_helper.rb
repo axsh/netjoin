@@ -40,4 +40,5 @@ RSpec.configure {|c| c.before(:all) {
 
 RSpec.configure {|c| c.after(:all) {
   resetDatabase()
+  File.delete('test.yml') if File.exist?('test.yml')
 }}

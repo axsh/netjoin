@@ -7,14 +7,20 @@ module Ducttape::Cli
 
   class Config < Thor
 
-    desc "database <name>", "change the database being used (creates new file when file does not exist yet)"
-    def database(name)
+    desc "database", "Show or change the database being used (creates new file when file does not exist yet)"
+    option :name, :type => :string
+    def database()
       config = Config.load_config()
-      config[:database] = name
-      Config.write_config(config)
 
-      if (!File.file?("#{name}.yml"))
-        File.open("#{name}.yml", 'w') {|f| f.write("---") }
+      if(options[:name])
+        config[:database] = options[:name]
+        Config.write_config(config)
+
+        if (!File.file?("#{options[:name]}.yml"))
+          File.open("#{options[:name]}.yml", 'w') do |f|
+            f.write("---")
+          end
+        end
       end
 
       puts config.to_yaml()
