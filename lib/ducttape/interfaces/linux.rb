@@ -104,7 +104,10 @@ verb 3
     def self.set_vpn_ip_address(server, client)
       if (!Ducttape::Interfaces::Linux.get_vpn_ip_address(server, client))
         Net::SSH.start(server.ip_address, server.username, Base.auth_param(client)) do |ssh|
-          ssh.exec!("echo #{client.name},#{client.vpn_ip_address} >> /etc/openvpn/ipp.txt")
+          ip = Linux.get_vpn_ip_address(server,client)
+          if !ip
+            ssh.exec!("echo #{client.name},#{client.vpn_ip_address} >> /etc/openvpn/ipp.txt")
+          end
         end
       end
     end
