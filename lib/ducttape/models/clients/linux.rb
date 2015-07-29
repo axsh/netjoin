@@ -12,6 +12,7 @@ module Ducttape::Models::Clients
     attr_accessor :key_pem
     attr_accessor :vpn_ip_address
     attr_accessor :generate_key
+    attr_accessor :file_key
 
     def initialize(name, server, ip_address, username, password = nil, key_pem = nil)
       super(name, server)
@@ -37,7 +38,7 @@ module Ducttape::Models::Clients
       client.password= data[:password]
       client.status = info[:status]
       client.vpn_ip_address = data[:vpn_ip_address]
-
+      client.file_key = data[:file_key]
       return client
     end
 
@@ -48,6 +49,7 @@ module Ducttape::Models::Clients
     def export_data()
       return {
         :generate_key => @generate_key,
+        :file_key => @file_key,
         :ip_address => @ip_address,
         :key_pem => @key_pem,
         :password => @password,

@@ -16,6 +16,7 @@ vpn-client-10:
   :error:#{' '}
   :data:
     :generate_key:#{' '}
+    :file_key:#{' '}
     :ip_address: 88.159.47.22
     :key_pem:#{' '}
     :password: test123
@@ -28,6 +29,7 @@ vpn-client-99:
   :error:#{' '}
   :data:
     :generate_key:#{' '}
+    :file_key:#{' '}
     :ip_address: 204.99.63.105
     :key_pem: \"/tmp/user.pem\"
     :password:#{' '}
@@ -40,6 +42,7 @@ aws-client-01:
   :error:#{' '}
   :data:
     :generate_key:#{' '}
+    :file_key:#{' '}
     :ip_address: 188.59.47.122
     :key_pem:#{' '}
     :password: test123
@@ -52,6 +55,7 @@ aws-client-02:
   :error:#{' '}
   :data:
     :generate_key:#{' '}
+    :file_key:#{' '}
     :ip_address: 214.93.163.15
     :key_pem: \"/tmp/user.pem\"
     :password:#{' '}
@@ -75,6 +79,7 @@ aws-client-02:
 :error:#{' '}
 :data:
   :generate_key:#{' '}
+  :file_key:#{' '}
   :ip_address: 88.159.47.22
   :key_pem:#{' '}
   :password: test123
@@ -120,6 +125,7 @@ test-client:
   :error:#{' '}
   :data:
     :generate_key: true
+    :file_key:#{' '}
     :ip_address: 0.0.0.0
     :key_pem: \"/tmp/user.pem\"
     :password: test-value
@@ -167,7 +173,7 @@ test-client:
     context "Missing auth info" do
       let(:output) { capture(:stdout) {
         subject.options = {
-          :generate_key => "true",
+          :generate_key => true,
           :ip_address => '0.0.0.0',
           :server => 'test-server',
           :username => 'test-value',
@@ -177,9 +183,27 @@ test-client:
       } }
 
       it "show error message for missing auth information" do
-        expect(output).to eql "ERROR : Missing a password or key file\n"
+        expect(output).to eql "ERROR : Missing a password or pem key file to ssh/scp\n"
       end
     end # End context Missing auth info
+
+    context "Missing certificate info" do
+      let(:output) { capture(:stdout) {
+        subject.options = {
+          :ip_address => '0.0.0.0',
+          :password => "test",
+          :server => 'test-server',
+          :username => 'test-value',
+          :vpn_ip_address => "10.8.0.50",
+        }
+        subject.add 'test-client-cert'
+      } }
+
+      it "show error message for missing auth information" do
+        expect(output).to eql "ERROR : Key file missing, if you want to generate a key file, add '--generate true' to the command.
+        This will only work if the OpenVPN Server has easy-rsa installed and configures!\n"
+      end
+    end # End context Missing certificate
 
   end # End context Add
 
@@ -200,6 +224,7 @@ test-client:
   :error:#{' '}
   :data:
     :generate_key: false
+    :file_key:#{' '}
     :ip_address: 0.0.0.1
     :key_pem: \"/tmp/user2.pem\"
     :password: test-value2

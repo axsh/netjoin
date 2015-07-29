@@ -80,8 +80,8 @@ verb 3
       return false
     end
 
-    def self.install_certificate(client)
-      return Linux.upload_file(client, "keys/#{client.name}.ovpn", "/etc/openvpn/#{client.name}.ovpn")
+    def self.install_certificate(client, key)
+      return Linux.upload_file(client, key, "/etc/openvpn/#{client.name}.ovpn")
     end
 
     def self.start_openvpn_server(client)

@@ -12,6 +12,7 @@ module Ducttape::Cli::Client
 
     desc "add <name>","Add a new linux client"
     option :generate_key, :type => :string
+    option :file_key, :type => :string
     option :ip_address, :type => :string, :required => true
     option :key_pem, :type => :string
     option :password, :type => :string
@@ -30,7 +31,14 @@ module Ducttape::Cli::Client
 
       # Check for a way to log in
       if(!options[:password] and !options[:key_pem])
-        puts "ERROR : Missing a password or key file"
+        puts "ERROR : Missing a password or pem key file to ssh/scp"
+        return
+      end
+
+      # Check for key generation of file
+      if(!options[:generate_key] and !options[:file_key])
+        puts "ERROR : Key file missing, if you want to generate a key file, add '--generate true' to the command."
+        puts "        This will only work if the OpenVPN Server has easy-rsa installed and configures!"
         return
       end
 
@@ -43,6 +51,7 @@ module Ducttape::Cli::Client
           client.generate_key = true
         end
       end
+      client.file_key = options[:file_key] if options[:file_key]
       client.key_pem = options[:key_pem] if options[:key_pem]
       client.password = options[:password] if options[:password]
       client.vpn_ip_address = options[:vpn_ip_address] if options[:vpn_ip_address]
@@ -61,6 +70,7 @@ module Ducttape::Cli::Client
 
     desc "update <name>", "Update a linux client"
     option :generate_key, :type => :string
+    option :file_key, :type => :string
     option :ip_address, :type => :string
     option :key_pem, :type => :string
     option :password, :type => :string
@@ -89,6 +99,7 @@ module Ducttape::Cli::Client
           client.generate_key = true
         end
       end
+      client.file_key = options[:file_key] if options[:file_key]
       client.ip_address = options[:ip_address] if options[:ip_address]
       client.key_pem = options[:key_pem] if options[:key_pem]
       client.password = options[:password] if options[:password]
@@ -98,7 +109,14 @@ module Ducttape::Cli::Client
 
       # Check for a way to log in
       if(!client.password and !client.key_pem)
-        puts "Missing a password or key file"
+        puts "ERROR : Missing a password or pem key file to ssh/scp"
+        return
+      end
+
+      # Check for key generation of file
+      if(!options[:generate_key] and !options[:file_key])
+        puts "ERROR : Key file missing, if you want to generate a key file, add '--generate true' to the command."
+        puts "        This will only work if the OpenVPN Server has easy-rsa installed and configures!"
         return
       end
 

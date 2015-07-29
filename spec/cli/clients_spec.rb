@@ -16,6 +16,7 @@ vpn-client-10:
   :error:#{' '}
   :data:
     :generate_key:#{' '}
+    :file_key:#{' '}
     :ip_address: 88.159.47.22
     :key_pem:#{' '}
     :password: test123
@@ -28,6 +29,7 @@ vpn-client-99:
   :error:#{' '}
   :data:
     :generate_key:#{' '}
+    :file_key:#{' '}
     :ip_address: 204.99.63.105
     :key_pem: \"/tmp/user.pem\"
     :password:#{' '}
@@ -40,6 +42,7 @@ aws-client-01:
   :error:#{' '}
   :data:
     :generate_key:#{' '}
+    :file_key:#{' '}
     :ip_address: 188.59.47.122
     :key_pem:#{' '}
     :password: test123
@@ -52,6 +55,7 @@ aws-client-02:
   :error:#{' '}
   :data:
     :generate_key:#{' '}
+    :file_key:#{' '}
     :ip_address: 214.93.163.15
     :key_pem: \"/tmp/user.pem\"
     :password:#{' '}
@@ -75,6 +79,7 @@ aws-client-02:
 :error:#{' '}
 :data:
   :generate_key:#{' '}
+  :file_key:#{' '}
   :ip_address: 88.159.47.22
   :key_pem:#{' '}
   :password: test123
@@ -140,6 +145,7 @@ test-client:
   :error:#{' '}
   :data:
     :generate_key:#{' '}
+    :file_key:#{' '}
     :ip_address: 0.0.0.1
     :key_pem:#{' '}
     :password: test-value2

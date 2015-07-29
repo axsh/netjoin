@@ -223,7 +223,7 @@ test-server-aws:
       } }
 
       it "show error message for missing auth information" do
-        expect(output).to eql "ERROR : Missing a password or key file\n"
+        expect(output).to eql "ERROR : Missing a password or pem key file to ssh/scp\n"
       end
     end # End context Missing auth info
 

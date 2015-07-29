@@ -33,7 +33,7 @@ module Ducttape::Cli::Server
       end
 
       if(!options[:password] and !options[:key_pem])
-        puts "ERROR : Missing a password or key file"
+        puts "ERROR : Missing a password or pem key file to ssh/scp"
         return
       end
 
@@ -133,6 +133,11 @@ module Ducttape::Cli::Server
       server.network = options[:network] if options[:network]
       server.password = options[:password] if options[:password]
       server.username = options[:username] if options[:username]
+
+      if(!options[:password] and !options[:key_pem])
+        puts "ERROR : Missing a password or pem key file to ssh/scp"
+        return
+      end
 
       database['servers'][name] = server.export()
       Ducttape::Cli::Root.write_database(database)

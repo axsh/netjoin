@@ -64,6 +64,7 @@ clients:
     :error:#{' '}
     :data:
       :generate_key:#{' '}
+      :file_key:#{' '}
       :ip_address: 88.159.47.22
       :key_pem:#{' '}
       :password: test123
@@ -76,6 +77,7 @@ clients:
     :error:#{' '}
     :data:
       :generate_key:#{' '}
+      :file_key:#{' '}
       :ip_address: 204.99.63.105
       :key_pem: \"/tmp/user.pem\"
       :password:#{' '}
@@ -88,6 +90,7 @@ clients:
     :error:#{' '}
     :data:
       :generate_key:#{' '}
+      :file_key:#{' '}
       :ip_address: 188.59.47.122
       :key_pem:#{' '}
       :password: test123
@@ -100,6 +103,7 @@ clients:
     :error:#{' '}
     :data:
       :generate_key:#{' '}
+      :file_key:#{' '}
       :ip_address: 214.93.163.15
       :key_pem: \"/tmp/user.pem\"
       :password:#{' '}
