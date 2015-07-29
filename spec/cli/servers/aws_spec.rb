@@ -21,7 +21,7 @@ aws-server-1:
     :installed: true
     :ip_address: 55.29.16.157
     :key_pem: \"/tmp/ec2_test.pem\"
-    :mode: :dynamic
+    :mode: dynamic
     :network:#{' '}
     :password:#{' '}
     :username: ec2-user
@@ -62,7 +62,7 @@ aws-server-1:
   :installed: true
   :ip_address: 55.29.16.157
   :key_pem: \"/tmp/ec2_test.pem\"
-  :mode: :dynamic
+  :mode: dynamic
   :network:#{' '}
   :password:#{' '}
   :username: ec2-user
@@ -137,7 +137,7 @@ test-server-aws:
     :installed: true
     :ip_address:#{' '}
     :key_pem: \"/tmp/amazon.pem\"
-    :mode: :dynamic
+    :mode: dynamic
     :network:#{' '}
     :password: password
     :username: ec2-user
@@ -268,7 +268,7 @@ test-server-aws:
     :installed: false
     :ip_address:#{' '}
     :key_pem: \"/tmp/amazon-2.pem\"
-    :mode: :dynamic
+    :mode: dynamic
     :network:#{' '}
     :password: password-2
     :username: ec2-user

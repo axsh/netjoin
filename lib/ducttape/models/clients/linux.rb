@@ -26,7 +26,13 @@ module Ducttape::Models::Clients
       data = info[:data]
       client = Linux.new(name, server, data[:ip_address], data[:username])
       client.error = info[:error]
-      client.generate_key = data[:generate_key]
+      if(data[:generate_key])
+        if(data[:generate_key] == true)
+          client.generate_key = true
+        else
+          client.generate_key = false
+        end
+      end
       client.key_pem = info[:key_pem]
       client.password= data[:password]
       client.status = info[:status]

@@ -20,7 +20,7 @@ module Ducttape::Models::Servers
     attr_accessor :password
     attr_accessor :username
 
-    def initialize(name, ip_address = nil, username = nil, mode = :dynamic, network = nil)
+    def initialize(name, ip_address = nil, username = nil, mode = "dynamic", network = nil)
       super(name)
       @ip_address = ip_address
       @mode = mode

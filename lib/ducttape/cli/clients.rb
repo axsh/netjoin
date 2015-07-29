@@ -138,6 +138,7 @@ module Ducttape::Cli
               end
             end
 
+            database['clients'][client.name] = client.export
             Ducttape::Cli::Root.write_database(database)
 
             if (client.generate_key == true)
@@ -158,12 +159,14 @@ module Ducttape::Cli
               end
             end
 
+            database['clients'][client.name] = client.export
             Ducttape::Cli::Root.write_database(database)
 
-            if (server.mode === :static)
+            if (server.mode === "static")
               Ducttape::Interfaces::Linux.set_vpn_ip_address(server, client)
             end
 
+            database['clients'][client.name] = client.export
             Ducttape::Cli::Root.write_database(database)
 
             # Check certificate exists on path
@@ -179,6 +182,7 @@ module Ducttape::Cli
               end
             end
 
+            database['clients'][client.name] = client.export
             Ducttape::Cli::Root.write_database(database)
 
             # Install certificate
@@ -194,6 +198,7 @@ module Ducttape::Cli
               end
             end
 
+            database['clients'][client.name] = client.export
             Ducttape::Cli::Root.write_database(database)
 
             # Start OpenVPN using the certificate
@@ -209,6 +214,7 @@ module Ducttape::Cli
               end
             end
 
+            database['clients'][client.name] = client.export
             Ducttape::Cli::Root.write_database(database)
 
             if(!(client.status === :error))
@@ -216,9 +222,10 @@ module Ducttape::Cli
               puts "  Attached!"
             end
           end
+
           database['clients'][client.name] = client.export
+          Ducttape::Cli::Root.write_database(database)
         end
-        Ducttape::Cli::Root.write_database(database)
       end
     }
 

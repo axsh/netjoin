@@ -119,7 +119,7 @@ test-client:
   :status: :new
   :error:#{' '}
   :data:
-    :generate_key: 'true'
+    :generate_key: true
     :ip_address: 0.0.0.0
     :key_pem: \"/tmp/user.pem\"
     :password: test-value
@@ -198,7 +198,7 @@ test-client:
   :status: :new
   :error:#{' '}
   :data:
-    :generate_key: 'false'
+    :generate_key: false
     :ip_address: 0.0.0.1
     :key_pem: \"/tmp/user2.pem\"
     :password: test-value2
