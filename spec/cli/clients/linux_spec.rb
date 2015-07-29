@@ -106,6 +106,7 @@ aws-client-02:
       let(:output) { capture(:stdout) {
         subject.options = {
           :generate_key => "true",
+          :file_key => "/tmp/client.ovpn",
           :ip_address => '0.0.0.0',
           :key_pem => '/tmp/user.pem',
           :password => 'test-value',
@@ -125,7 +126,7 @@ test-client:
   :error:#{' '}
   :data:
     :generate_key: true
-    :file_key:#{' '}
+    :file_key: \"/tmp/client.ovpn\"
     :ip_address: 0.0.0.0
     :key_pem: \"/tmp/user.pem\"
     :password: test-value
@@ -139,6 +140,7 @@ test-client:
       let(:output) { capture(:stdout) {
         subject.options = {
           :generate_key => "true",
+          :file_key => "/tmp/client.ovpn",
           :ip_address => '0.0.0.0',
           :key_pem => '/tmp/user.pem',
           :password => 'test-value',
@@ -211,7 +213,7 @@ test-client:
 
     context "Existing" do
       let(:output) { capture(:stdout) {
-        subject.options = {:server => 'test-server2', :ip_address => '0.0.0.1', :username => 'test-value2', :password => 'test-value2', :key_pem => '/tmp/user2.pem', :vpn_ip_address => "10.8.0.52", :generate_key => "false"}
+        subject.options = {:server => 'test-server2', :ip_address => '0.0.0.1', :username => 'test-value2', :password => 'test-value2', :key_pem => '/tmp/user2.pem', :vpn_ip_address => "10.8.0.52", :generate_key => "false", :file_key => "/tmp/client-2.ovpn"}
         subject.update 'test-client'
       } }
 
@@ -224,7 +226,7 @@ test-client:
   :error:#{' '}
   :data:
     :generate_key: false
-    :file_key:#{' '}
+    :file_key: \"/tmp/client-2.ovpn\"
     :ip_address: 0.0.0.1
     :key_pem: \"/tmp/user2.pem\"
     :password: test-value2
