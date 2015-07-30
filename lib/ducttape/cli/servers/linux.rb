@@ -37,6 +37,11 @@ module Ducttape::Cli::Server
         return
       end
 
+      if(!Ducttape::Helpers::StringUtils.blank?(options[:ip_address]) and !Ducttape::Helpers::StringUtils.valid_ip_address?(options[:ip_address]))
+        puts "ERROR : Not a valid IP address!"
+        return
+      end
+
       # Create server object to work with
       server = Ducttape::Models::Servers::Linux.new(name, options[:ip_address], options[:username])
 
@@ -134,8 +139,13 @@ module Ducttape::Cli::Server
       server.password = options[:password] if options[:password]
       server.username = options[:username] if options[:username]
 
-      if(Ducttape::Helpers::StringUtils.blank?(options[:password]) and Ducttape::Helpers::StringUtils.blank?(options[:key_pem]))
+      if(Ducttape::Helpers::StringUtils.blank?(server.password) and Ducttape::Helpers::StringUtils.blank?(server.key_pem))
         puts "ERROR : Missing a password or pem key file to ssh/scp"
+        return
+      end
+
+      if(!Ducttape::Helpers::StringUtils.blank?(server.ip_address) and !Ducttape::Helpers::StringUtils.valid_ip_address?(server.ip_address))
+        puts "ERROR : Not a valid IP address!"
         return
       end
 

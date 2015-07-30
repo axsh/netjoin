@@ -167,6 +167,28 @@ test-server:
       end
     end # End context Missing auth info
 
+    context "Invalid IP Address" do
+      let(:output) { capture(:stdout) {
+        subject.options = {
+          :file_ca_crt => "/tmp/ca.crt",
+          :file_conf => "/tmp/server.conf",
+          :file_crt => "/tmp/server.crt",
+          :file_key => "/tmp/server.key",
+          :file_pem => "/tmp/server.pem",
+          :ip_address => '0.0.0.300',
+          :mode => 'dynamic',
+          :network => '10.8.0.0',
+          :password => 'root',
+          :username => 'root',
+        }
+        subject.add 'test-server-2'
+      } }
+
+      it "show error message for missing auth information" do
+        expect(output).to eql "ERROR : Not a valid IP address!\n"
+      end
+    end # End context Invalid IP Address
+
   end # End context Add
 
   context "Update" do
@@ -220,6 +242,34 @@ test-server:
         expect(output).to eql "ERROR : server with name 'test-server2' does not exist\n"
       end
     end # End context Non-existing
+
+    context "Missing auth info" do
+      let(:output) { capture(:stdout) {
+        subject.options = {
+          :password => '',
+          :file_key => '',
+        }
+        subject.update 'test-server'
+      } }
+
+      it "show error message for missing auth information" do
+        expect(output).to eql "ERROR : Missing a password or pem key file to ssh/scp\n"
+      end
+    end # End context Missing auth info
+
+    context "Invalid IP Address" do
+      let(:output) { capture(:stdout) {
+        subject.options = {
+          :ip_address => '0.0.0.300',
+        }
+        subject.update 'test-server'
+      } }
+
+      it "show error message for missing auth information" do
+        expect(output).to eql "ERROR : Not a valid IP address!\n"
+      end
+    end # End context Invalid IP Address
+
   end # End context Update
 
 end
