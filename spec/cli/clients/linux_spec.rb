@@ -110,7 +110,7 @@ aws-client-02:
           :ip_address => '0.0.0.0',
           :key_pem => '/tmp/user.pem',
           :password => 'test-value',
-          :server => 'test-server',
+          :server => 'vpn-server-1',
           :username => 'test-value',
           :vpn_ip_address => "10.8.0.50",
         }
@@ -121,7 +121,7 @@ aws-client-02:
         expect(output).to eql "---
 test-client:
   :type: :linux
-  :server: test-server
+  :server: vpn-server-1
   :status: :new
   :error:#{' '}
   :data:
@@ -144,7 +144,7 @@ test-client:
           :ip_address => '0.0.0.0',
           :key_pem => '/tmp/user.pem',
           :password => 'test-value',
-          :server => 'test-server',
+          :server => 'vpn-server-1',
           :username => 'test-value',
           :vpn_ip_address => "10.8.0.50",
         }
@@ -177,7 +177,7 @@ test-client:
         subject.options = {
           :generate_key => true,
           :ip_address => '0.0.0.0',
-          :server => 'test-server',
+          :server => 'vpn-server-1',
           :username => 'test-value',
           :vpn_ip_address => "10.8.0.50",
         }
@@ -194,7 +194,7 @@ test-client:
         subject.options = {
           :ip_address => '0.0.0.0',
           :password => "test",
-          :server => 'test-server',
+          :server => 'vpn-server-1',
           :username => 'test-value',
           :vpn_ip_address => "10.8.0.50",
         }
@@ -206,6 +206,25 @@ test-client:
         This will only work if the OpenVPN Server has easy-rsa installed and configures!\n"
       end
     end # End context Missing certificate
+
+    context "Server does not exist" do
+      let(:output) { capture(:stdout) {
+        subject.options = {
+          :generate_key => "true",
+          :file_key => "/tmp/client.ovpn",
+          :ip_address => '0.0.0.0',
+          :key_pem => '/tmp/user.pem',
+          :password => 'test-value',
+          :server => 'non-existing',
+          :username => 'test-value',
+          :vpn_ip_address => "10.8.0.50",
+        }
+        subject.add 'test-client-server'
+      } }
+      it "show error message for missing auth information" do
+        expect(output).to eql "ERROR : Server does not exist!\n"
+      end
+    end
 
   end # End context Add
 
@@ -219,7 +238,7 @@ test-client:
           :key_pem => '/tmp/user2.pem',
           :ip_address => '0.0.0.1',
           :password => 'test-value2',
-          :server => 'test-server2',
+          :server => 'aws-server-1',
           :username => 'test-value2',
           :vpn_ip_address => "10.8.0.52",
         }
@@ -230,7 +249,7 @@ test-client:
         expect(output).to eql "---
 test-client:
   :type: :linux
-  :server: test-server2
+  :server: aws-server-1
   :status: :new
   :error:#{' '}
   :data:
@@ -288,6 +307,18 @@ test-client:
         This will only work if the OpenVPN Server has easy-rsa installed and configures!\n"
       end
     end # End context Missing certificate
+
+    context "Server does not exist" do
+      let(:output) { capture(:stdout) {
+        subject.options = {
+          :server => 'non-existing',
+        }
+        subject.update 'test-client'
+      } }
+      it "show error message for missing auth information" do
+        expect(output).to eql "ERROR : Server does not exist!\n"
+      end
+    end
 
   end # End context Update
 

@@ -42,6 +42,12 @@ module Ducttape::Cli::Client
         return
       end
 
+      # Check server
+      if(!database['servers'][options[:server]])
+        puts "ERROR : Server does not exist!"
+        return
+      end
+
       # Create Client object to work with
       client = Ducttape::Models::Clients::Linux.new(name, options[:server], options[:ip_address], options[:username])
       if (options[:generate_key])
@@ -117,6 +123,12 @@ module Ducttape::Cli::Client
       if(Ducttape::Helpers::StringUtils.blank?(client.generate_key) and Ducttape::Helpers::StringUtils.blank?(client.file_key))
         puts "ERROR : Key file missing, if you want to generate a key file, add '--generate true' to the command."
         puts "        This will only work if the OpenVPN Server has easy-rsa installed and configures!"
+        return
+      end
+
+      # Check server
+      if(!database['servers'][client.server])
+        puts "ERROR : Server does not exist!"
         return
       end
 
