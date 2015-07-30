@@ -10,6 +10,11 @@ module Ducttape
   module Interfaces
   end
 
+  module Helpers
+  end
+
+  require_relative 'ducttape/helpers/string_utils'
+
   require_relative 'ducttape/interfaces/linux'
   require_relative 'ducttape/models/clients/linux'
   require_relative 'ducttape/models/servers/linux'

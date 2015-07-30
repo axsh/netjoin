@@ -39,7 +39,7 @@ module Ducttape::Cli::Server
       end
 
       # Check for a way to log in
-      if((!options[:password]) and !options[:key_pem])
+      if(Ducttape::Helpers::StringUtils.blank?(options[:password]) and Ducttape::Helpers::StringUtils.blank?(options[:key_pem]))
         puts "ERROR : Missing a password or pem key file to ssh/scp"
         return
       end
@@ -153,7 +153,7 @@ module Ducttape::Cli::Server
       server.zone = options[:zone] if options[:zone]
 
       # Check for a way to log in
-      if(!options[:password] and !options(:key_pem))
+      if(Ducttape::Helpers::StringUtils.blank?(options[:password]) and Ducttape::Helpers::StringUtils.blank?(options(:key_pem)))
         puts "ERROR : Missing a password or pem key file to ssh/scp"
         return
       end

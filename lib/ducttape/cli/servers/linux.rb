@@ -32,7 +32,7 @@ module Ducttape::Cli::Server
         return
       end
 
-      if(!options[:password] and !options[:key_pem])
+      if(Ducttape::Helpers::StringUtils.blank?(options[:password]) and Ducttape::Helpers::StringUtils.blank?(options[:key_pem]))
         puts "ERROR : Missing a password or pem key file to ssh/scp"
         return
       end
@@ -134,7 +134,7 @@ module Ducttape::Cli::Server
       server.password = options[:password] if options[:password]
       server.username = options[:username] if options[:username]
 
-      if(!options[:password] and !options[:key_pem])
+      if(Ducttape::Helpers::StringUtils.blank?(options[:password]) and Ducttape::Helpers::StringUtils.blank?(options[:key_pem]))
         puts "ERROR : Missing a password or pem key file to ssh/scp"
         return
       end
