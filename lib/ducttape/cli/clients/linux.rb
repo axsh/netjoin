@@ -48,6 +48,16 @@ module Ducttape::Cli::Client
         return
       end
 
+      if(!Ducttape::Helpers::StringUtils.blank?(options[:ip_address]) and !Ducttape::Helpers::StringUtils.valid_ip_address?(options[:ip_address]))
+        puts "ERROR : Not a valid IP address!"
+        return
+      end
+
+      if(!Ducttape::Helpers::StringUtils.blank?(options[:vpn_ip_address]) and !Ducttape::Helpers::StringUtils.valid_ip_address?(options[:vpn_ip_address]))
+        puts "ERROR : Not a valid VPN IP address!"
+        return
+      end
+
       # Create Client object to work with
       client = Ducttape::Models::Clients::Linux.new(name, options[:server], options[:ip_address], options[:username])
       if (options[:generate_key])
@@ -129,6 +139,16 @@ module Ducttape::Cli::Client
       # Check server
       if(!database['servers'][client.server])
         puts "ERROR : Server does not exist!"
+        return
+      end
+
+      if(!Ducttape::Helpers::StringUtils.blank?(client.ip_address) and !Ducttape::Helpers::StringUtils.valid_ip_address?(client.ip_address))
+        puts "ERROR : Not a valid IP address!"
+        return
+      end
+
+      if(!Ducttape::Helpers::StringUtils.blank?(client.vpn_ip_address) and !Ducttape::Helpers::StringUtils.valid_ip_address?(client.vpn_ip_address))
+        puts "ERROR : Not a valid VPN IP address!"
         return
       end
 

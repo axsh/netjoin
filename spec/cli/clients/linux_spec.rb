@@ -226,6 +226,46 @@ test-client:
       end
     end
 
+    context "Invalid IP Address" do
+      let(:output) { capture(:stdout) {
+        subject.options = {
+          :generate_key => "true",
+          :file_key => "/tmp/client.ovpn",
+          :ip_address => '0.0.0.300',
+          :key_pem => '/tmp/user.pem',
+          :password => 'test-value',
+          :server => 'vpn-server-1',
+          :username => 'test-value',
+          :vpn_ip_address => "10.8.0.50",
+        }
+        subject.add 'test-client-2'
+      } }
+
+      it "creates a new linux client" do
+        expect(output).to eql "ERROR : Not a valid IP address!\n"
+      end
+    end # End context Invalid IP Address
+
+    context "Invalid VPN IP Address" do
+      let(:output) { capture(:stdout) {
+        subject.options = {
+          :generate_key => "true",
+          :file_key => "/tmp/client.ovpn",
+          :ip_address => '0.0.0.0',
+          :key_pem => '/tmp/user.pem',
+          :password => 'test-value',
+          :server => 'vpn-server-1',
+          :username => 'test-value',
+          :vpn_ip_address => "10.8.0.350",
+        }
+        subject.add 'test-client-2'
+      } }
+
+      it "creates a new linux client" do
+        expect(output).to eql "ERROR : Not a valid VPN IP address!\n"
+      end
+    end # End context Invalid VPN IP Address
+
   end # End context Add
 
   context "Update" do
@@ -319,6 +359,32 @@ test-client:
         expect(output).to eql "ERROR : Server does not exist!\n"
       end
     end
+
+    context "Invalid IP Address" do
+      let(:output) { capture(:stdout) {
+        subject.options = {
+          :ip_address => '0.0.0.300',
+        }
+        subject.update 'test-client'
+      } }
+
+      it "creates a new linux client" do
+        expect(output).to eql "ERROR : Not a valid IP address!\n"
+      end
+    end # End context Invalid IP Address
+
+    context "Invalid VPN IP Address" do
+      let(:output) { capture(:stdout) {
+        subject.options = {
+          :vpn_ip_address => "10.8.0.350",
+        }
+        subject.update 'test-client'
+      } }
+
+      it "creates a new linux client" do
+        expect(output).to eql "ERROR : Not a valid VPN IP address!\n"
+      end
+    end # End context Invalid VPN IP Address
 
   end # End context Update
 
