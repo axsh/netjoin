@@ -115,6 +115,11 @@ module Ducttape::Cli
 
             # Create Client object to work with
             client = Ducttape::Models::Clients::Linux.retrieve(name, inst)
+            # Check server
+            if(!database['servers'][client.server])
+              puts "ERROR : Server does not exist!"
+              return
+            end
             server =  Ducttape::Models::Servers::Linux.retrieve(client.server, serv)
 
             client.status = :in_process
@@ -122,15 +127,15 @@ module Ducttape::Cli
             # Check for OpenVPN installation on the client
             if(!client.error or client.error === :openvpn_not_installed)
               client.error = :openvpn_not_installed
-              puts "  Checking OpenVPN installation"
+              puts "  Checking OpenVPN installation!"
               if (Ducttape::Interfaces::Linux.check_openvpn_installed(client))
                 client.error = nil
-                puts "    Installed"
+                puts "    OpenVPN already installed!"
               else
                 puts "    Not installed, trying to install!"
                 if (Ducttape::Interfaces::Linux.install_openvpn(client))
                   client.error = nil
-                  puts "    Installed"
+                  puts "    Installed!"
                 else
                   puts "    Failed to install!"
                   client.status = :error
@@ -171,7 +176,7 @@ module Ducttape::Cli
               if(!client.error or client.error === :static_ip_failed)
                 puts "  Restarting OpenVPN server for static IP allocation"
                 client.error = :static_ip_failed
-                if(Ducttape::Interfaces::Linux.start_openvpn_client(server))
+                if(Ducttape::Interfaces::Linux.restart_openvpn(server))
                   puts "    Success"
                   client.error = nil
                 else
@@ -194,7 +199,7 @@ module Ducttape::Cli
                 file_key = "keys/#{client.name}.ovpn"
               end
               if(File.file?(file_key))
-                puts "    Certificate file found"
+                puts "    Certificate file found!"
                 client.error = nil
               else
                 puts "    Certificate file not found!"
@@ -221,11 +226,27 @@ module Ducttape::Cli
             database['clients'][client.name] = client.export
             Ducttape::Cli::Root.write_database(database)
 
+            # Start OpenVPN
+            if(!client.error or client.error === :openvpn_not_restarted)
+              puts "  Restarting OpenVPN"
+              client.error = :openvpn_not_restarted
+              if(Ducttape::Interfaces::Linux.restart_openvpn(client))
+                puts "    Success"
+                client.error = nil
+              else
+                puts "    Failed restarting OpenVPN!"
+                client.status = :error
+              end
+            end
+
+            database['clients'][client.name] = client.export
+            Ducttape::Cli::Root.write_database(database)
+
             # Start OpenVPN using the certificate
             if(!client.error or client.error === :openvpn_not_started)
-              puts "  Starting OpenVPN"
+              puts "  Starting OpenVPN config"
               client.error = :openvpn_not_started
-              if(Ducttape::Interfaces::Linux.start_openvpn_client(client))
+              if(Ducttape::Interfaces::Linux.start_openvpn_config(client))
                 puts "    Success"
                 client.error = nil
               else

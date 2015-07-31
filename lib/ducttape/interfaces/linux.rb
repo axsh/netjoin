@@ -18,24 +18,123 @@ module Ducttape::Interfaces
       return false
     end
 
-    def self.check_openvpn_installed(client)
+    def self.move_file(client, source, destination)
       Net::SSH.start(client.ip_address, client.username, Base.auth_param(client)) do |ssh|
-        result = ssh.exec!('rpm -qa | grep openvpn')
-        if (result)
-          return true
+        ssh.open_channel do |channel|
+          channel.request_pty do |ch, success|
+            if !success
+              puts "Could not obtain pty"
+            end
+          end
+
+          channel.exec("sudo mv #{source} #{destination}") do |ch, success|
+            abort "Could not execute commands!" unless success
+            channel.on_data do |ch, data|
+              puts ch.exec("sudo ls /etc/openvpn")
+            end
+            channel.on_extended_data do |ch, type, data|
+              puts "stderr: #{data}"
+            end
+          end
         end
       end
-      return false
+    end
+
+    def self.check_openvpn_installed(client)
+      installed = false
+      Net::SSH.start(client.ip_address, client.username, Base.auth_param(client)) do |ssh|
+        ssh.open_channel do |channel|
+          channel.request_pty do |ch, success|
+            if !success
+              puts "Could not obtain pty"
+            end
+          end
+
+          channel.exec('sudo rpm -qa | grep openvpn') do |ch, success|
+            abort "Could not execute commands!" unless success
+            channel.on_data do |ch, data|
+              if (data.include?("openvpn"))
+                 installed = true
+              end
+              channel.on_extended_data do |ch, type, data|
+                puts "stderr: #{data}"
+              end
+            end
+          end
+        end
+      end
+      return installed
     end
 
     def self.install_openvpn(client)
+      installed = false
       Net::SSH.start(client.ip_address, client.username, Base.auth_param(client)) do |ssh|
-        result = ssh.exec!('yum install -y openvpn')
-        if (result.end_with?("Complete!\n"))
-          return true
+        ssh.open_channel do |channel|
+          channel.request_pty do |ch, success|
+            if !success
+              puts "Could not obtain pty"
+            end
+          end
+
+          channel.exec('sudo yum install -y openvpn') do |ch, success|
+            abort "Could not execute commands!" unless success
+            channel.on_data do |ch, data|
+              if (data.include?("Complete!") or data.include?("Nothing to do"))
+                installed = true
+              end
+            end
+            channel.on_extended_data do |ch, type, data|
+              puts "stderr: #{data}"
+            end
+          end
         end
       end
-      return false
+      return installed
+    end
+
+    def self.restart_openvpn(client)
+      restarted = false
+      Net::SSH.start(client.ip_address, client.username, Base.auth_param(client)) do |ssh|
+        ssh.open_channel do |channel|
+          channel.request_pty do |ch, success|
+            if !success
+              puts "Could not obtain pty"
+            end
+          end
+
+          channel.exec("sudo service openvpn restart") do |ch, success|
+            abort "Could not execute commands!" unless success
+            channel.on_data do |ch, data|
+              restarted = true
+            end
+            channel.on_extended_data do |ch, type, data|
+              puts "stderr: #{data}"
+            end
+          end
+        end
+      end
+      return restarted
+    end
+
+    def self.start_openvpn_config(client)
+      config = false
+      Net::SSH.start(client.ip_address, client.username, Base.auth_param(client)) do |ssh|
+        ssh.open_channel do |channel|
+          channel.request_pty do |ch, success|
+            if !success
+              puts "Could not obtain pty"
+            end
+          end
+          channel.exec("sudo openvpn --config /etc/openvpn/#{client.name}.ovpn --daemon")  do |ch, success|
+            abort "Could not execute commands!" unless success
+            config = true
+            channel.on_extended_data do |ch, type, data|
+              puts "stderr: #{data}"
+            end
+          end
+        end
+      end
+      return config
     end
 
     def self.generate_certificate(server, client)
@@ -84,29 +183,12 @@ verb 3
       return Linux.upload_file(client, key, "/etc/openvpn/#{client.name}.ovpn")
     end
 
-    def self.start_openvpn_server(client)
-      Net::SSH.start(client.ip_address, client.username, Base.auth_param(client)) do |ssh|
-        ssh.exec!("service openvpn restart")
-        return true
-      end
-      return false
-    end
-
-    def self.start_openvpn_client(client)
-      Net::SSH.start(client.ip_address, client.username, Base.auth_param(client)) do |ssh|
-        ssh.exec!("service openvpn restart")
-        ssh.exec!("openvpn --config /etc/openvpn/#{client.name}.ovpn --daemon")
-        return true
-      end
-      return false
-    end
-
     def self.set_vpn_ip_address(server, client)
       if (!Ducttape::Interfaces::Linux.get_vpn_ip_address(server, client))
         Net::SSH.start(server.ip_address, server.username, Base.auth_param(client)) do |ssh|
           ip = Linux.get_vpn_ip_address(server,client)
           if !ip
-            ssh.exec!("echo #{client.name},#{client.vpn_ip_address} >> /etc/openvpn/ipp.txt")
+            ssh.exec!("sudo echo #{client.name},#{client.vpn_ip_address} >> /etc/openvpn/ipp.txt")
           end
         end
       end
@@ -114,7 +196,7 @@ verb 3
 
     def self.get_vpn_ip_address(server, client)
       Net::SSH.start(server.ip_address, server.username, Base.auth_param(client)) do |ssh|
-        ipp = ssh.exec!("cat /etc/openvpn/ipp.txt")
+        ipp = ssh.exec!("sudo cat /etc/openvpn/ipp.txt")
         if (ipp)
           csv = CSV.new(ipp)
           csv.each { |row|

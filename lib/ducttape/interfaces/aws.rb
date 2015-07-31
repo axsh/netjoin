@@ -2,11 +2,11 @@
 
 require "right_aws_api"
 
-require_relative 'base'
+require_relative 'linux'
 
 module Ducttape::Interfaces
 
-  class Aws < Base
+  class Aws < Linux
 
     def self.connect(server)
       if(!server.access_key_id or !server.secret_key)
@@ -116,79 +116,5 @@ module Ducttape::Interfaces
       return true
     end
 
-     def self.move_file(client, source, destination)
-      Net::SSH.start(client.ip_address, client.username, Base.auth_param(client)) do |ssh|
-        ssh.open_channel do |channel|
-          channel.request_pty do |ch, success|
-            if success
-              puts "Successfully obtained pty"
-            else
-              puts "Could not obtain pty"
-            end
-          end
-
-          channel.exec("sudo mv #{source} #{destination}") do |ch, success|
-            abort "Could not execute commands!" unless success
-            channel.on_data do |ch, data|
-              puts ch.exec("sudo ls /etc/openvpn")
-            end
-            channel.on_extended_data do |ch, type, data|
-              puts "stderr: #{data}"
-            end
-          end
-        end
-      end
-    end
-
-    def self.check_openvpn_installed(client)
-      Net::SSH.start(client.ip_address, client.username, Base.auth_param(client)) do |ssh|
-        result = ssh.exec!('rpm -qa | grep openvpn')
-        if (result)
-          return true
-        end
-      end
-      return false
-    end
-
-    def self.install_openvpn(client)
-      installed = false
-      Net::SSH.start(client.ip_address, client.username, Base.auth_param(client)) do |ssh|
-        ssh.open_channel do |channel|
-          channel.request_pty do |ch, success|
-            if success
-              puts "Successfully obtained pty"
-            else
-              puts "Could not obtain pty"
-            end
-          end
-
-          channel.exec('sudo yum install -y openvpn') do |ch, success|
-            abort "Could not execute commands!" unless success
-            channel.on_data do |ch, data|
-              if (data.include?("Complete!") or data.include?("Nothing to do"))
-                installed = true
-              end
-            end
-            channel.on_extended_data do |ch, type, data|
-              puts "stderr: #{data}"
-            end
-          end
-        end
-      end
-      return installed
-    end
-
-    def self.install_certificate(client)
-      return Base.upload_file(client, "keys/#{client.name}.ovpn", "/etc/openvpn/#{client.name}.ovpn")
-    end
-
-    def self.start_openvpn_server(client)
-      Net::SSH.start(client.ip_address, client.username, Base.auth_param(client)) do |ssh|
-        ssh.exec!("sudo service openvpn restart")
-        return true
-      end
-      return false
-    end
   end
-
 end

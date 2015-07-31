@@ -171,7 +171,7 @@ module Ducttape::Cli::Server
 
     desc "install <name>", "Install and configure server"
     def install(name)
-    database = Ducttape::Cli::Root.load_database()
+      database = Ducttape::Cli::Root.load_database()
 
       # Check for existing server
       if (!database['servers'] or !database['servers'][name])
@@ -196,7 +196,6 @@ module Ducttape::Cli::Server
       end
 
       database['servers'][name] = server.export()
-
       Ducttape::Cli::Root.write_database(database)
 
       if(!server.configured)
@@ -245,9 +244,7 @@ module Ducttape::Cli::Server
       Ducttape::Interfaces::Linux.start_openvpn_server(server)
 
       database['servers'][name] = server.export()
-
       Ducttape::Cli::Root.write_database(database)
-
     end
   end
 end

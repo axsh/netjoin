@@ -320,7 +320,7 @@ module Ducttape::Cli::Server
       Ducttape::Cli::Root.write_database(database)
 
       puts "Restarting OpenVPN"
-      if(Ducttape::Interfaces::Aws.start_openvpn_server(server))
+      if(Ducttape::Interfaces::Aws.restart_openvpn(server))
         puts "  OpenVPN restart : success!"
       else
         puts "  OpenVPN restart : failed!"
