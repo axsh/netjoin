@@ -27,6 +27,7 @@ module Ducttape::Cli::Server
     option :region, :type => :string, :required => true
     option :secret_key, :type => :string, :required => true
     option :security_groups, :type => :array, :required => true
+    option :username, :type => :string
     option :zone, :type => :string, :required => true
     def add(name)
       # Read database file
@@ -53,7 +54,8 @@ module Ducttape::Cli::Server
         options[:ami],
         options[:instance_type],
         options[:key_pair],
-        options[:security_groups]
+        options[:security_groups],
+        options[:username]
       )
 
       if (options[:configured])
@@ -106,6 +108,7 @@ module Ducttape::Cli::Server
     option :region, :type => :string
     option :secret_key, :type => :string
     option :security_groups, :type => :array
+    option :username, type => :string
     option :zone, :type => :string
     def update(name)
       # Read database file
@@ -150,6 +153,7 @@ module Ducttape::Cli::Server
       server.region = options[:region] if options[:region]
       server.secret_key = options[:secret_key] if options[:secret_key]
       server.security_groups = options[:security_groups] if options[:security_groups]
+      server.username = options[:username] if options[:username]
       server.zone = options[:zone] if options[:zone]
 
       # Check for a way to log in
@@ -192,17 +196,23 @@ module Ducttape::Cli::Server
       database['servers'][server.name()] = server.export()
       Ducttape::Cli::Root.write_database(database)
 
-      puts "Checking for running instance, wait for 30 seconds and check again, abort by ctrl-c, rerun command to continue."
+      puts "Checking for running instance,  abort by ctrl-c, rerun command to continue."
 
-      status = Ducttape::Interfaces::Aws.status(server)["instanceState"]
-      while (!status or status["name"] != "running") do
-        puts "Instance not running or busy initializing!"
+      status = Ducttape::Interfaces::Aws.status(server)
+      while(status == nil) do
+        puts "No instance found, checking every 5 seconds!"
+        sleep(5)
+        Ducttape::Interfaces::Aws.status(server)
+      end
+        state = status["instanceState"]
+      while (!state or state["name"] != "running") do
+        puts "Instance not running or busy initializing, checking again in 30 seconds!"
         for i in 1..6
           sleep(5)
           puts "Waited #{i * 5} seconds"
         end
         puts "Checking status"
-        status = Ducttape::Interfaces::Aws.status(server)["instanceState"]
+        state = Ducttape::Interfaces::Aws.status(server)["instanceState"]
       end
       puts "Instance running, continuing"
 
@@ -235,25 +245,28 @@ module Ducttape::Cli::Server
 
       info = database['servers'][name]
       server = Ducttape::Models::Servers::Aws.retrieve(name, info)
-      status = Ducttape::Interfaces::Aws.status(server)["instanceStatus"]["status"]
 
       # Check if instance is ready
+      puts "Checking instance status"
+      status = Ducttape::Interfaces::Aws.status(server)["instanceStatus"]["status"]
       if(status != "ok")
         puts "Instance not ready, please try again later"
         return
       end
 
       # Check OpenVPN installation, install if missing
+      puts "Checking OpenVPN installation"
       if (!server.installed or !Ducttape::Interfaces::Aws.check_openvpn_installed(server))
+        puts "  Not installed, installing now"
         if (Ducttape::Interfaces::Aws.install_openvpn(server))
-          puts "OpenVPN installed!"
+          puts "    Installed!"
           server.installed = true
         else
-          puts "OpenVPN installation failed!"
+          puts "    Installation failed!"
           server.installed = false
         end
       else
-        puts "OpenVPN already installed!"
+        puts "  Already installed!"
       end
 
       # Save current progress

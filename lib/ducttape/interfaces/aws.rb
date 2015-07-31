@@ -47,13 +47,10 @@ module Ducttape::Interfaces
              'Tenancy'          => 'default' }
       )
 
-      puts response.to_yaml()
-
       instance = response["RunInstancesResponse"]["instancesSet"]["item"]
       server.instance_id = instance["instanceId"]
       server.vpc_id = instance["vpcId"]
       server.private_ip_address = instance["privateIpAddress"]
-
     end
 
     def self.describe(server)
@@ -104,8 +101,6 @@ module Ducttape::Interfaces
       response = ec2.DescribeInstances(
         'InstanceId'      => "#{server.instance_id}"
       )
-
-      puts response.to_yaml()
 
       instance = response["DescribeInstancesResponse"]["reservationSet"]["item"]["instancesSet"]["item"]
       server.ip_address = instance["ipAddress"]
