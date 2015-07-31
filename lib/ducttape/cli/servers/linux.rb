@@ -19,7 +19,8 @@ module Ducttape::Cli::Server
     option :installed, :type => :string
     option :ip_address, :type => :string, :required => true
     option :mode, :type => :string
-    option :network, :type => :string
+    option :network_ip, :type => :string
+    option :network_prefix, :type => :string
     option :password, :type => :string
     option :username, :type => :string, :required => true
     def add(name)
@@ -39,6 +40,11 @@ module Ducttape::Cli::Server
 
       if(!Ducttape::Helpers::StringUtils.blank?(options[:ip_address]) and !Ducttape::Helpers::StringUtils.valid_ip_address?(options[:ip_address]))
         puts "ERROR : Not a valid IP address!"
+        return
+      end
+
+      if(!Ducttape::Helpers::StringUtils.blank?(options[:network_ip]) and !Ducttape::Helpers::StringUtils.valid_ip_address?(options[:network_ip]))
+        puts "ERROR : Not a valid network IP address!"
         return
       end
 
@@ -66,7 +72,8 @@ module Ducttape::Cli::Server
         end
       end
       server.mode = options[:mode] if options[:mode]
-      server.network = options[:network] if options[:network]
+      server.network_ip = options[:network_ip] if options[:network_ip]
+      server.network_prefix = options[:network_prefix] if options[:network_prefix]
       server.password = options[:password] if options[:password]
 
       # Check for OpenVPN installation on the server
@@ -96,7 +103,8 @@ module Ducttape::Cli::Server
     option :installed, :type => :string
     option :ip_address, :type => :string
     option :mode, :type => :string
-    option :network, :type => :string
+    option :network_ip, :type => :string
+    option :network_prefix, :type => :string
     option :password, :type => :string
     option :username, :type => :string
     def update(name)
@@ -135,7 +143,8 @@ module Ducttape::Cli::Server
       end
       server.ip_address = options[:ip_address] if options[:ip_address]
       server.mode = options[:mode] if options[:mode]
-      server.network = options[:network] if options[:network]
+      server.network_ip = options[:network_ip] if options[:network_ip]
+      server.network_prefix = options[:network_prefix] if options[:network_prefix]
       server.password = options[:password] if options[:password]
       server.username = options[:username] if options[:username]
 
@@ -146,6 +155,11 @@ module Ducttape::Cli::Server
 
       if(!Ducttape::Helpers::StringUtils.blank?(server.ip_address) and !Ducttape::Helpers::StringUtils.valid_ip_address?(server.ip_address))
         puts "ERROR : Not a valid IP address!"
+        return
+      end
+
+      if(!Ducttape::Helpers::StringUtils.blank?(server.network_ip) and !Ducttape::Helpers::StringUtils.valid_ip_address?(server.network_ip))
+        puts "ERROR : Not a valid network IP address!"
         return
       end
 

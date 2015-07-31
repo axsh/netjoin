@@ -22,7 +22,8 @@ aws-server-1:
     :ip_address: 55.29.16.157
     :key_pem: \"/tmp/ec2_test.pem\"
     :mode: dynamic
-    :network:#{' '}
+    :network_ip:#{' '}
+    :network_prefix:#{' '}
     :password:#{' '}
     :username: ec2-user
     :access_key_id: AMAZONAWSEC2ACCESKEY
@@ -63,7 +64,8 @@ aws-server-1:
   :ip_address: 55.29.16.157
   :key_pem: \"/tmp/ec2_test.pem\"
   :mode: dynamic
-  :network:#{' '}
+  :network_ip:#{' '}
+  :network_prefix:#{' '}
   :password:#{' '}
   :username: ec2-user
   :access_key_id: AMAZONAWSEC2ACCESKEY
@@ -138,7 +140,8 @@ test-server-aws:
     :ip_address:#{' '}
     :key_pem: \"/tmp/amazon.pem\"
     :mode: dynamic
-    :network:#{' '}
+    :network_ip:#{' '}
+    :network_prefix:#{' '}
     :password: password
     :username: ec2-user
     :access_key_id: AmazonAwsEc2AccessKeyId
@@ -270,7 +273,8 @@ test-server-aws:
     :ip_address:#{' '}
     :key_pem: \"/tmp/amazon-2.pem\"
     :mode: dynamic
-    :network:#{' '}
+    :network_ip:#{' '}
+    :network_prefix:#{' '}
     :password: password-2
     :username: ec2-user
     :access_key_id: AmazonAwsEc2AccessKeyId-2

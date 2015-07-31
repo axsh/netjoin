@@ -22,7 +22,8 @@ vpn-server-1:
     :ip_address: 225.79.101.15
     :key_pem: \"/tmp/user.pem\"
     :mode: dynamic
-    :network: 10.8.0.0
+    :network_ip: 10.8.0.0
+    :network_prefix: 32
     :password: test123
     :username: root
 aws-server-1:
@@ -38,7 +39,8 @@ aws-server-1:
     :ip_address: 55.29.16.157
     :key_pem: \"/tmp/ec2_test.pem\"
     :mode: dynamic
-    :network:#{' '}
+    :network_ip:#{' '}
+    :network_prefix:#{' '}
     :password:#{' '}
     :username: ec2-user
     :access_key_id: AMAZONAWSEC2ACCESKEY
@@ -79,7 +81,8 @@ aws-server-1:
   :ip_address: 225.79.101.15
   :key_pem: \"/tmp/user.pem\"
   :mode: dynamic
-  :network: 10.8.0.0
+  :network_ip: 10.8.0.0
+  :network_prefix: 32
   :password: test123
   :username: root
 "

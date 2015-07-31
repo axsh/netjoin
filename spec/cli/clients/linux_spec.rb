@@ -201,7 +201,7 @@ test-client:
         subject.add 'test-client-cert'
       } }
 
-      it "show error message for missing auth information" do
+      it "show error message for missing certificate information" do
         expect(output).to eql "ERROR : Key file missing, if you want to generate a key file, add '--generate true' to the command.
         This will only work if the OpenVPN Server has easy-rsa installed and configures!\n"
       end
@@ -221,7 +221,7 @@ test-client:
         }
         subject.add 'test-client-server'
       } }
-      it "show error message for missing auth information" do
+      it "show an error" do
         expect(output).to eql "ERROR : Server does not exist!\n"
       end
     end
@@ -241,7 +241,7 @@ test-client:
         subject.add 'test-client-2'
       } }
 
-      it "creates a new linux client" do
+      it "show an error" do
         expect(output).to eql "ERROR : Not a valid IP address!\n"
       end
     end # End context Invalid IP Address
@@ -261,7 +261,7 @@ test-client:
         subject.add 'test-client-2'
       } }
 
-      it "creates a new linux client" do
+      it "show an error" do
         expect(output).to eql "ERROR : Not a valid VPN IP address!\n"
       end
     end # End context Invalid VPN IP Address
@@ -342,7 +342,7 @@ test-client:
         subject.update 'test-client'
       } }
 
-      it "show error message for missing auth information" do
+      it "show error message for missing certificate information" do
         expect(output).to eql "ERROR : Key file missing, if you want to generate a key file, add '--generate true' to the command.
         This will only work if the OpenVPN Server has easy-rsa installed and configures!\n"
       end
@@ -355,7 +355,7 @@ test-client:
         }
         subject.update 'test-client'
       } }
-      it "show error message for missing auth information" do
+      it "show an error" do
         expect(output).to eql "ERROR : Server does not exist!\n"
       end
     end
@@ -368,7 +368,7 @@ test-client:
         subject.update 'test-client'
       } }
 
-      it "creates a new linux client" do
+      it "show an error" do
         expect(output).to eql "ERROR : Not a valid IP address!\n"
       end
     end # End context Invalid IP Address
@@ -381,7 +381,7 @@ test-client:
         subject.update 'test-client'
       } }
 
-      it "creates a new linux client" do
+      it "show an error" do
         expect(output).to eql "ERROR : Not a valid VPN IP address!\n"
       end
     end # End context Invalid VPN IP Address

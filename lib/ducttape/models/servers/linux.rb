@@ -16,15 +16,15 @@ module Ducttape::Models::Servers
     attr_accessor :ip_address
     attr_accessor :key_pem
     attr_accessor :mode
-    attr_accessor :network
+    attr_accessor :network_ip
+    attr_accessor :network_prefix
     attr_accessor :password
     attr_accessor :username
 
-    def initialize(name, ip_address = nil, username = nil, mode = "dynamic", network = nil)
+    def initialize(name, ip_address = nil, username = nil, mode = "dynamic")
       super(name)
       @ip_address = ip_address
       @mode = mode
-      @network = network
       @username = username
     end
 
@@ -46,7 +46,8 @@ module Ducttape::Models::Servers
       entity.key_pem = data[:key_pem]
       entity.ip_address = data[:ip_address]
       entity.mode = data[:mode]
-      entity.network = data[:network]
+      entity.network_ip = data[:network_ip]
+      entity.network_prefix = data[:network_prefix]
       entity.password = data[:password]
       entity.username = data[:username]
     end
@@ -67,7 +68,8 @@ module Ducttape::Models::Servers
       data[:ip_address] = @ip_address
       data[:key_pem] = @key_pem
       data[:mode] = @mode
-      data[:network] = @network
+      data[:network_ip] = @network_ip
+      data[:network_prefix] = @network_prefix
       data[:password] = @password
       data[:username] = @username
       return data

@@ -22,7 +22,8 @@ vpn-server-1:
     :ip_address: 225.79.101.15
     :key_pem: \"/tmp/user.pem\"
     :mode: dynamic
-    :network: 10.8.0.0
+    :network_ip: 10.8.0.0
+    :network_prefix: 32
     :password: test123
     :username: root
 "
@@ -49,7 +50,8 @@ vpn-server-1:
   :ip_address: 225.79.101.15
   :key_pem: \"/tmp/user.pem\"
   :mode: dynamic
-  :network: 10.8.0.0
+  :network_ip: 10.8.0.0
+  :network_prefix: 32
   :password: test123
   :username: root
 "
@@ -81,7 +83,8 @@ vpn-server-1:
           :file_pem => "/tmp/server.pem",
           :ip_address => '0.0.0.0',
           :mode => 'dynamic',
-          :network => '10.8.0.0',
+          :network_ip => '10.8.0.0',
+          :network_prefix => 32,
           :password => 'root',
           :username => 'root',
         }
@@ -103,7 +106,8 @@ test-server:
     :ip_address: 0.0.0.0
     :key_pem:#{' '}
     :mode: dynamic
-    :network: 10.8.0.0
+    :network_ip: 10.8.0.0
+    :network_prefix: 32
     :password: root
     :username: root
 "
@@ -120,7 +124,8 @@ test-server:
           :file_pem => "/tmp/server.pem",
           :ip_address => '0.0.0.0',
           :mode => 'dynamic',
-          :network => '10.8.0.0',
+          :network_ip => '10.8.0.0',
+          :network_prefix => 32,
           :password => 'root',
           :username => 'root',
         }
@@ -156,7 +161,8 @@ test-server:
           :file_key => "/tmp/server.key",
           :ip_address => '0.0.0.0',
           :mode => 'dynamic',
-          :network => '10.8.0.0',
+          :network_ip => '10.8.0.0',
+          :network_prefix => 32,
           :username => 'root',
         }
         subject.add 'test-server-missing'
@@ -177,17 +183,41 @@ test-server:
           :file_pem => "/tmp/server.pem",
           :ip_address => '0.0.0.300',
           :mode => 'dynamic',
-          :network => '10.8.0.0',
+          :network_ip => '10.8.0.0',
+          :network_prefix => 32,
           :password => 'root',
           :username => 'root',
         }
         subject.add 'test-server-2'
       } }
 
-      it "show error message for missing auth information" do
+      it "show error message for invalid IP address" do
         expect(output).to eql "ERROR : Not a valid IP address!\n"
       end
     end # End context Invalid IP Address
+
+    context "Invalid network IP Address" do
+      let(:output) { capture(:stdout) {
+        subject.options = {
+          :file_ca_crt => "/tmp/ca.crt",
+          :file_conf => "/tmp/server.conf",
+          :file_crt => "/tmp/server.crt",
+          :file_key => "/tmp/server.key",
+          :file_pem => "/tmp/server.pem",
+          :ip_address => '0.0.0.0',
+          :mode => 'dynamic',
+          :network_ip => '10.308.0.0',
+          :network_prefix => 32,
+          :password => 'root',
+          :username => 'root',
+        }
+        subject.add 'test-server-2'
+      } }
+
+      it "show error message for invalid network IP address" do
+        expect(output).to eql "ERROR : Not a valid network IP address!\n"
+      end
+    end # End context Invalid network IP Address
 
   end # End context Add
 
@@ -203,7 +233,8 @@ test-server:
           :file_pem => "/tmp/server-2.pem",
           :ip_address => '0.0.0.1',
           :mode => 'static',
-          :network => '10.9.0.0',
+          :network_ip => '10.9.0.0',
+          :network_prefix => 24,
           :password => 'root2',
           :username => 'root2',
         }
@@ -225,7 +256,8 @@ test-server:
     :ip_address: 0.0.0.1
     :key_pem:#{' '}
     :mode: static
-    :network: 10.9.0.0
+    :network_ip: 10.9.0.0
+    :network_prefix: 24
     :password: root2
     :username: root2
 "
@@ -265,8 +297,21 @@ test-server:
         subject.update 'test-server'
       } }
 
-      it "show error message for missing auth information" do
+      it "show error message for invalid IP address" do
         expect(output).to eql "ERROR : Not a valid IP address!\n"
+      end
+    end # End context Invalid IP Address
+
+    context "Invalid network IP Address" do
+      let(:output) { capture(:stdout) {
+        subject.options = {
+          :network_ip => '10.300.0.0',
+        }
+        subject.update 'test-server'
+      } }
+
+      it "show error message for invalid network IP address" do
+        expect(output).to eql "ERROR : Not a valid network IP address!\n"
       end
     end # End context Invalid IP Address
 
