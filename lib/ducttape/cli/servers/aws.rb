@@ -54,8 +54,7 @@ module Ducttape::Cli::Server
         options[:ami],
         options[:instance_type],
         options[:key_pair],
-        options[:security_groups],
-        options[:username]
+        options[:security_groups]
       )
 
       if (options[:configured])
@@ -79,6 +78,7 @@ module Ducttape::Cli::Server
       end
       server.key_pem = options[:key_pem] if options[:key_pem]
       server.password = options[:password] if options[:password]
+      server.password = options[:username] if options[:username]
 
       # Update the database file
       if(!database['servers'])

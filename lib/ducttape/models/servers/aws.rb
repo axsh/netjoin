@@ -19,9 +19,9 @@ module Ducttape::Models::Servers
     attr_accessor :private_ip_address
     attr_accessor :public_dns_name
 
-    def initialize(name, region = nil, zone = nil, access_key_id = nil, secret_key = nil, ami = nil, instance_type = nil, key_pair = nil, security_groups = [], username = "ec2-user")
+    def initialize(name, region = nil, zone = nil, access_key_id = nil, secret_key = nil, ami = nil, instance_type = nil, key_pair = nil, security_groups = [])
       super(name)
-      @username = username
+      @username = "ec2-user"
       @region = region
       @zone = zone
       @access_key_id = access_key_id
