@@ -168,14 +168,15 @@ module Ducttape::Cli
             Ducttape::Cli::Root.write_database(database)
 
             if (server.mode === "static")
-              puts "  Adding static IP address to ipp.txt of OpenVPN server!"
-              Ducttape::Interfaces::Linux.set_vpn_ip_address(server, client)
-              if (client.vpn_ip_address === Ducttape::Interfaces::Linux.get_vpn_ip_address(server, client))
-                puts "    Success!"
-              end
               if(!client.error or client.error === :static_ip_failed)
-                puts "  Restarting OpenVPN server for static IP allocation"
+                puts "  Adding static IP address to ipp.txt of OpenVPN server!"
                 client.error = :static_ip_failed
+                Ducttape::Interfaces::Linux.set_vpn_ip_address(server, client)
+                sleep(10)
+                if (client.vpn_ip_address === Ducttape::Interfaces::Linux.get_vpn_ip_address(server, client.name))
+                  puts "    Success!"
+                end
+                puts "  Restarting OpenVPN server for static IP allocation"
                 if(Ducttape::Interfaces::Linux.restart_openvpn(server))
                   puts "    Success"
                   client.error = nil

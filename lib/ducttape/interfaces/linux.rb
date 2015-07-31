@@ -184,30 +184,56 @@ verb 3
     end
 
     def self.set_vpn_ip_address(server, client)
-      if (!Ducttape::Interfaces::Linux.get_vpn_ip_address(server, client))
-        Net::SSH.start(server.ip_address, server.username, Base.auth_param(client)) do |ssh|
-          ip = Linux.get_vpn_ip_address(server,client)
-          if !ip
-            ssh.exec!("sudo echo #{client.name},#{client.vpn_ip_address} >> /etc/openvpn/ipp.txt")
+      done = false
+      if (!Linux.get_vpn_ip_address(server, client.name))
+        Net::SSH.start(server.ip_address, server.username, Base.auth_param(server)) do |ssh|
+          ssh.open_channel do |channel|
+            channel.request_pty do |ch, success|
+              if !success
+                puts "Could not obtain pty"
+              end
+            end
+            channel.exec("sudo echo #{client.name},#{client.vpn_ip_address} >> /etc/openvpn/ipp.txt && cat /etc/openvpn/ipp.txt") do |ch, success|
+              abort "Could not execute commands!" unless success
+            end
+            channel.on_extended_data do |ch, type, data|
+              puts "stderr: #{data}"
+            end
           end
         end
       end
+      return done
     end
 
-    def self.get_vpn_ip_address(server, client)
-      Net::SSH.start(server.ip_address, server.username, Base.auth_param(client)) do |ssh|
-        ipp = ssh.exec!("sudo cat /etc/openvpn/ipp.txt")
-        if (ipp)
-          csv = CSV.new(ipp)
-          csv.each { |row|
-            name, ip_address = row
-            if (name == client.name())
-              return ip_address
+    def self.get_vpn_ip_address(server, client_name)
+      ip = nil
+      Net::SSH.start(server.ip_address, server.username, Base.auth_param(server)) do |ssh|
+        ssh.open_channel do |channel|
+          channel.request_pty do |ch, success|
+            if !success
+              puts "Could not obtain pty"
             end
-          }
+          end
+          channel.exec("sudo cat /etc/openvpn/ipp.txt") do |ch, success|
+            abort "Could not execute commands!" unless success
+            channel.on_data do |ch, data|
+              if (data)
+                csv = CSV.new(data)
+                csv.each { |row|
+                  name, ip_address = row
+                  if (name == client_name)
+                    ip = ip_address
+                  end
+                }
+              end
+            end
+            channel.on_extended_data do |ch, type, data|
+              puts "stderr: #{data}"
+            end
+          end
         end
       end
-      return nil
+      return ip
     end
 
   end

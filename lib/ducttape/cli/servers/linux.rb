@@ -241,7 +241,7 @@ module Ducttape::Cli::Server
       end
 
       puts "Restarting OpenVPN"
-      Ducttape::Interfaces::Linux.start_openvpn_server(server)
+      Ducttape::Interfaces::Linux.restart_openvpn(server)
 
       database['servers'][name] = server.export()
       Ducttape::Cli::Root.write_database(database)
