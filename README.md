@@ -115,3 +115,7 @@ Installs OpenVPN, uploads the local certification file  to the client and starts
 ```bash
 $ ducttape clients attach
 ```
+
+# Troubleshooting
+
+Make sure iptables and SELinux are configured properly to allows traffic on the IP's and ports specified for your VPN network!

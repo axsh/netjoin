@@ -25,6 +25,7 @@ vpn-server-1:
     :network_ip: 10.8.0.0
     :network_prefix: 32
     :password: test123
+    :port:#{' '}
     :username: root
 "
       end
@@ -53,6 +54,7 @@ vpn-server-1:
   :network_ip: 10.8.0.0
   :network_prefix: 32
   :password: test123
+  :port:#{' '}
   :username: root
 "
       end
@@ -86,6 +88,7 @@ vpn-server-1:
           :network_ip => '10.8.0.0',
           :network_prefix => 32,
           :password => 'root',
+          :port => 1500,
           :username => 'root',
         }
         subject.add 'test-server'
@@ -109,6 +112,7 @@ test-server:
     :network_ip: 10.8.0.0
     :network_prefix: 32
     :password: root
+    :port: 1500
     :username: root
 "
       end
@@ -236,6 +240,7 @@ test-server:
           :network_ip => '10.9.0.0',
           :network_prefix => 24,
           :password => 'root2',
+          :port => 1600,
           :username => 'root2',
         }
         subject.update 'test-server'
@@ -259,6 +264,7 @@ test-server:
     :network_ip: 10.9.0.0
     :network_prefix: 24
     :password: root2
+    :port: 1600
     :username: root2
 "
       end

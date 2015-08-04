@@ -22,6 +22,7 @@ module Ducttape::Cli::Server
     option :network_ip, :type => :string
     option :network_prefix, :type => :string
     option :password, :type => :string
+    option :port, :type => :string
     option :username, :type => :string, :required => true
     def add(name)
       # Read database file
@@ -75,6 +76,7 @@ module Ducttape::Cli::Server
       server.network_ip = options[:network_ip] if options[:network_ip]
       server.network_prefix = options[:network_prefix] if options[:network_prefix]
       server.password = options[:password] if options[:password]
+      server.port = options[:port] if options[:port]
 
       # Check for OpenVPN installation on the server
       if (!server.ip_address === '0.0.0.0' and !Ducttape::Interfaces::Linux.check_openvpn_installed(server))
@@ -106,6 +108,7 @@ module Ducttape::Cli::Server
     option :network_ip, :type => :string
     option :network_prefix, :type => :string
     option :password, :type => :string
+    option :port, :type => :string
     option :username, :type => :string
     def update(name)
       # Read database file
@@ -146,6 +149,7 @@ module Ducttape::Cli::Server
       server.network_ip = options[:network_ip] if options[:network_ip]
       server.network_prefix = options[:network_prefix] if options[:network_prefix]
       server.password = options[:password] if options[:password]
+      server.port = options[:port] if options[:port]
       server.username = options[:username] if options[:username]
 
       if(Ducttape::Helpers::StringUtils.blank?(server.password) and Ducttape::Helpers::StringUtils.blank?(server.key_pem))
@@ -193,6 +197,7 @@ module Ducttape::Cli::Server
         end
       else
         puts "OpenVPN already installed!"
+        server.installed = true
       end
 
       database['servers'][name] = server.export()
@@ -201,31 +206,31 @@ module Ducttape::Cli::Server
       if(!server.configured)
         error = false
         if(File.file?(server.file_conf))
-          Ducttape::Interfaces::Linux.upload_file(server, server.file_conf, "/etc/openvpn/server.conf")
+          Ducttape::Interfaces::Linux.upload_file(server, server.file_conf, "/etc/openvpn/")
         else
           puts "File missing 'file_conf' at #{server.file_conf}"
           error = true
         end
         if(File.file?(server.file_ca_crt))
-          Ducttape::Interfaces::Linux.upload_file(server, server.file_ca_crt, "/etc/openvpn/ca.crt")
+          Ducttape::Interfaces::Linux.upload_file(server, server.file_ca_crt, "/etc/openvpn/")
         else
           puts "File missing 'file_ca_crt' at #{server.file_ca_cert}"
           error = true
         end
         if(File.file?(server.file_pem))
-          Ducttape::Interfaces::Linux.upload_file(server, server.file_pem, "/etc/openvpn/server.pem")
+          Ducttape::Interfaces::Linux.upload_file(server, server.file_pem, "/etc/openvpn/")
         else
           puts "File missing 'file_pem' at #{server.file_pem}"
           error = true
         end
         if(File.file?(server.file_crt))
-          Ducttape::Interfaces::Linux.upload_file(server, server.file_crt, "/etc/openvpn/server.crt")
+          Ducttape::Interfaces::Linux.upload_file(server, server.file_crt, "/etc/openvpn/")
         else
           puts "File missing 'file_crt' at #{server.file_crt}"
           error = true
         end
         if(File.file?(server.file_key))
-          Ducttape::Interfaces::Linux.upload_file(server, server.file_key, "/etc/openvpn/server.key")
+          Ducttape::Interfaces::Linux.upload_file(server, server.file_key, "/etc/openvpn/")
         else
           puts "File missing 'file_key' at #{server.file_key}"
           error = true
@@ -235,12 +240,15 @@ module Ducttape::Cli::Server
           puts "OpenVPN configured!"
         else
           puts "OpenVPN configuration failed!"
+          return
         end
       else
         puts "OpenVPN already configured!"
       end
 
-      puts "Restarting OpenVPN"
+      puts "Starting OpenVPN with config"
+      Ducttape::Interfaces::Linux.restart_openvpn(server)
+      Ducttape::Interfaces::Linux.start_openvpn_config(server)
       Ducttape::Interfaces::Linux.restart_openvpn(server)
 
       database['servers'][name] = server.export()

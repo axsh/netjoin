@@ -25,6 +25,7 @@ aws-server-1:
     :network_ip:#{' '}
     :network_prefix:#{' '}
     :password:#{' '}
+    :port:#{' '}
     :username: ec2-user
     :access_key_id: AMAZONAWSEC2ACCESKEY
     :ami: ami-12345678
@@ -67,6 +68,7 @@ aws-server-1:
   :network_ip:#{' '}
   :network_prefix:#{' '}
   :password:#{' '}
+  :port:#{' '}
   :username: ec2-user
   :access_key_id: AMAZONAWSEC2ACCESKEY
   :ami: ami-12345678
@@ -143,6 +145,7 @@ test-server-aws:
     :network_ip:#{' '}
     :network_prefix:#{' '}
     :password: password
+    :port:#{' '}
     :username: ec2-user
     :access_key_id: AmazonAwsEc2AccessKeyId
     :ami: ami-12345678
@@ -276,6 +279,7 @@ test-server-aws:
     :network_ip:#{' '}
     :network_prefix:#{' '}
     :password: password-2
+    :port:#{' '}
     :username: ec2-user
     :access_key_id: AmazonAwsEc2AccessKeyId-2
     :ami: ami-87654321

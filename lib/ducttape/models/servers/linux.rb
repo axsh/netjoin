@@ -19,6 +19,7 @@ module Ducttape::Models::Servers
     attr_accessor :network_ip
     attr_accessor :network_prefix
     attr_accessor :password
+    attr_accessor :port
     attr_accessor :username
 
     def initialize(name, ip_address = nil, username = nil, mode = "dynamic")
@@ -49,6 +50,7 @@ module Ducttape::Models::Servers
       entity.network_ip = data[:network_ip]
       entity.network_prefix = data[:network_prefix]
       entity.password = data[:password]
+      entity.port = data[:port]
       entity.username = data[:username]
     end
 
@@ -71,6 +73,7 @@ module Ducttape::Models::Servers
       data[:network_ip] = @network_ip
       data[:network_prefix] = @network_prefix
       data[:password] = @password
+      data[:port] = @port
       data[:username] = @username
       return data
     end

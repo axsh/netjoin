@@ -26,6 +26,7 @@ servers:
       :network_ip: 10.8.0.0
       :network_prefix: 32
       :password: test123
+      :port:#{' '}
       :username: root
   aws-server-1:
     :type: :aws
@@ -43,6 +44,7 @@ servers:
       :network_ip:#{' '}
       :network_prefix:#{' '}
       :password:#{' '}
+      :port:#{' '}
       :username: ec2-user
       :access_key_id: AMAZONAWSEC2ACCESKEY
       :ami: ami-12345678

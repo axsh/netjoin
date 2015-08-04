@@ -5,6 +5,7 @@ require 'net/scp'
 require 'net/ssh'
 
 require_relative 'base'
+require_relative '../models/servers/base'
 
 module Ducttape::Interfaces
 
@@ -117,6 +118,14 @@ module Ducttape::Interfaces
     end
 
     def self.start_openvpn_config(client)
+      filename = client.name
+      if(client.respond_to?(:port))
+        puts "    Starting as a server"
+        filename += ".conf"
+      else
+        puts "    Starting as a client"
+        filename += ".ovpn"
+      end
       config = false
       Net::SSH.start(client.ip_address, client.username, Base.auth_param(client)) do |ssh|
         ssh.open_channel do |channel|
@@ -125,7 +134,7 @@ module Ducttape::Interfaces
               puts "Could not obtain pty"
             end
           end
-          channel.exec("sudo openvpn --config /etc/openvpn/#{client.name}.ovpn --daemon")  do |ch, success|
+          channel.exec("sudo openvpn --config /etc/openvpn/#{filename} --daemon")  do |ch, success|
             abort "Could not execute commands!" unless success
             config = true
             channel.on_extended_data do |ch, type, data|
@@ -148,10 +157,15 @@ module Ducttape::Interfaces
         ca = ssh.exec!("cat /etc/openvpn/easy-rsa/keys/ca.crt")
         cert = ssh.exec!("cat /etc/openvpn/easy-rsa/keys/#{client.name}.crt")
         key = ssh.exec!("cat /etc/openvpn/easy-rsa/keys/#{client.name}.key")
+        if(server.port)
+          port = server.port
+        else
+          port = 1194
+        end
         file = "client
 dev tun
 proto udp
-remote #{server.ip_address} 1194
+remote #{server.ip_address} #{port}
 resolv-retry infinite
 nobind
 persist-key
