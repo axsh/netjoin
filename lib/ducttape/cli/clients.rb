@@ -194,12 +194,10 @@ module Ducttape::Cli
             if(!client.error or client.error === :cert_file_missing)
               puts "  Check VPN Certificate"
               client.error = :cert_file_missing
-              if(client.file_key)
-                file_key = client.file_key
-              else
-                file_key = "keys/#{client.name}.ovpn"
+              if(! client.file_key)
+                client.file_key = "keys/#{client.name}.ovpn"
               end
-              if(File.file?(file_key))
+              if(File.file?(client.file_key))
                 puts "    Certificate file found!"
                 client.error = nil
               else
@@ -215,9 +213,14 @@ module Ducttape::Cli
             if(!client.error or client.error === :cert_install_failed)
               puts "  Installing VPN Certificate"
               client.error = :cert_install_failed
-              if(Ducttape::Interfaces::Linux.install_certificate(client, file_key))
-                puts "    Success"
-                client.error = nil
+              if(Ducttape::Interfaces::Linux.upload_file(client, client.file_key, "/tmp/#{client.name}.ovpn"))
+                if(Ducttape::Interfaces::Linux.move_file(client, "/tmp/#{client.name}.ovpn", "/etc/openvpn/"))
+                  puts "    Success"
+                  client.error = nil
+                else
+                  puts "    Failed installing certificate!"
+                  client.status = :error
+                end
               else
                 puts "    Failed installing certificate!"
                 client.status = :error

@@ -34,7 +34,7 @@ module Ducttape::Models::Clients
           client.generate_key = false
         end
       end
-      client.key_pem = info[:key_pem]
+      client.key_pem = data[:key_pem]
       client.password= data[:password]
       client.status = info[:status]
       client.vpn_ip_address = data[:vpn_ip_address]

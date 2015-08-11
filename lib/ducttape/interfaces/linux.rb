@@ -13,7 +13,6 @@ module Ducttape::Interfaces
 
     def self.upload_file(client, source, destination)
       Net::SCP.start(client.ip_address, client.username, Base.auth_param(client)) do |scp|
-        puts destination
         scp.upload!(source, destination)
         return true
       end
@@ -43,6 +42,7 @@ module Ducttape::Interfaces
     end
 
     def self.move_file(client, source, destination)
+      moved = false
       Net::SSH.start(client.ip_address, client.username, Base.auth_param(client)) do |ssh|
         ssh.open_channel do |channel|
           channel.request_pty do |ch, success|
@@ -53,15 +53,14 @@ module Ducttape::Interfaces
 
           channel.exec("sudo mv #{source} #{destination}") do |ch, success|
             abort "Could not execute commands!" unless success
-            channel.on_data do |ch, data|
-              puts ch.exec("sudo ls /etc/openvpn")
-            end
+            moved = true
             channel.on_extended_data do |ch, type, data|
               puts "stderr: #{data}"
             end
           end
         end
       end
+      return moved
     end
 
     def self.check_openvpn_installed(client)
@@ -214,10 +213,6 @@ verb 3
         return file
       end
       return false
-    end
-
-    def self.install_certificate(client, key)
-      return Linux.upload_file(client, key, "/etc/openvpn/#{client.name}.ovpn")
     end
 
     def self.set_vpn_ip_address(server, client)
