@@ -13,10 +13,33 @@ module Ducttape::Interfaces
 
     def self.upload_file(client, source, destination)
       Net::SCP.start(client.ip_address, client.username, Base.auth_param(client)) do |scp|
+        puts destination
         scp.upload!(source, destination)
         return true
       end
       return false
+    end
+
+    def self.mkdir(client, dir_name)
+      Net::SSH.start(client.ip_address, client.username, Base.auth_param(client)) do |ssh|
+        ssh.open_channel do |channel|
+          channel.request_pty do |ch, success|
+            if !success
+              puts "Could not obtain pty"
+            end
+          end
+
+          channel.exec("mkdir #{dir_name}") do |ch, success|
+            abort "Could not execute commands!" unless success
+            channel.on_data do |ch, data|
+              puts ch.exec("ls #{dir_name}")
+            end
+            channel.on_extended_data do |ch, type, data|
+              puts "stderr: #{data}"
+            end
+          end
+        end
+      end
     end
 
     def self.move_file(client, source, destination)

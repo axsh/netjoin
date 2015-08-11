@@ -187,16 +187,17 @@ module Ducttape::Cli::Server
 
       server = Ducttape::Models::Servers::Linux.retrieve(name, info)
 
+      puts "Checking OpenVPN Installation"
       if (!Ducttape::Interfaces::Linux.check_openvpn_installed(server))
         if (Ducttape::Interfaces::Linux.install_openvpn(server))
-          puts "OpenVPN installed!"
+          puts "  OpenVPN installed!"
           server.installed = true
         else
-          puts "OpenVPN installation failed!"
+          puts "  OpenVPN installation failed!"
           server.installed = false
         end
       else
-        puts "OpenVPN already installed!"
+        puts "  OpenVPN already installed!"
         server.installed = true
       end
 
@@ -204,42 +205,45 @@ module Ducttape::Cli::Server
       Ducttape::Cli::Root.write_database(database)
 
       if(!server.configured)
+        puts "Configuring OpenVPN"
         error = false
+        Ducttape::Interfaces::Linux.mkdir(server, "/tmp/openvpn/")
         if(File.file?(server.file_conf))
-          Ducttape::Interfaces::Linux.upload_file(server, server.file_conf, "/etc/openvpn/")
+          Ducttape::Interfaces::Linux.upload_file(server, server.file_conf, "/tmp/openvpn/")
         else
-          puts "File missing 'file_conf' at #{server.file_conf}"
+          puts "  File missing 'file_conf' at #{server.file_conf}"
           error = true
         end
         if(File.file?(server.file_ca_crt))
-          Ducttape::Interfaces::Linux.upload_file(server, server.file_ca_crt, "/etc/openvpn/")
+          Ducttape::Interfaces::Linux.upload_file(server, server.file_ca_crt, "/tmp/openvpn/")
         else
-          puts "File missing 'file_ca_crt' at #{server.file_ca_cert}"
+          puts "  File missing 'file_ca_crt' at #{server.file_ca_cert}"
           error = true
         end
         if(File.file?(server.file_pem))
-          Ducttape::Interfaces::Linux.upload_file(server, server.file_pem, "/etc/openvpn/")
+          Ducttape::Interfaces::Linux.upload_file(server, server.file_pem, "/tmp/openvpn/")
         else
-          puts "File missing 'file_pem' at #{server.file_pem}"
+          puts "  File missing 'file_pem' at #{server.file_pem}"
           error = true
         end
         if(File.file?(server.file_crt))
-          Ducttape::Interfaces::Linux.upload_file(server, server.file_crt, "/etc/openvpn/")
+          Ducttape::Interfaces::Linux.upload_file(server, server.file_crt, "/tmp/openvpn/")
         else
-          puts "File missing 'file_crt' at #{server.file_crt}"
+          puts "  File missing 'file_crt' at #{server.file_crt}"
           error = true
         end
         if(File.file?(server.file_key))
-          Ducttape::Interfaces::Linux.upload_file(server, server.file_key, "/etc/openvpn/")
+          Ducttape::Interfaces::Linux.upload_file(server, server.file_key, "/tmp/openvpn/")
         else
-          puts "File missing 'file_key' at #{server.file_key}"
+          puts "  File missing 'file_key' at #{server.file_key}"
           error = true
         end
         if (!error)
+          Ducttape::Interfaces::Linux.move_file(server, "/tmp/openvpn/*", "/etc/openvpn/")
           server.configured = true
-          puts "OpenVPN configured!"
+          puts "  OpenVPN configured!"
         else
-          puts "OpenVPN configuration failed!"
+          puts "  OpenVPN configuration failed!"
           return
         end
       else
