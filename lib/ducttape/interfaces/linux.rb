@@ -102,7 +102,7 @@ module Ducttape::Interfaces
           channel.exec('sudo yum install -y openvpn') do |ch, success|
             abort "Could not execute commands!" unless success
             channel.on_data do |ch, data|
-              if (data.include?("Complete!") or data.include?("Nothing to do"))
+              if (!data.include?("Error") and (data.include?("Complete!") or data.include?("Nothing to do")))
                 installed = true
               end
             end
