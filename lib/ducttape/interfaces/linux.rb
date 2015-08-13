@@ -63,6 +63,31 @@ module Ducttape::Interfaces
       return moved
     end
 
+    def self.retrieve_hash(client, file_path)
+      Net::SSH.start(client.ip_address, client.username, Base.auth_param(client)) do |ssh|
+        ssh.open_channel do |channel|
+          channel.request_pty do |ch, success|
+            if !success
+              puts "Could not obtain pty"
+            end
+          end
+
+          channel.exec("sudo cat #{file_path} | sed -n \"/-----BEGIN.*-----/,/-----END.*-----/p\"") do |ch, success|
+            abort "Could not execute commands!" unless success
+            channel.on_data do |ch, data|
+              puts "### Reading #{file_path}"
+              puts "#{data}"
+              return data
+            end
+            channel.on_extended_data do |ch, type, data|
+              puts "stderr: #{data}"
+            end
+          end
+        end
+      end
+      return nil
+    end
+
     def self.check_openvpn_installed(client)
       installed = false
       Net::SSH.start(client.ip_address, client.username, Base.auth_param(client)) do |ssh|
@@ -169,22 +194,33 @@ module Ducttape::Interfaces
     end
 
     def self.generate_certificate(server, client)
-      Net::SSH.start(server.ip_address, server.username, Base.auth_param(client)) do |ssh|
-        ls = ssh.exec!("ls /etc/openvpn/easy-rsa/keys/#{client.name}.crt")
-        if(ls == "/etc/openvpn/easy-rsa/keys/#{client.name}.crt\n")
-          puts "    Already generated"
-        else
-          build = ssh.exec!("cd /etc/openvpn/easy-rsa/ && source ./vars && ./build-key #{client.name}")
-        end
-        ca = ssh.exec!("cat /etc/openvpn/easy-rsa/keys/ca.crt")
-        cert = ssh.exec!("cat /etc/openvpn/easy-rsa/keys/#{client.name}.crt")
-        key = ssh.exec!("cat /etc/openvpn/easy-rsa/keys/#{client.name}.key")
-        if(server.port)
-          port = server.port
-        else
-          port = 1194
-        end
-        file = "client
+#      Net::SSH.start(server.ip_address, server.username, Base.auth_param(server)) do |ssh|
+#        ssh.open_channel do |channel|
+#          channel.request_pty do |ch, success|
+#            if !success
+#              puts "Could not obtain pty"
+#            end
+#          end
+#          channel.exec("sudo bash <<< 'cd /etc/openvpn/easy-rsa && . vars && . build-key #{client.name}'")  do |ch, success|
+#            abort "Could not execute commands!" unless success
+##            channel.on_data do |ch, data|
+##              puts data
+##            end
+#            channel.on_extended_data do |ch, type, data|
+#              puts "stderr: #{data}"
+#            end
+#          end
+#        end
+#      end
+      ca = Linux.retrieve_hash(server, "/etc/openvpn/easy-rsa/keys/ca.crt")
+      cert = Linux.retrieve_hash(server, "/etc/openvpn/easy-rsa/keys/#{client.name}.crt")
+      key = Linux.retrieve_hash(server, "/etc/openvpn/easy-rsa/keys/#{client.name}.key")
+      if(server.port)
+        port = server.port
+      else
+        port = 1194
+      end
+      file = "client
 dev tun
 proto udp
 remote #{server.ip_address} #{port}
@@ -204,15 +240,14 @@ verb 3
 #{key}
 </key>
 "
-        if (!ca or !cert or !key)
-          puts "  ERROR"
-          puts build
-          return false
-        end
-        Ducttape::Cli::Root.write_file("keys/#{client.name}.ovpn",file)
-        return file
+      if (!ca or !cert or !key)
+        puts "  ERROR, missing one of the files"
+        puts "### FILE"
+        puts file
+        return false
       end
-      return false
+      Ducttape::Cli::Root.write_file("keys/#{client.name}.ovpn",file)
+      return file
     end
 
     def self.set_vpn_ip_address(server, client)

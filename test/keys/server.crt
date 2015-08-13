@@ -3,33 +3,33 @@ Certificate:
         Version: 3 (0x2)
         Serial Number: 1 (0x1)
     Signature Algorithm: sha256WithRSAEncryption
-        Issuer: C=JP, ST=TOKYO, L=Yoyogi, O=Axsh Co. LTD., OU=server, CN=Axsh Co. LTD. CA/name=server/emailAddress=dev@axsh.net
+        Issuer: C=US, ST=CA, L=SanFrancisco, O=Fort-Funston, OU=MyOrganizationalUnit, CN=Fort-Funston CA/name=server/emailAddress=me@myhost.mydomain
         Validity
-            Not Before: Jul 28 03:37:45 2015 GMT
-            Not After : Jul 25 03:37:45 2025 GMT
-        Subject: C=JP, ST=TOKYO, L=Yoyogi, O=Axsh Co. LTD., OU=server, CN=server/name=server/emailAddress=dev@axsh.net
+            Not Before: Aug 12 05:58:20 2015 GMT
+            Not After : Aug  9 05:58:20 2025 GMT
+        Subject: C=US, ST=CA, L=SanFrancisco, O=Fort-Funston, OU=MyOrganizationalUnit, CN=server/name=server/emailAddress=me@myhost.mydomain
         Subject Public Key Info:
             Public Key Algorithm: rsaEncryption
                 Public-Key: (2048 bit)
                 Modulus:
-                    00:be:66:de:7b:5e:d2:b2:0a:a6:6d:c4:48:31:e8:
-                    28:0d:64:b2:c4:28:4f:4e:b3:bd:6d:c5:43:61:6f:
-                    f8:fe:9a:7a:7c:f7:d1:7c:09:e4:67:d8:22:cb:86:
-                    25:02:f8:e2:04:d9:0a:b0:c1:37:30:79:7c:90:a4:
-                    97:45:5b:2f:cb:42:52:0d:6e:ae:87:5f:a7:41:83:
-                    e1:fe:85:3b:9b:bb:1e:6f:7e:4f:07:1d:63:21:89:
-                    1d:1a:a2:1a:dd:c8:30:de:ee:ca:11:ee:f0:02:78:
-                    4a:af:33:f8:9b:91:d6:26:87:4d:85:f3:13:64:f6:
-                    2c:8c:f8:28:dc:38:3e:37:ed:34:b3:75:9c:77:a3:
-                    a0:e2:3f:72:36:23:e9:2e:96:53:bb:d7:62:4e:a0:
-                    62:83:41:7a:a4:69:29:bc:e9:da:6c:7e:fe:79:3d:
-                    58:fc:c1:a2:0e:2e:84:2e:86:0c:82:27:33:19:bc:
-                    03:8e:35:46:9f:bd:40:e6:f6:b1:86:d1:43:c2:ca:
-                    5a:92:d6:a0:51:fd:aa:37:e0:83:b8:89:ac:a9:3d:
-                    32:0c:32:d5:2b:42:11:2f:c8:c2:4f:1d:96:fd:2f:
-                    2e:73:f8:ef:7d:70:16:10:0d:f8:c2:d2:20:25:87:
-                    2e:26:db:b1:4b:79:69:48:ab:34:b9:ee:ea:70:aa:
-                    e6:05
+                    00:97:e5:b8:61:0f:0a:34:f6:57:c6:b9:1c:c2:f7:
+                    4d:1e:92:49:9d:bb:5e:00:85:e2:ed:8e:b1:39:2e:
+                    29:d1:dd:83:50:75:cd:32:99:c1:55:80:bf:69:54:
+                    05:9a:cf:9b:71:62:f1:79:47:2d:70:86:ce:47:0a:
+                    2a:b0:65:5f:1b:f1:97:be:9a:72:4d:a4:51:a8:c7:
+                    53:00:e4:ff:08:9c:12:c8:93:aa:2a:c0:bb:84:ba:
+                    3f:e0:2d:b2:60:04:90:a7:36:54:fc:ba:02:6d:4d:
+                    dd:78:2e:9d:9e:e5:7e:66:df:fd:8d:41:9a:26:29:
+                    11:7d:77:96:97:98:33:28:94:af:95:0d:2a:95:e3:
+                    73:88:ac:8a:20:7b:28:2e:17:6d:37:e3:28:d8:66:
+                    8e:af:7c:12:30:62:35:75:43:c7:2e:d3:81:e0:48:
+                    8c:6e:23:66:90:be:b1:d0:b5:79:33:b5:a1:37:10:
+                    47:13:1e:cf:74:6c:e2:11:c7:15:2f:ca:b6:84:01:
+                    f2:66:2e:a4:3a:e8:09:d7:63:61:1d:06:42:54:6f:
+                    58:1a:5f:40:13:8a:d8:d8:52:b0:0f:0e:b3:6e:57:
+                    b6:10:4b:73:29:2b:81:bd:51:1e:cb:b3:b2:74:99:
+                    f2:31:74:2a:17:90:27:7f:d7:3e:5b:3f:f8:3c:75:
+                    d3:d3
                 Exponent: 65537 (0x10001)
         X509v3 extensions:
             X509v3 Basic Constraints: 
@@ -39,59 +39,60 @@ Certificate:
             Netscape Comment: 
                 Easy-RSA Generated Server Certificate
             X509v3 Subject Key Identifier: 
-                50:59:CE:59:AB:DC:2F:29:B1:77:03:9F:55:7A:AE:01:29:E5:8C:7A
+                5D:67:80:64:06:67:DB:AB:67:55:BD:4F:D9:EE:24:FD:2A:B7:71:3F
             X509v3 Authority Key Identifier: 
-                keyid:AA:66:92:79:2C:8F:CD:27:79:9D:E4:90:8C:B4:95:50:51:11:7A:95
-                DirName:/C=JP/ST=TOKYO/L=Yoyogi/O=Axsh Co. LTD./OU=server/CN=Axsh Co. LTD. CA/name=server/emailAddress=dev@axsh.net
-                serial:B7:27:13:41:8D:01:04:DC
+                keyid:D2:73:2A:C0:20:D4:99:28:17:41:DE:30:4A:0B:09:36:63:AC:F9:60
+                DirName:/C=US/ST=CA/L=SanFrancisco/O=Fort-Funston/OU=MyOrganizationalUnit/CN=Fort-Funston CA/name=server/emailAddress=me@myhost.mydomain
+                serial:9C:2D:BD:8E:48:95:BA:F2
 
             X509v3 Extended Key Usage: 
                 TLS Web Server Authentication
             X509v3 Key Usage: 
                 Digital Signature, Key Encipherment
     Signature Algorithm: sha256WithRSAEncryption
-         5e:89:d2:99:0a:50:b2:27:cd:da:73:85:d3:3b:77:57:fe:89:
-         7b:bf:d7:f3:7b:8f:3e:a2:5b:2a:03:30:53:25:80:23:fa:fc:
-         fd:ad:44:15:c1:66:66:2a:c9:23:9a:42:13:13:64:de:e6:3e:
-         8f:5e:46:89:ef:42:56:d9:4d:26:1b:ac:c6:53:a1:df:d8:d8:
-         d6:e3:28:2b:a8:81:6b:79:3b:47:95:6b:dd:59:85:72:20:5c:
-         cb:1a:fc:08:8a:08:b9:0b:39:f1:64:d8:6c:25:08:30:37:66:
-         bc:88:48:5b:ae:9d:6f:ee:81:2f:16:f2:f7:78:9f:cc:7e:13:
-         65:ce:7f:3f:83:73:64:1f:42:82:15:02:89:c4:ca:f9:af:28:
-         aa:89:85:21:88:57:33:bd:fd:85:81:ec:fd:dd:2b:3f:9f:0c:
-         ef:61:7e:92:6e:eb:c5:c4:56:0a:f4:bb:1d:ba:77:fa:a9:90:
-         d4:a5:09:68:82:7d:df:0a:bd:2f:00:5f:f3:8f:b1:15:2c:c2:
-         9d:82:77:d9:f9:01:5f:e0:69:cc:d7:db:21:14:59:32:c7:4b:
-         9b:c7:71:be:aa:11:b5:f9:b5:70:04:a7:60:b2:d9:41:34:5f:
-         0a:a5:bf:c0:34:6d:1f:78:11:2c:69:02:a9:02:25:dd:05:a7:
-         b7:41:04:11
+         dd:19:e8:30:71:04:9b:cf:df:b5:4f:69:de:9f:83:85:de:bb:
+         2d:53:24:55:f8:2b:d5:62:44:05:88:d8:d7:25:a5:65:23:c9:
+         d4:86:d2:ef:23:e4:a8:bf:4f:e1:20:6e:f0:02:2c:11:78:68:
+         aa:08:8b:fb:ba:8b:61:ea:3a:5b:9f:33:17:7a:f5:13:81:07:
+         d4:4b:dc:45:35:b9:0e:77:38:1d:b6:de:bc:cb:3b:27:0a:e1:
+         c4:c7:88:52:6a:1f:7d:04:91:81:a4:59:ad:20:2c:79:10:a6:
+         fa:86:b1:a8:71:e2:ac:bf:d0:f9:f8:32:5f:84:3e:35:8a:2c:
+         11:e6:22:94:35:d5:cc:a4:41:80:54:9f:44:fa:4a:4c:81:11:
+         d4:90:0b:55:0a:90:19:2a:70:3c:b1:5b:01:89:87:ef:1c:13:
+         c1:eb:78:c5:69:70:bd:28:65:d6:56:b5:52:ae:e6:a4:73:ab:
+         04:bc:8b:91:1d:a4:a0:c0:d3:48:cb:b7:ad:1c:f3:a0:9e:88:
+         45:25:6e:5b:cc:cb:1e:59:e0:ee:de:29:fe:9e:f5:c6:91:d8:
+         2c:50:84:ad:39:a1:8b:1b:8d:d8:72:d7:9c:92:f5:32:b9:db:
+         9c:fb:51:fa:d5:c9:b2:cb:ee:d7:14:35:f1:db:4b:84:b3:08:
+         2c:f3:1d:65
 -----BEGIN CERTIFICATE-----
-MIIFJjCCBA6gAwIBAgIBATANBgkqhkiG9w0BAQsFADCBoDELMAkGA1UEBhMCSlAx
-DjAMBgNVBAgTBVRPS1lPMQ8wDQYDVQQHEwZZb3lvZ2kxFjAUBgNVBAoTDUF4c2gg
-Q28uIExURC4xDzANBgNVBAsTBnNlcnZlcjEZMBcGA1UEAxMQQXhzaCBDby4gTFRE
-LiBDQTEPMA0GA1UEKRMGc2VydmVyMRswGQYJKoZIhvcNAQkBFgxkZXZAYXhzaC5u
-ZXQwHhcNMTUwNzI4MDMzNzQ1WhcNMjUwNzI1MDMzNzQ1WjCBljELMAkGA1UEBhMC
-SlAxDjAMBgNVBAgTBVRPS1lPMQ8wDQYDVQQHEwZZb3lvZ2kxFjAUBgNVBAoTDUF4
-c2ggQ28uIExURC4xDzANBgNVBAsTBnNlcnZlcjEPMA0GA1UEAxMGc2VydmVyMQ8w
-DQYDVQQpEwZzZXJ2ZXIxGzAZBgkqhkiG9w0BCQEWDGRldkBheHNoLm5ldDCCASIw
-DQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAL5m3nte0rIKpm3ESDHoKA1kssQo
-T06zvW3FQ2Fv+P6aenz30XwJ5GfYIsuGJQL44gTZCrDBNzB5fJCkl0VbL8tCUg1u
-rodfp0GD4f6FO5u7Hm9+TwcdYyGJHRqiGt3IMN7uyhHu8AJ4Sq8z+JuR1iaHTYXz
-E2T2LIz4KNw4PjftNLN1nHejoOI/cjYj6S6WU7vXYk6gYoNBeqRpKbzp2mx+/nk9
-WPzBog4uhC6GDIInMxm8A441Rp+9QOb2sYbRQ8LKWpLWoFH9qjfgg7iJrKk9Mgwy
-1StCES/Iwk8dlv0vLnP4731wFhAN+MLSICWHLibbsUt5aUirNLnu6nCq5gUCAwEA
-AaOCAXEwggFtMAkGA1UdEwQCMAAwEQYJYIZIAYb4QgEBBAQDAgZAMDQGCWCGSAGG
-+EIBDQQnFiVFYXN5LVJTQSBHZW5lcmF0ZWQgU2VydmVyIENlcnRpZmljYXRlMB0G
-A1UdDgQWBBRQWc5Zq9wvKbF3A59Veq4BKeWMejCB1QYDVR0jBIHNMIHKgBSqZpJ5
-LI/NJ3md5JCMtJVQURF6laGBpqSBozCBoDELMAkGA1UEBhMCSlAxDjAMBgNVBAgT
-BVRPS1lPMQ8wDQYDVQQHEwZZb3lvZ2kxFjAUBgNVBAoTDUF4c2ggQ28uIExURC4x
-DzANBgNVBAsTBnNlcnZlcjEZMBcGA1UEAxMQQXhzaCBDby4gTFRELiBDQTEPMA0G
-A1UEKRMGc2VydmVyMRswGQYJKoZIhvcNAQkBFgxkZXZAYXhzaC5uZXSCCQC3JxNB
-jQEE3DATBgNVHSUEDDAKBggrBgEFBQcDATALBgNVHQ8EBAMCBaAwDQYJKoZIhvcN
-AQELBQADggEBAF6J0pkKULInzdpzhdM7d1f+iXu/1/N7jz6iWyoDMFMlgCP6/P2t
-RBXBZmYqySOaQhMTZN7mPo9eRonvQlbZTSYbrMZTod/Y2NbjKCuogWt5O0eVa91Z
-hXIgXMsa/AiKCLkLOfFk2GwlCDA3ZryISFuunW/ugS8W8vd4n8x+E2XOfz+Dc2Qf
-QoIVAonEyvmvKKqJhSGIVzO9/YWB7P3dKz+fDO9hfpJu68XEVgr0ux26d/qpkNSl
-CWiCfd8KvS8AX/OPsRUswp2Cd9n5AV/gaczX2yEUWTLHS5vHcb6qEbX5tXAEp2Cy
-2UE0Xwqlv8A0bR94ESxpAqkCJd0Fp7dBBBE=
+MIIFZjCCBE6gAwIBAgIBATANBgkqhkiG9w0BAQsFADCBtTELMAkGA1UEBhMCVVMx
+CzAJBgNVBAgTAkNBMRUwEwYDVQQHEwxTYW5GcmFuY2lzY28xFTATBgNVBAoTDEZv
+cnQtRnVuc3RvbjEdMBsGA1UECxMUTXlPcmdhbml6YXRpb25hbFVuaXQxGDAWBgNV
+BAMTD0ZvcnQtRnVuc3RvbiBDQTEPMA0GA1UEKRMGc2VydmVyMSEwHwYJKoZIhvcN
+AQkBFhJtZUBteWhvc3QubXlkb21haW4wHhcNMTUwODEyMDU1ODIwWhcNMjUwODA5
+MDU1ODIwWjCBrDELMAkGA1UEBhMCVVMxCzAJBgNVBAgTAkNBMRUwEwYDVQQHEwxT
+YW5GcmFuY2lzY28xFTATBgNVBAoTDEZvcnQtRnVuc3RvbjEdMBsGA1UECxMUTXlP
+cmdhbml6YXRpb25hbFVuaXQxDzANBgNVBAMTBnNlcnZlcjEPMA0GA1UEKRMGc2Vy
+dmVyMSEwHwYJKoZIhvcNAQkBFhJtZUBteWhvc3QubXlkb21haW4wggEiMA0GCSqG
+SIb3DQEBAQUAA4IBDwAwggEKAoIBAQCX5bhhDwo09lfGuRzC900ekkmdu14AheLt
+jrE5LinR3YNQdc0ymcFVgL9pVAWaz5txYvF5Ry1whs5HCiqwZV8b8Ze+mnJNpFGo
+x1MA5P8InBLIk6oqwLuEuj/gLbJgBJCnNlT8ugJtTd14Lp2e5X5m3/2NQZomKRF9
+d5aXmDMolK+VDSqV43OIrIogeyguF2034yjYZo6vfBIwYjV1Q8cu04HgSIxuI2aQ
+vrHQtXkztaE3EEcTHs90bOIRxxUvyraEAfJmLqQ66AnXY2EdBkJUb1gaX0ATitjY
+UrAPDrNuV7YQS3MpK4G9UR7Ls7J0mfIxdCoXkCd/1z5bP/g8ddPTAgMBAAGjggGG
+MIIBgjAJBgNVHRMEAjAAMBEGCWCGSAGG+EIBAQQEAwIGQDA0BglghkgBhvhCAQ0E
+JxYlRWFzeS1SU0EgR2VuZXJhdGVkIFNlcnZlciBDZXJ0aWZpY2F0ZTAdBgNVHQ4E
+FgQUXWeAZAZn26tnVb1P2e4k/Sq3cT8wgeoGA1UdIwSB4jCB34AU0nMqwCDUmSgX
+Qd4wSgsJNmOs+WChgbukgbgwgbUxCzAJBgNVBAYTAlVTMQswCQYDVQQIEwJDQTEV
+MBMGA1UEBxMMU2FuRnJhbmNpc2NvMRUwEwYDVQQKEwxGb3J0LUZ1bnN0b24xHTAb
+BgNVBAsTFE15T3JnYW5pemF0aW9uYWxVbml0MRgwFgYDVQQDEw9Gb3J0LUZ1bnN0
+b24gQ0ExDzANBgNVBCkTBnNlcnZlcjEhMB8GCSqGSIb3DQEJARYSbWVAbXlob3N0
+Lm15ZG9tYWluggkAnC29jkiVuvIwEwYDVR0lBAwwCgYIKwYBBQUHAwEwCwYDVR0P
+BAQDAgWgMA0GCSqGSIb3DQEBCwUAA4IBAQDdGegwcQSbz9+1T2nen4OF3rstUyRV
++CvVYkQFiNjXJaVlI8nUhtLvI+Sov0/hIG7wAiwReGiqCIv7uoth6jpbnzMXevUT
+gQfUS9xFNbkOdzgdtt68yzsnCuHEx4hSah99BJGBpFmtICx5EKb6hrGoceKsv9D5
++DJfhD41iiwR5iKUNdXMpEGAVJ9E+kpMgRHUkAtVCpAZKnA8sVsBiYfvHBPB63jF
+aXC9KGXWVrVSruakc6sEvIuRHaSgwNNIy7etHPOgnohFJW5bzMseWeDu3in+nvXG
+kdgsUIStOaGLG43YcteckvUyuduc+1H61cmyy+7XFDXx20uEswgs8x1l
 -----END CERTIFICATE-----
