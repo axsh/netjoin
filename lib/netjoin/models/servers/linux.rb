@@ -6,6 +6,7 @@ module Netjoin::Models::Servers
 
   class Linux < Base
 
+    attr_accessor :mode
     attr_accessor :configured
     attr_accessor :file_ca_crt
     attr_accessor :file_conf
@@ -37,6 +38,7 @@ module Netjoin::Models::Servers
     end
 
     def self.fill(entity, data)
+      entity.mode = data[:mode]
       entity.configured = data[:configured]
       entity.file_ca_crt = data[:file_ca_crt]
       entity.file_conf = data[:file_conf]
@@ -60,6 +62,7 @@ module Netjoin::Models::Servers
 
     def export_data()
       data = super()
+      data[:mode] = @mode
       data[:configured] = @configured
       data[:file_ca_crt] = @file_ca_crt
       data[:file_conf] = @file_conf

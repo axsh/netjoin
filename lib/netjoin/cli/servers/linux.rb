@@ -9,6 +9,7 @@ module Netjoin::Cli::Server
     @type = 'linux'
 
     desc "add <name>","Add server"
+    option :mode, :type => :string, :required => true
     option :configured, :type => :string
     option :file_ca_crt, :type => :string
     option :file_conf, :type => :string
@@ -46,6 +47,11 @@ module Netjoin::Cli::Server
 
       if(!Netjoin::Helpers::StringUtils.blank?(options[:network_ip]) and !Netjoin::Helpers::StringUtils.valid_ip_address?(options[:network_ip]))
         puts "ERROR : Not a valid network IP address!"
+        return
+      end
+
+      unless options[:mode] == "site-to-site" || options[:mode] == "client-to-client"
+        puts "ERROR : invalid mode #{options[:mode}"
         return
       end
 
