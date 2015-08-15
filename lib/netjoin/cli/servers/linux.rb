@@ -51,7 +51,7 @@ module Netjoin::Cli::Server
       end
 
       unless options[:mode] == "site-to-site" || options[:mode] == "client-to-client"
-        puts "ERROR : invalid mode #{options[:mode}"
+        puts "ERROR : invalid mode #{options[:mode]}"
         return
       end
 
