@@ -355,14 +355,19 @@ verb 3
       return ip
     end
 
-    def self.upload_openvpn_config(server)
+    def self.upload_openvpn_config(server, database)
       error = false
       Netjoin::Interfaces::Linux.mkdir(server, "/tmp/openvpn/")
       if(File.file?(server.file_conf))
         Netjoin::Interfaces::Linux.upload_file(server, server.file_conf, "/tmp/openvpn/")
       else
-        puts "  File missing 'file_conf' at #{server.file_conf}"
-        error = true
+        if server.mode == "site-to-site"
+          path = generate_site_to_site_conf_file(server, database)
+          Netjoin::Interfaces::Linux.upload_file(server, path, "/tmp/openvpn/")
+        else
+          puts "  File missing 'file_conf' at #{server.file_conf}"
+          error = true
+        end
       end
       if(File.file?(server.file_ca_crt))
         Netjoin::Interfaces::Linux.upload_file(server, server.file_ca_crt, "/tmp/openvpn/")
@@ -395,6 +400,27 @@ verb 3
       return false
     end
 
+    private
+
+    def self.generate_site_to_site_conf_file(server, database)
+      lines = []
+      if server.type == "linux"
+        lines << "remote #{database[server.master]['network_ip']}"
+        lines << "port 1194"
+      end
+      lines << "dev tun"
+      lines << "persist-tun"
+      lines << "persist-local-ip"
+      lines << "comp-lzo"
+      lines << "user nobody"
+      lines << "group nobody"
+      lines << "log vpn.log"
+      lines << "verb 3"
+      fp = File.open("./server-site.conf", "w")
+      fp.write(lines.join("\n"))
+      fp.close
+      "./server-site.conf"
+    end
   end
 
 end
