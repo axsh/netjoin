@@ -14,6 +14,7 @@ module Netjoin::Models::Servers
     attr_accessor :file_crt
     attr_accessor :file_key
     attr_accessor :file_pem
+    attr_accessor :psk
     attr_accessor :installed
     attr_accessor :ip_address
     attr_accessor :key_pem
@@ -47,6 +48,7 @@ module Netjoin::Models::Servers
       entity.file_crt = data[:file_crt]
       entity.file_key = data[:file_key]
       entity.file_pem = data[:file_pem]
+      entity.psk = data[:psk]
       entity.installed = data[:installed]
       entity.key_pem = data[:key_pem]
       entity.ip_address = data[:ip_address]
@@ -72,6 +74,7 @@ module Netjoin::Models::Servers
       data[:file_crt] = @file_crt
       data[:file_key] = @file_key
       data[:file_pem] = @file_pem
+      data[:psk] = @psk
       data[:installed] = @installed
       data[:ip_address] = @ip_address
       data[:key_pem] = @key_pem

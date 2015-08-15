@@ -356,48 +356,42 @@ verb 3
     end
 
     def self.upload_openvpn_config(server, database)
-      error = false
-      Netjoin::Interfaces::Linux.mkdir(server, "/tmp/openvpn/")
-      if(File.file?(server.file_conf))
-        Netjoin::Interfaces::Linux.upload_file(server, server.file_conf, "/tmp/openvpn/")
+      required_file_exist = false
+
+      if !server.file_conf.nil? && File.exist?(server.file_conf)
+        Netjoin::Interfaces::Linux.upload_file(server, server.file_conf, "/etc/openvpn/")
       else
         if server.mode == "site-to-site"
           path = generate_site_to_site_conf_file(server, database)
-          Netjoin::Interfaces::Linux.upload_file(server, path, "/tmp/openvpn/")
+          Netjoin::Interfaces::Linux.upload_file(server, path, "/etc/openvpn/")
         else
           puts "  File missing 'file_conf' at #{server.file_conf}"
-          error = true
         end
       end
-      if(File.file?(server.file_ca_crt))
-        Netjoin::Interfaces::Linux.upload_file(server, server.file_ca_crt, "/tmp/openvpn/")
+
+      upload_files = []
+      if !server.psk.nil? && File.exist?(server.psk)
+        required_file_exist = true
+        upload_files << server.psk
+      elsif (!server.file_ca_crt.nil? && File.exist?(server.file_ca_crt)) &&
+            (!server.file_pem.nil? && File.exist?(server.file_pem)) &&
+            (!server.file_crt.nil? && File.exist?(server.file_crt)) &&
+            (!server.file_key.nil? && File.exist?(server.file_key))
+        required_file_exist = true
+        upload_files << server.file_ca_crt
+        upload_files << server.file_pem
+        upload_files << server.file_crt
+        upload_files << server.file_key
       else
-        puts "  File missing 'file_ca_crt' at #{server.file_ca_cert}"
-        error = true
+        required_file_exist = false
       end
-      if(File.file?(server.file_pem))
-        Netjoin::Interfaces::Linux.upload_file(server, server.file_pem, "/tmp/openvpn/")
-      else
-        puts "  File missing 'file_pem' at #{server.file_pem}"
-        error = true
+
+      if required_file_exist
+        upload_files.each do |path|
+          Netjoin::Interfaces::Linux.upload_file(server, path, "/etc/openvpn/")
+        end
       end
-      if(File.file?(server.file_crt))
-        Netjoin::Interfaces::Linux.upload_file(server, server.file_crt, "/tmp/openvpn/")
-      else
-        puts "  File missing 'file_crt' at #{server.file_crt}"
-        error = true
-      end
-      if(File.file?(server.file_key))
-        Netjoin::Interfaces::Linux.upload_file(server, server.file_key, "/tmp/openvpn/")
-      else
-       puts "  File missing 'file_key' at #{server.file_key}"
-       error = true
-      end
-      if (!error)
-        Netjoin::Interfaces::Linux.move_file(server, "/tmp/openvpn/*", "/etc/openvpn/")
-        return true
-      end
-      return false
+      required_file_exist
     end
 
     private
@@ -416,6 +410,7 @@ verb 3
       lines << "group nobody"
       lines << "log vpn.log"
       lines << "verb 3"
+      lines << "secret /etc/openvpn/#{File.basename(server.psk)}" if File.exist?(server.psk)
       fp = File.open("./server-site.conf", "w")
       fp.write(lines.join("\n"))
       fp.close

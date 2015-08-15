@@ -10,6 +10,7 @@ module Netjoin::Cli::Server
 
     desc "add <name>","Add server"
     option :mode, :type => :string, :required => true
+    option :master, :type => :string
     option :configured, :type => :string
     option :file_ca_crt, :type => :string
     option :file_conf, :type => :string
@@ -17,6 +18,7 @@ module Netjoin::Cli::Server
     option :file_key, :type => :string
     option :file_pem, :type => :string
     option :key_pem, :type => :string
+    option :psk, :type => :string
     option :installed, :type => :string
     option :ip_address, :type => :string, :required => true
     option :mode, :type => :string
@@ -71,6 +73,7 @@ module Netjoin::Cli::Server
       server.file_key = options[:file_key] if options[:file_key]
       server.file_pem = options[:file_pem] if options[:file_pem]
       server.key_pem = options[:key_pem] if options[:key_pem]
+      server.psk = options[:psk] if options[:psk]
       if (options[:installed])
         if(options[:installed] === "false")
           server.installed = false
@@ -79,6 +82,7 @@ module Netjoin::Cli::Server
         end
       end
       server.mode = options[:mode] if options[:mode]
+      server.master = options[:master] if options[:master]
       server.network_ip = options[:network_ip] if options[:network_ip]
       server.network_prefix = options[:network_prefix] if options[:network_prefix]
       server.password = options[:password] if options[:password]
