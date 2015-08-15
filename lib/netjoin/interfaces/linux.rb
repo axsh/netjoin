@@ -398,10 +398,14 @@ verb 3
 
     def self.generate_site_to_site_conf_file(server, database)
       lines = []
-      if server.type == "linux"
-        lines << "remote #{database[server.master]['network_ip']}"
+
+      if server.master
+        lines << "remote #{database['servers'][server.master][:data][:ip_address]}"
         lines << "port 1194"
+      else
+        lines << "persist-remote-ip"
       end
+
       lines << "dev tun"
       lines << "persist-tun"
       lines << "persist-local-ip"
@@ -413,6 +417,7 @@ verb 3
       lines << "secret /etc/openvpn/#{File.basename(server.psk)}" if File.exist?(server.psk)
       fp = File.open("./server-site.conf", "w")
       fp.write(lines.join("\n"))
+      fp.write("\n")
       fp.close
       "./server-site.conf"
     end
