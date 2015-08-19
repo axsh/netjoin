@@ -2,6 +2,7 @@
 
 set -e
 set -o pipefail
+set -x
 
 # jenkins defines "WORKSPACE"
 cd "${WORKSPACE:-"/home/vagrant/ducttape"}"
