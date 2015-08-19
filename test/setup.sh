@@ -1,4 +1,5 @@
-cd /home/vagrant/ducttape
+# jenkins defines "WORKSPACE"
+cd "${WORKSPACE:-"/home/vagrant/ducttape"}"
 bundle install
 
 echo "#### Adding Server"
