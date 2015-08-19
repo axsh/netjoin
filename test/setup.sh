@@ -1,3 +1,8 @@
+#!/bin/bash
+
+set -e
+set -o pipefail
+
 # jenkins defines "WORKSPACE"
 cd "${WORKSPACE:-"/home/vagrant/ducttape"}"
 bundle install
