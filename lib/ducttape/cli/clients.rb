@@ -137,7 +137,7 @@ module Ducttape::Cli
                   client.error = nil
                   puts "    Installed!"
                 else
-                  puts "    Failed to install!"
+                  puts "ERROR:    Failed to install!"
                   client.status = :error
                 end
               end
@@ -156,7 +156,7 @@ module Ducttape::Cli
                   puts "    Success"
                   client.error = nil
                 else
-                  puts "    Failed generating certificate"
+                  puts "ERROR:    Failed generating certificate"
                   client.status = :error
                 end
               else
@@ -181,7 +181,7 @@ module Ducttape::Cli
                   puts "    Success"
                   client.error = nil
                 else
-                  puts "    Failed restarting OpenVPN!"
+                  puts "ERROR:    Failed restarting OpenVPN!"
                   client.status = :error
                 end
               end
@@ -201,7 +201,7 @@ module Ducttape::Cli
                 puts "    Certificate file found!"
                 client.error = nil
               else
-                puts "    Certificate file not found!"
+                puts "ERROR:    Certificate file not found!"
                 client.status = :error
               end
             end
@@ -222,7 +222,7 @@ module Ducttape::Cli
                   client.status = :error
                 end
               else
-                puts "    Failed installing certificate!"
+                puts "ERROR:    Failed installing certificate!"
                 client.status = :error
               end
             end
@@ -238,7 +238,7 @@ module Ducttape::Cli
                 puts "    Success"
                 client.error = nil
               else
-                puts "    Failed restarting OpenVPN!"
+                puts "ERROR:    Failed restarting OpenVPN!"
                 client.status = :error
               end
             end
@@ -254,7 +254,7 @@ module Ducttape::Cli
                 puts "    Success"
                 client.error = nil
               else
-                puts "    Failed starting OpenVPN!"
+                puts "ERROR:    Failed starting OpenVPN!"
                 client.status = :error
               end
             end

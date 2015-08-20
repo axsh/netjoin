@@ -193,7 +193,7 @@ module Ducttape::Cli::Server
           puts "  OpenVPN installed!"
           server.installed = true
         else
-          puts "  OpenVPN installation failed!"
+          puts "ERROR:  OpenVPN installation failed!"
           server.installed = false
         end
       else
@@ -243,7 +243,7 @@ module Ducttape::Cli::Server
           server.configured = true
           puts "  OpenVPN configured!"
         else
-          puts "  OpenVPN configuration failed!"
+          puts "ERROR:  OpenVPN configuration failed!"
           return
         end
       else
