@@ -13,13 +13,17 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   config.vm.define "server" do |node|
     node.vm.provider :virtualbox do |v, override|
-       node.vm.network :private_network, ip: "192.168.56.10", :adapter => 2, virtualbox__intnet: "name"
+      node.vm.network :private_network, ip: "192.168.56.10", :adapter => 2, virtualbox__intnet: "name"
+      v.customize ["modifyvm", :id, "--nicpromisc2", "allow-all"]
+      v.customize ["modifyvm", :id, "--nictype2", "82540EM"]
     end
   end
 
   config.vm.define "client-1" do |node|
     node.vm.provider :virtualbox do |v, override|
       node.vm.network :private_network, ip: "192.168.56.100", :adapter => 2, virtualbox__intnet: "name"
+      v.customize ["modifyvm", :id, "--nictype2", "82540EM"]
+      v.customize ["modifyvm", :id, "--nicpromisc2", "allow-all"]
     end
   end
 
