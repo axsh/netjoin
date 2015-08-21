@@ -11,7 +11,7 @@ bundle install
 
 
 echo "#### Initializing ducttape"
-rm database.yml
+rm -f database.yml
 bin/ducttape init
 
 echo "#### Adding Server"
