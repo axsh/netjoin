@@ -18,7 +18,7 @@ echo "#### Adding Client"
 bin/ducttape clients linux add client3 --server server1 --ip-address 192.168.56.100 --username vagrant --key-pem test/keys/insecure_private_key --file_key test/keys/client1.ovpn
 
 echo "#### Installing Server"
-bin/ducttape servers linux install server1
+bin/ducttape servers linux install server1; echo $
 
 echo "#### Attaching Client"
-bin/ducttape clients attach
+bin/ducttape clients attach; echo $
