@@ -8,8 +8,6 @@ set -x
 cd "${WORKSPACE:-"/home/vagrant/ducttape"}"
 bundle install
 
-
-
 echo "#### Initializing ducttape"
 rm -f database.yml
 bin/ducttape init
