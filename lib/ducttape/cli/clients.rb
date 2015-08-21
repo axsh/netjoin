@@ -265,11 +265,13 @@ module Ducttape::Cli
             if(!(client.status === :error))
               client.status = :attached
               puts "  Attached!"
+              database['clients'][client.name] = client.export
+              Ducttape::Cli::Root.write_database(database)
+            else
+              raise Exception.new("Something went wrong")
             end
           end
 
-          database['clients'][client.name] = client.export
-          Ducttape::Cli::Root.write_database(database)
         end
       end
     }

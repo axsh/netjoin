@@ -250,13 +250,18 @@ module Ducttape::Cli::Server
         puts "OpenVPN already configured!"
       end
 
-      puts "Starting OpenVPN with config"
-      Ducttape::Interfaces::Linux.restart_openvpn(server)
-      Ducttape::Interfaces::Linux.start_openvpn_config(server)
-      Ducttape::Interfaces::Linux.restart_openvpn(server)
-
       database['servers'][name] = server.export()
       Ducttape::Cli::Root.write_database(database)
+
+      if(!error)
+        puts "Starting OpenVPN with config"
+        Ducttape::Interfaces::Linux.restart_openvpn(server)
+        Ducttape::Interfaces::Linux.start_openvpn_config(server)
+        Ducttape::Interfaces::Linux.restart_openvpn(server)
+      else
+        raise Exception.new("Something went wrong")
+      end
+
     end
   end
 end
