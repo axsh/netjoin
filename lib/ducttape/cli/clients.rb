@@ -102,6 +102,36 @@ module Ducttape::Cli
       end
     end
 
+    desc "refresh", "Update the remote IP in certificates by the server IP"
+    def refresh()
+      # Read database file
+      database = Ducttape::Cli::Root.load_database()
+
+      if (!database['clients'])
+        return
+      end
+
+      puts " Refreshing remote IP addresses"
+
+      database['clients'].each do |name, inst|
+        # Create Client object to work with
+        client = Ducttape::Models::Clients::Linux.retrieve(name, inst)
+        # Check for key generation of file
+        if(!Ducttape::Helpers::StringUtils.blank?(client.file_key))
+          puts "  Updating #{client.name}"
+          # Retrieve server
+          serv = database['servers'][inst[:server]]
+          server =  Ducttape::Models::Servers::Linux.retrieve(client.server, serv)
+
+          text = File.read(client.file_key)
+          new_contents = text.gsub(/remote .*/, "remote #{server.ip_address} #{server.port}")
+
+          # To write changes to the file, use:
+          File.open(client.file_key, "w") {|file| file.puts new_contents }
+        end
+      end
+    end
+
     no_commands {
 
       def attach_client(database, name, inst)

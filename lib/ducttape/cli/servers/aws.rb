@@ -24,6 +24,7 @@ module Ducttape::Cli::Server
     option :key_pair, :type => :string, :required => true
     option :key_pem, :type => :string
     option :password, :type => :string
+    option :port, :type => :string, :required => true
     option :region, :type => :string, :required => true
     option :secret_key, :type => :string, :required => true
     option :security_groups, :type => :array, :required => true
@@ -78,6 +79,7 @@ module Ducttape::Cli::Server
       end
       server.key_pem = options[:key_pem] if options[:key_pem]
       server.password = options[:password] if options[:password]
+      server.port = options[:port] if options[:port]
       server.password = options[:username] if options[:username]
 
       # Update the database file
@@ -105,6 +107,7 @@ module Ducttape::Cli::Server
     option :key_pair, :type => :string
     option :key_pem, :type => :string
     option :password, :type => :string
+    option :port, :type => :string
     option :region, :type => :string
     option :secret_key, :type => :string
     option :security_groups, :type => :array
@@ -150,6 +153,7 @@ module Ducttape::Cli::Server
       server.key_pair = options[:key_pair] if options[:key_pair]
       server.key_pem = options[:key_pem] if options[:key_pem]
       server.password = options[:password] if options[:password]
+      server.port = options[:port] if options[:port]
       server.region = options[:region] if options[:region]
       server.secret_key = options[:secret_key] if options[:secret_key]
       server.security_groups = options[:security_groups] if options[:security_groups]
@@ -157,7 +161,7 @@ module Ducttape::Cli::Server
       server.zone = options[:zone] if options[:zone]
 
       # Check for a way to log in
-      if(Ducttape::Helpers::StringUtils.blank?(options[:password]) and Ducttape::Helpers::StringUtils.blank?(options(:key_pem)))
+      if(Ducttape::Helpers::StringUtils.blank?(server.password) and Ducttape::Helpers::StringUtils.blank?(server.key_pem))
         puts "ERROR : Missing a password or pem key file to ssh/scp"
         return
       end
@@ -202,9 +206,9 @@ module Ducttape::Cli::Server
       while(status == nil) do
         puts "No instance found, checking every 5 seconds!"
         sleep(5)
-        Ducttape::Interfaces::Aws.status(server)
+        status = Ducttape::Interfaces::Aws.status(server)
       end
-        state = status["instanceState"]
+      state = status["instanceState"]
       while (!state or state["name"] != "running") do
         puts "Instance not running or busy initializing, checking again in 30 seconds!"
         for i in 1..6
@@ -262,7 +266,7 @@ module Ducttape::Cli::Server
           puts "    Installed!"
           server.installed = true
         else
-          puts "    Installation failed!"
+          puts "ERROR: Installation failed!"
           server.installed = false
         end
       else
@@ -275,54 +279,52 @@ module Ducttape::Cli::Server
 
       # If installation failed, abort here
       if(!server.installed)
-        puts "Server not installed, aborting!"
+        puts "ERROR: Server not installed, aborting!"
         return
       end
 
       # If server is not yet configured, do it now
       if(!server.configured)
+        puts "  Uploading files"
         error = false
+        Ducttape::Interfaces::Linux.mkdir(server, "/tmp/openvpn/")
         if(File.file?(server.file_conf))
-          Ducttape::Interfaces::Aws.upload_file(server, server.file_conf, "server.conf")
-          Ducttape::Interfaces::Aws.move_file(server, "server.conf", "/etc/openvpn/server.conf")
+          Ducttape::Interfaces::Aws.upload_file(server, server.file_conf, "/tmp/openvpn/")
         else
           puts "File missing 'file_conf' at #{server.file_conf}"
           error = true
         end
         if(File.file?(server.file_ca_crt))
-          Ducttape::Interfaces::Aws.upload_file(server, server.file_ca_crt, "ca.crt")
-          Ducttape::Interfaces::Aws.move_file(server, "ca.crt", "/etc/openvpn/ca.crt")
+          Ducttape::Interfaces::Aws.upload_file(server, server.file_ca_crt, "/tmp/openvpn/")
         else
           puts "File missing 'file_ca_crt' at #{server.file_ca_cert}"
           error = true
         end
         if(File.file?(server.file_pem))
-          Ducttape::Interfaces::Aws.upload_file(server, server.file_pem, "server.pem")
-          Ducttape::Interfaces::Aws.move_file(server, "server.pem", "/etc/openvpn/server.pem")
+          Ducttape::Interfaces::Aws.upload_file(server, server.file_pem, "/tmp/openvpn/")
         else
           puts "File missing 'file_pem' at #{server.file_pem}"
           error = true
         end
         if(File.file?(server.file_crt))
-          Ducttape::Interfaces::Aws.upload_file(server, server.file_crt, "server.crt")
-          Ducttape::Interfaces::Aws.move_file(server, "server.crt", "/etc/openvpn/server.crt")
+          Ducttape::Interfaces::Aws.upload_file(server, server.file_crt, "/tmp/openvpn/")
         else
           puts "File missing 'file_crt' at #{server.file_crt}"
           error = true
         end
         if(File.file?(server.file_key))
-          Ducttape::Interfaces::Aws.upload_file(server, server.file_key, "server.key")
-          Ducttape::Interfaces::Aws.move_file(server, "server.key", "/etc/openvpn/server.key")
+          Ducttape::Interfaces::Aws.upload_file(server, server.file_key, "/tmp/openvpn/")
         else
           puts "File missing 'file_key' at #{server.file_key}"
           error = true
         end
 
         if (!error)
+          Ducttape::Interfaces::Aws.move_file(server, "/tmp/openvpn/*", "/etc/openvpn/")
           server.configured = true
           puts "OpenVPN configured!"
         else
-          puts "OpenVPN configuration failed!"
+          puts "ERROR: OpenVPN configuration failed!"
         end
       else
         puts "OpenVPN already configured!"
