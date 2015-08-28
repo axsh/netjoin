@@ -6,7 +6,7 @@ require_relative '../../interfaces/softlayer'
 
 module Ducttape::Cli::Server
 
-  class Aws < Base
+  class Softlayer < Base
 
     @type = 'softlayer'
 
@@ -21,6 +21,8 @@ module Ducttape::Cli::Server
     option :key_pem, :type => :string
     option :password, :type => :string
     option :port, :type => :string, :required => true
+    option :ssl_api_key, :type => :string, :required => true
+    option :ssl_api_username, :type => :string, :required => true
     option :username, :type => :string
     def add(name)
       # Read database file
@@ -65,6 +67,8 @@ module Ducttape::Cli::Server
       server.key_pem = options[:key_pem] if options[:key_pem]
       server.password = options[:password] if options[:password]
       server.port = options[:port] if options[:port]
+      server.port = options[:ssl_api_key] if options[:ssl_api_key]
+      server.port = options[:ssl_api_username] if options[:ssl_api_username]
       server.password = options[:username] if options[:username]
 
       # Update the database file
@@ -89,6 +93,8 @@ module Ducttape::Cli::Server
     option :key_pem, :type => :string
     option :password, :type => :string
     option :port, :type => :string
+    option :ssl_api_key, :type => :string
+    option :ssl_api_username, :type => :string
     option :username, type => :string
     def update(name)
       # Read database file
@@ -127,6 +133,8 @@ module Ducttape::Cli::Server
       server.key_pem = options[:key_pem] if options[:key_pem]
       server.password = options[:password] if options[:password]
       server.port = options[:port] if options[:port]
+      server.port = options[:ssl_api_key] if options[:ssl_api_key]
+      server.port = options[:ssl_api_username] if options[:ssl_api_username]
       server.username = options[:username] if options[:username]
 
       # Check for a way to log in

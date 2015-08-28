@@ -4,6 +4,7 @@ require 'thor'
 
 require_relative 'servers/aws'
 require_relative 'servers/linux'
+require_relative 'servers/softlayer'
 
 module Ducttape::Cli
 
@@ -51,8 +52,8 @@ module Ducttape::Cli
     subcommand "aws", Ducttape::Cli::Server::Aws
     desc "linux SUBCOMMAND ...ARGS", "manage Linux servers"
     subcommand "linux", Ducttape::Cli::Server::Linux
-    desc "aws SUBCOMMAND ...ARGS", "manage AWS servers"
-    subcommand "aws", Ducttape::Cli::Server::Aws
+    desc "softlayer SUBCOMMAND ...ARGS", "manage Softlayer servers"
+    subcommand "softlayer", Ducttape::Cli::Server::Softlayer
 
    end
 end

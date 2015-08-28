@@ -19,6 +19,7 @@ module Ducttape
   require_relative 'ducttape/models/clients/linux'
   require_relative 'ducttape/models/servers/linux'
   require_relative 'ducttape/models/servers/aws'
+  require_relative 'ducttape/models/servers/softlayer'
 
   require_relative 'ducttape/cli/config'
   require_relative 'ducttape/cli/clients'
