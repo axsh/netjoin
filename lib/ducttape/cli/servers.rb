@@ -51,6 +51,8 @@ module Ducttape::Cli
     subcommand "aws", Ducttape::Cli::Server::Aws
     desc "linux SUBCOMMAND ...ARGS", "manage Linux servers"
     subcommand "linux", Ducttape::Cli::Server::Linux
+    desc "aws SUBCOMMAND ...ARGS", "manage AWS servers"
+    subcommand "aws", Ducttape::Cli::Server::Aws
 
    end
 end
