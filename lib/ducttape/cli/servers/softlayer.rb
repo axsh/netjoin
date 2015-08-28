@@ -150,5 +150,33 @@ module Ducttape::Cli::Server
       puts server.export_yaml
     end
 
+    desc "create <name>", "Create the server on SoftLayer"
+    def create(name)
+      # Read database file
+      database = Ducttape::Cli::Root.load_database()
+
+      # Check for existing server
+      if (!database['servers'] or !database['servers'][name])
+        puts "ERROR : server with name '#{name}' does not exist"
+        return
+      end
+
+      # Get server
+      info = database['servers'][name]
+      server = Ducttape::Models::Servers::Softlayer.retrieve(name, info)
+
+      if(Ducttape::Interfaces::Aws.create(server))
+        server.installed = true
+      else
+        puts "ERROR: something went wrong"
+      end
+
+      # Write database file
+      database['servers'][server.name()] = server.export()
+      Ducttape::Cli::Root.write_database(database)
+
+      puts server.export_yaml
+    end
+
   end
 end

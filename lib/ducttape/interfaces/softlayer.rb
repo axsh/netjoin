@@ -15,17 +15,17 @@ module Ducttape::Interfaces
         )
     end
 
-    def self.test(server)
+    def self.create(server)
       service = Softlayer.connect(server)
       begin
         templateObject = {
           'complexType' => "SoftLayer_Virtual_Guest",
-          'hostname' => 'test1',
-          'domain' => 'example.com',
+          'hostname' => server.hostname,
+          'domain' => server.domain,
           'startCpus' => 1,
           'maxMemory' => 1024,
           'hourlyBillingFlag' => true,
-          'operatingSystemReferenceCode' => 'UBUNTU_LATEST',
+          'operatingSystemReferenceCode' => 'CENTOS_6_64',
           'localDiskFlag' => false
         }
 
@@ -33,7 +33,9 @@ module Ducttape::Interfaces
         puts result.inspect
       rescue => e
         $stdout.print(e.inspect)
+        return false
       end
+      return true
     end
 
   end

@@ -6,6 +6,8 @@ module Ducttape::Models::Servers
 
   class Softlayer < Linux
 
+    attr_accessor :domain
+    attr_accessor :hostname
     attr_accessor :ssl_api_key
     attr_accessor :ssl_api_username
 
@@ -19,6 +21,8 @@ module Ducttape::Models::Servers
       data = info[:data]
       entity = Aws.new(name)
       self.fill(entity, data)
+      entity.domain = data[:domain]
+      entity.hostname = data[:hostname]
       entity.ssl_api_key = data[:ssl_api_key]
       entity.ssl_api_username = data[:ssl_api_username]
       return entity
