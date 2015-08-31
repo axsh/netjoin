@@ -5,7 +5,7 @@ require 'yaml'
 
 require_relative 'clients/linux'
 
-module Ducttape::Cli
+module Netjoin::Cli
 
   class Clients < Thor
 
@@ -14,7 +14,7 @@ module Ducttape::Cli
     def show()
 
       # Read database file
-      database = Ducttape::Cli::Root.load_database()
+      database = Netjoin::Cli::Root.load_database()
 
       if (!database['clients'])
         return
@@ -37,7 +37,7 @@ module Ducttape::Cli
     def delete(name)
 
       # Read database file
-      database = Ducttape::Cli::Root.load_database()
+      database = Netjoin::Cli::Root.load_database()
 
       # Check for existing client
       if (!database['clients'] or !database['clients'][name])
@@ -47,7 +47,7 @@ module Ducttape::Cli
 
       # Update the database gile
       database['clients'].delete(name)
-      Ducttape::Cli::Root.write_database(database)
+      Netjoin::Cli::Root.write_database(database)
 
       database['clients'].to_yaml()
     end
@@ -56,7 +56,7 @@ module Ducttape::Cli
     option :name, :type => :string
     def attach()
       # Read database file
-      database = Ducttape::Cli::Root.load_database()
+      database = Netjoin::Cli::Root.load_database()
 
       if (!database['clients'])
         return
@@ -81,7 +81,7 @@ module Ducttape::Cli
     option :name, :type => :string
     def status()
       # Read database file
-      database = Ducttape::Cli::Root.load_database()
+      database = Netjoin::Cli::Root.load_database()
 
       if (!database['clients'])
         return
@@ -105,7 +105,7 @@ module Ducttape::Cli
     desc "refresh", "Update the remote IP in certificates by the server IP"
     def refresh()
       # Read database file
-      database = Ducttape::Cli::Root.load_database()
+      database = Netjoin::Cli::Root.load_database()
 
       if (!database['clients'])
         return
@@ -115,13 +115,13 @@ module Ducttape::Cli
 
       database['clients'].each do |name, inst|
         # Create Client object to work with
-        client = Ducttape::Models::Clients::Linux.retrieve(name, inst)
+        client = Netjoin::Models::Clients::Linux.retrieve(name, inst)
         # Check for key generation of file
-        if(!Ducttape::Helpers::StringUtils.blank?(client.file_key))
+        if(!Netjoin::Helpers::StringUtils.blank?(client.file_key))
           puts "  Updating #{client.name}"
           # Retrieve server
           serv = database['servers'][inst[:server]]
-          server =  Ducttape::Models::Servers::Linux.retrieve(client.server, serv)
+          server =  Netjoin::Models::Servers::Linux.retrieve(client.server, serv)
 
           text = File.read(client.file_key)
           new_contents = text.gsub(/remote .*/, "remote #{server.ip_address} #{server.port}")
@@ -144,13 +144,13 @@ module Ducttape::Cli
           if (:linux === inst[:type])
 
             # Create Client object to work with
-            client = Ducttape::Models::Clients::Linux.retrieve(name, inst)
+            client = Netjoin::Models::Clients::Linux.retrieve(name, inst)
             # Check server
             if(!database['servers'][client.server])
               puts "ERROR : Server does not exist!"
               return
             end
-            server =  Ducttape::Models::Servers::Linux.retrieve(client.server, serv)
+            server =  Netjoin::Models::Servers::Linux.retrieve(client.server, serv)
 
             client.status = :in_process
 
@@ -158,12 +158,12 @@ module Ducttape::Cli
             if(!client.error or client.error === :openvpn_not_installed)
               client.error = :openvpn_not_installed
               puts "  Checking OpenVPN installation!"
-              if (Ducttape::Interfaces::Linux.check_openvpn_installed(client))
+              if (Netjoin::Interfaces::Linux.check_openvpn_installed(client))
                 client.error = nil
                 puts "    OpenVPN already installed!"
               else
                 puts "    Not installed, trying to install!"
-                if (Ducttape::Interfaces::Linux.install_openvpn(client))
+                if (Netjoin::Interfaces::Linux.install_openvpn(client))
                   client.error = nil
                   puts "    Installed!"
                 else
@@ -174,14 +174,14 @@ module Ducttape::Cli
             end
 
             database['clients'][client.name] = client.export
-            Ducttape::Cli::Root.write_database(database)
+            Netjoin::Cli::Root.write_database(database)
 
             if (client.generate_key == true)
               # Generate VPN certificate
               if(!client.error or client.error === :cert_generation_failed)
                 puts "  Generating VPN Certificate"
                 client.error = :cert_generation_failed
-                ovpn = Ducttape::Interfaces::Linux.generate_certificate(server, client)
+                ovpn = Netjoin::Interfaces::Linux.generate_certificate(server, client)
                 if(ovpn)
                   puts "    Success"
                   client.error = nil
@@ -195,19 +195,19 @@ module Ducttape::Cli
             end
 
             database['clients'][client.name] = client.export
-            Ducttape::Cli::Root.write_database(database)
+            Netjoin::Cli::Root.write_database(database)
 
             if (server.mode === "static")
               if(!client.error or client.error === :static_ip_failed)
                 puts "  Adding static IP address to ipp.txt of OpenVPN server!"
                 client.error = :static_ip_failed
-                Ducttape::Interfaces::Linux.set_vpn_ip_address(server, client)
+                Netjoin::Interfaces::Linux.set_vpn_ip_address(server, client)
                 sleep(10)
-                if (client.vpn_ip_address === Ducttape::Interfaces::Linux.get_vpn_ip_address(server, client.name))
+                if (client.vpn_ip_address === Netjoin::Interfaces::Linux.get_vpn_ip_address(server, client.name))
                   puts "    Success!"
                 end
                 puts "  Restarting OpenVPN server for static IP allocation"
-                if(Ducttape::Interfaces::Linux.restart_openvpn(server))
+                if(Netjoin::Interfaces::Linux.restart_openvpn(server))
                   puts "    Success"
                   client.error = nil
                 else
@@ -218,7 +218,7 @@ module Ducttape::Cli
             end
 
             database['clients'][client.name] = client.export
-            Ducttape::Cli::Root.write_database(database)
+            Netjoin::Cli::Root.write_database(database)
 
             # Check certificate exists on path
             if(!client.error or client.error === :cert_file_missing)
@@ -237,14 +237,14 @@ module Ducttape::Cli
             end
 
             database['clients'][client.name] = client.export
-            Ducttape::Cli::Root.write_database(database)
+            Netjoin::Cli::Root.write_database(database)
 
             # Install certificate
             if(!client.error or client.error === :cert_install_failed)
               puts "  Installing VPN Certificate"
               client.error = :cert_install_failed
-              if(Ducttape::Interfaces::Linux.upload_file(client, client.file_key, "/tmp/#{client.name}.ovpn"))
-                if(Ducttape::Interfaces::Linux.move_file(client, "/tmp/#{client.name}.ovpn", "/etc/openvpn/"))
+              if(Netjoin::Interfaces::Linux.upload_file(client, client.file_key, "/tmp/#{client.name}.ovpn"))
+                if(Netjoin::Interfaces::Linux.move_file(client, "/tmp/#{client.name}.ovpn", "/etc/openvpn/"))
                   puts "    Success"
                   client.error = nil
                 else
@@ -258,13 +258,13 @@ module Ducttape::Cli
             end
 
             database['clients'][client.name] = client.export
-            Ducttape::Cli::Root.write_database(database)
+            Netjoin::Cli::Root.write_database(database)
 
             # Start OpenVPN
             if(!client.error or client.error === :openvpn_not_restarted)
               puts "  Restarting OpenVPN"
               client.error = :openvpn_not_restarted
-              if(Ducttape::Interfaces::Linux.restart_openvpn(client))
+              if(Netjoin::Interfaces::Linux.restart_openvpn(client))
                 puts "    Success"
                 client.error = nil
               else
@@ -274,13 +274,13 @@ module Ducttape::Cli
             end
 
             database['clients'][client.name] = client.export
-            Ducttape::Cli::Root.write_database(database)
+            Netjoin::Cli::Root.write_database(database)
 
             # Start OpenVPN using the certificate
             if(!client.error or client.error === :openvpn_not_started)
               puts "  Starting OpenVPN config"
               client.error = :openvpn_not_started
-              if(Ducttape::Interfaces::Linux.start_openvpn_config(client))
+              if(Netjoin::Interfaces::Linux.start_openvpn_config(client))
                 puts "    Success"
                 client.error = nil
               else
@@ -290,13 +290,13 @@ module Ducttape::Cli
             end
 
             database['clients'][client.name] = client.export
-            Ducttape::Cli::Root.write_database(database)
+            Netjoin::Cli::Root.write_database(database)
 
             if(!(client.status === :error))
               client.status = :attached
               puts "  Attached!"
               database['clients'][client.name] = client.export
-              Ducttape::Cli::Root.write_database(database)
+              Netjoin::Cli::Root.write_database(database)
             else
               raise Exception.new("Something went wrong")
             end
@@ -307,7 +307,7 @@ module Ducttape::Cli
     }
 
     desc "linux SUBCOMMAND ...ARGS", "manage Linux clients"
-    subcommand "linux", Ducttape::Cli::Client::Linux
+    subcommand "linux", Netjoin::Cli::Client::Linux
 
   end
 

@@ -7,7 +7,7 @@ require 'net/ssh'
 require_relative 'base'
 require_relative '../models/servers/base'
 
-module Ducttape::Interfaces
+module Netjoin::Interfaces
 
   class Linux < Base
 
@@ -246,7 +246,7 @@ verb 3
         puts file
         return false
       end
-      Ducttape::Cli::Root.write_file("keys/#{client.name}.ovpn",file)
+      Netjoin::Cli::Root.write_file("keys/#{client.name}.ovpn",file)
       return file
     end
 

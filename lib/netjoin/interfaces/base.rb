@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-module Ducttape::Interfaces
+module Netjoin::Interfaces
 
   class Base
 

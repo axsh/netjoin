@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Ducttape::Cli::Server::Aws do
+describe Netjoin::Cli::Server::Aws do
 
   context "Show" do
 

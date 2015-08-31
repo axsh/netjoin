@@ -5,7 +5,7 @@ require 'thor'
 require_relative 'servers/aws'
 require_relative 'servers/linux'
 
-module Ducttape::Cli
+module Netjoin::Cli
 
   class Servers < Thor
 
@@ -14,7 +14,7 @@ module Ducttape::Cli
     def show()
 
       # Read database file
-      database = Ducttape::Cli::Root.load_database()
+      database = Netjoin::Cli::Root.load_database()
 
       # If specific server is asked, show that server only, if not, show all
       if (options[:name])
@@ -33,7 +33,7 @@ module Ducttape::Cli
     def delete(name)
 
       # Read database file
-      database = Ducttape::Cli::Root.load_database()
+      database = Netjoin::Cli::Root.load_database()
 
       # Check for existing server
       if (!database['servers'] or !database['servers'][name])
@@ -43,14 +43,14 @@ module Ducttape::Cli
 
       # Update the database gile
       database['servers'].delete(name)
-      Ducttape::Cli::Root.write_database(database)
+      Netjoin::Cli::Root.write_database(database)
       puts database['servers'].to_yaml()
     end
 
     desc "aws SUBCOMMAND ...ARGS", "manage AWS servers"
-    subcommand "aws", Ducttape::Cli::Server::Aws
+    subcommand "aws", Netjoin::Cli::Server::Aws
     desc "linux SUBCOMMAND ...ARGS", "manage Linux servers"
-    subcommand "linux", Ducttape::Cli::Server::Linux
+    subcommand "linux", Netjoin::Cli::Server::Linux
 
    end
 end

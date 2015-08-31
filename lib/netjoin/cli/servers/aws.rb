@@ -4,7 +4,7 @@ require_relative 'base'
 require_relative '../../models/servers/aws'
 require_relative '../../interfaces/aws'
 
-module Ducttape::Cli::Server
+module Netjoin::Cli::Server
 
   class Aws < Base
 
@@ -32,7 +32,7 @@ module Ducttape::Cli::Server
     option :zone, :type => :string, :required => true
     def add(name)
       # Read database file
-      database = Ducttape::Cli::Root.load_database()
+      database = Netjoin::Cli::Root.load_database()
 
       # Check for existing server
       if (database['servers'] and database['servers'][name])
@@ -41,13 +41,13 @@ module Ducttape::Cli::Server
       end
 
       # Check for a way to log in
-      if(Ducttape::Helpers::StringUtils.blank?(options[:password]) and Ducttape::Helpers::StringUtils.blank?(options[:key_pem]))
+      if(Netjoin::Helpers::StringUtils.blank?(options[:password]) and Netjoin::Helpers::StringUtils.blank?(options[:key_pem]))
         puts "ERROR : Missing a password or pem key file to ssh/scp"
         return
       end
 
       # Create Server object to work with
-      server = Ducttape::Models::Servers::Aws.new(name,
+      server = Netjoin::Models::Servers::Aws.new(name,
         options[:region],
         options[:zone],
         options[:access_key_id],
@@ -88,7 +88,7 @@ module Ducttape::Cli::Server
       end
       database['servers'][server.name()] = server.export()
 
-      Ducttape::Cli::Root.write_database(database)
+      Netjoin::Cli::Root.write_database(database)
 
       puts server.export_yaml
     end
@@ -115,7 +115,7 @@ module Ducttape::Cli::Server
     option :zone, :type => :string
     def update(name)
       # Read database file
-      database = Ducttape::Cli::Root.load_database()
+      database = Netjoin::Cli::Root.load_database()
 
       # Check for existing server
       if (!database['servers'] or !database['servers'][name])
@@ -125,7 +125,7 @@ module Ducttape::Cli::Server
 
       # Get server
       info = database['servers'][name]
-      server = Ducttape::Models::Servers::Aws.retrieve(name, info)
+      server = Netjoin::Models::Servers::Aws.retrieve(name, info)
 
       # Update the database file
       server.access_key_id = options[:access_key_id] if options[:access_key_id]
@@ -161,14 +161,14 @@ module Ducttape::Cli::Server
       server.zone = options[:zone] if options[:zone]
 
       # Check for a way to log in
-      if(Ducttape::Helpers::StringUtils.blank?(server.password) and Ducttape::Helpers::StringUtils.blank?(server.key_pem))
+      if(Netjoin::Helpers::StringUtils.blank?(server.password) and Netjoin::Helpers::StringUtils.blank?(server.key_pem))
         puts "ERROR : Missing a password or pem key file to ssh/scp"
         return
       end
 
       # Write database file
       database['servers'][server.name()] = server.export()
-      Ducttape::Cli::Root.write_database(database)
+      Netjoin::Cli::Root.write_database(database)
 
       puts server.export_yaml
     end
@@ -176,7 +176,7 @@ module Ducttape::Cli::Server
     desc "create <name>", "Run server"
     def create(name)
       # Read database file
-      database = Ducttape::Cli::Root.load_database()
+      database = Netjoin::Cli::Root.load_database()
 
       # Check for existing server
       if (!database['servers'] or !database['servers'][name])
@@ -186,27 +186,27 @@ module Ducttape::Cli::Server
 
       # Get server
       info = database['servers'][name]
-      server = Ducttape::Models::Servers::Aws.retrieve(name, info)
+      server = Netjoin::Models::Servers::Aws.retrieve(name, info)
 
       # Check if server has already been created on AWS
       if(!server.instance_id)
         puts "Initializing new instance, this will take a few minutes"
-        Ducttape::Interfaces::Aws.create_instance(server)
+        Netjoin::Interfaces::Aws.create_instance(server)
       else
         puts "Instance already created. skipping!"
       end
 
       # Save instance creation information
       database['servers'][server.name()] = server.export()
-      Ducttape::Cli::Root.write_database(database)
+      Netjoin::Cli::Root.write_database(database)
 
       puts "Checking for running instance,  abort by ctrl-c, rerun command to continue."
 
-      status = Ducttape::Interfaces::Aws.status(server)
+      status = Netjoin::Interfaces::Aws.status(server)
       while(status == nil) do
         puts "No instance found, checking every 5 seconds!"
         sleep(5)
-        status = Ducttape::Interfaces::Aws.status(server)
+        status = Netjoin::Interfaces::Aws.status(server)
       end
       state = status["instanceState"]
       while (!state or state["name"] != "running") do
@@ -216,13 +216,13 @@ module Ducttape::Cli::Server
           puts "Waited #{i * 5} seconds"
         end
         puts "Checking status"
-        state = Ducttape::Interfaces::Aws.status(server)["instanceState"]
+        state = Netjoin::Interfaces::Aws.status(server)["instanceState"]
       end
       puts "Instance running, continuing"
 
       # Retrieve public IP Address
       if (!server.ip_address or !server.public_dns_name)
-        if (!Ducttape::Interfaces::Aws.public_ip_address(server))
+        if (!Netjoin::Interfaces::Aws.public_ip_address(server))
           puts "Public IP address or public DNS name not found!"
         end
       else
@@ -231,7 +231,7 @@ module Ducttape::Cli::Server
 
       # Write database file
       database['servers'][server.name()] = server.export()
-      Ducttape::Cli::Root.write_database(database)
+      Netjoin::Cli::Root.write_database(database)
 
       puts server.export_yaml
     end
@@ -239,7 +239,7 @@ module Ducttape::Cli::Server
     desc "install <name>", "Install and configure server"
     def install(name)
       # Read database file
-      database = Ducttape::Cli::Root.load_database()
+      database = Netjoin::Cli::Root.load_database()
 
       # Check for existing server
       if (!database['servers'] or !database['servers'][name])
@@ -248,11 +248,11 @@ module Ducttape::Cli::Server
       end
 
       info = database['servers'][name]
-      server = Ducttape::Models::Servers::Aws.retrieve(name, info)
+      server = Netjoin::Models::Servers::Aws.retrieve(name, info)
 
       # Check if instance is ready
       puts "Checking instance status"
-      status = Ducttape::Interfaces::Aws.status(server)["instanceStatus"]["status"]
+      status = Netjoin::Interfaces::Aws.status(server)["instanceStatus"]["status"]
       if(status != "ok")
         puts "Instance not ready, please try again later"
         return
@@ -260,9 +260,9 @@ module Ducttape::Cli::Server
 
       # Check OpenVPN installation, install if missing
       puts "Checking OpenVPN installation"
-      if (!server.installed or !Ducttape::Interfaces::Aws.check_openvpn_installed(server))
+      if (!server.installed or !Netjoin::Interfaces::Aws.check_openvpn_installed(server))
         puts "  Not installed, installing now"
-        if (Ducttape::Interfaces::Aws.install_openvpn(server))
+        if (Netjoin::Interfaces::Aws.install_openvpn(server))
           puts "    Installed!"
           server.installed = true
         else
@@ -275,7 +275,7 @@ module Ducttape::Cli::Server
 
       # Save current progress
       database['servers'][name] = server.export()
-      Ducttape::Cli::Root.write_database(database)
+      Netjoin::Cli::Root.write_database(database)
 
       # If installation failed, abort here
       if(!server.installed)
@@ -287,40 +287,40 @@ module Ducttape::Cli::Server
       if(!server.configured)
         puts "  Uploading files"
         error = false
-        Ducttape::Interfaces::Linux.mkdir(server, "/tmp/openvpn/")
+        Netjoin::Interfaces::Linux.mkdir(server, "/tmp/openvpn/")
         if(File.file?(server.file_conf))
-          Ducttape::Interfaces::Aws.upload_file(server, server.file_conf, "/tmp/openvpn/")
+          Netjoin::Interfaces::Aws.upload_file(server, server.file_conf, "/tmp/openvpn/")
         else
           puts "File missing 'file_conf' at #{server.file_conf}"
           error = true
         end
         if(File.file?(server.file_ca_crt))
-          Ducttape::Interfaces::Aws.upload_file(server, server.file_ca_crt, "/tmp/openvpn/")
+          Netjoin::Interfaces::Aws.upload_file(server, server.file_ca_crt, "/tmp/openvpn/")
         else
           puts "File missing 'file_ca_crt' at #{server.file_ca_cert}"
           error = true
         end
         if(File.file?(server.file_pem))
-          Ducttape::Interfaces::Aws.upload_file(server, server.file_pem, "/tmp/openvpn/")
+          Netjoin::Interfaces::Aws.upload_file(server, server.file_pem, "/tmp/openvpn/")
         else
           puts "File missing 'file_pem' at #{server.file_pem}"
           error = true
         end
         if(File.file?(server.file_crt))
-          Ducttape::Interfaces::Aws.upload_file(server, server.file_crt, "/tmp/openvpn/")
+          Netjoin::Interfaces::Aws.upload_file(server, server.file_crt, "/tmp/openvpn/")
         else
           puts "File missing 'file_crt' at #{server.file_crt}"
           error = true
         end
         if(File.file?(server.file_key))
-          Ducttape::Interfaces::Aws.upload_file(server, server.file_key, "/tmp/openvpn/")
+          Netjoin::Interfaces::Aws.upload_file(server, server.file_key, "/tmp/openvpn/")
         else
           puts "File missing 'file_key' at #{server.file_key}"
           error = true
         end
 
         if (!error)
-          Ducttape::Interfaces::Aws.move_file(server, "/tmp/openvpn/*", "/etc/openvpn/")
+          Netjoin::Interfaces::Aws.move_file(server, "/tmp/openvpn/*", "/etc/openvpn/")
           server.configured = true
           puts "OpenVPN configured!"
         else
@@ -332,10 +332,10 @@ module Ducttape::Cli::Server
 
       # Save current progress
       database['servers'][name] = server.export()
-      Ducttape::Cli::Root.write_database(database)
+      Netjoin::Cli::Root.write_database(database)
 
       puts "Restarting OpenVPN"
-      if(Ducttape::Interfaces::Aws.restart_openvpn(server))
+      if(Netjoin::Interfaces::Aws.restart_openvpn(server))
         puts "  OpenVPN restart : success!"
       else
         puts "  OpenVPN restart : failed!"
@@ -347,7 +347,7 @@ module Ducttape::Cli::Server
     desc "status <name>", "Status server"
     def status(name)
       # Read database file
-      database = Ducttape::Cli::Root.load_database()
+      database = Netjoin::Cli::Root.load_database()
 
       # Check for existing server
       if (!database['servers'] or !database['servers'][name])
@@ -356,8 +356,8 @@ module Ducttape::Cli::Server
       end
 
       info = database['servers'][name]
-      server = Ducttape::Models::Servers::Aws.retrieve(name, info)
-      status = Ducttape::Interfaces::Aws.status(server)
+      server = Netjoin::Models::Servers::Aws.retrieve(name, info)
+      status = Netjoin::Interfaces::Aws.status(server)
 
       if(!status)
         puts "Unable to get status!"
@@ -370,7 +370,7 @@ module Ducttape::Cli::Server
     desc "describe <name>", "describe"
     def describe(name)
       # Read database file
-      database = Ducttape::Cli::Root.load_database()
+      database = Netjoin::Cli::Root.load_database()
 
       # Check for existing server
       if (!database['servers'] or !database['servers'][name])
@@ -379,8 +379,8 @@ module Ducttape::Cli::Server
       end
 
       info = database['servers'][name]
-      server = Ducttape::Models::Servers::Aws.retrieve(name, info)
-      response = Ducttape::Interfaces::Aws.describe(server)
+      server = Netjoin::Models::Servers::Aws.retrieve(name, info)
+      response = Netjoin::Interfaces::Aws.describe(server)
 
       puts response.to_yaml()
     end

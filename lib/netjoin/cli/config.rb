@@ -3,7 +3,7 @@
 
 require 'thor'
 
-module Ducttape::Cli
+module Netjoin::Cli
 
   class Config < Thor
 
@@ -28,11 +28,11 @@ module Ducttape::Cli
 
     no_commands {
       def self.load_config()
-        Ducttape::Cli::Root.load_file('config.yml')
+        Netjoin::Cli::Root.load_file('config.yml')
       end
 
       def self.write_config(config)
-        Ducttape::Cli::Root.write_file('config.yml', config.to_yaml)
+        Netjoin::Cli::Root.write_file('config.yml', config.to_yaml)
       end
     }
   end

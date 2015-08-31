@@ -4,7 +4,7 @@ require_relative 'base'
 require_relative '../../models/clients/linux'
 require_relative '../../interfaces/linux'
 
-module Ducttape::Cli::Client
+module Netjoin::Cli::Client
 
   class Linux < Base
 
@@ -21,7 +21,7 @@ module Ducttape::Cli::Client
     option :vpn_ip_address, :type => :string
     def add(name)
       # Read database file
-      database = Ducttape::Cli::Root.load_database()
+      database = Netjoin::Cli::Root.load_database()
 
       # Check for existing client
       if (database['clients'] and database['clients'][name])
@@ -30,13 +30,13 @@ module Ducttape::Cli::Client
       end
 
       # Check for a way to log in
-      if(Ducttape::Helpers::StringUtils.blank?(options[:password]) and Ducttape::Helpers::StringUtils.blank?(options[:key_pem]))
+      if(Netjoin::Helpers::StringUtils.blank?(options[:password]) and Netjoin::Helpers::StringUtils.blank?(options[:key_pem]))
         puts "ERROR : Missing a password or pem key file to ssh/scp"
         return
       end
 
       # Check for key generation of file
-      if(Ducttape::Helpers::StringUtils.blank?(options[:generate_key]) and Ducttape::Helpers::StringUtils.blank?(options[:file_key]))
+      if(Netjoin::Helpers::StringUtils.blank?(options[:generate_key]) and Netjoin::Helpers::StringUtils.blank?(options[:file_key]))
         puts "ERROR : Key file missing, if you want to generate a key file, add '--generate true' to the command."
         puts "        This will only work if the OpenVPN Server has easy-rsa installed and configures!"
         return
@@ -48,18 +48,18 @@ module Ducttape::Cli::Client
         return
       end
 
-      if(!Ducttape::Helpers::StringUtils.blank?(options[:ip_address]) and !Ducttape::Helpers::StringUtils.valid_ip_address?(options[:ip_address]))
+      if(!Netjoin::Helpers::StringUtils.blank?(options[:ip_address]) and !Netjoin::Helpers::StringUtils.valid_ip_address?(options[:ip_address]))
         puts "ERROR : Not a valid IP address!"
         return
       end
 
-      if(!Ducttape::Helpers::StringUtils.blank?(options[:vpn_ip_address]) and !Ducttape::Helpers::StringUtils.valid_ip_address?(options[:vpn_ip_address]))
+      if(!Netjoin::Helpers::StringUtils.blank?(options[:vpn_ip_address]) and !Netjoin::Helpers::StringUtils.valid_ip_address?(options[:vpn_ip_address]))
         puts "ERROR : Not a valid VPN IP address!"
         return
       end
 
       # Create Client object to work with
-      client = Ducttape::Models::Clients::Linux.new(name, options[:server], options[:ip_address], options[:username])
+      client = Netjoin::Models::Clients::Linux.new(name, options[:server], options[:ip_address], options[:username])
       if (options[:generate_key])
         if(options[:generate_key] === "false")
           client.generate_key = false
@@ -79,7 +79,7 @@ module Ducttape::Cli::Client
 
       # Write database file
       database['clients'][client.name()] = client.export()
-      Ducttape::Cli::Root.write_database(database)
+      Netjoin::Cli::Root.write_database(database)
 
       puts client.export_yaml()
     end
@@ -95,7 +95,7 @@ module Ducttape::Cli::Client
     option :vpn_ip_address, :type => :string
     def update(name)
       # Read database file
-      database = Ducttape::Cli::Root.load_database()
+      database = Netjoin::Cli::Root.load_database()
 
       # Check for existing client
       if (!database['clients'] or !database['clients'][name])
@@ -105,7 +105,7 @@ module Ducttape::Cli::Client
 
       # Get client
       info = database['clients'][name]
-      client = Ducttape::Models::Clients::Linux.retrieve(name, info)
+      client = Netjoin::Models::Clients::Linux.retrieve(name, info)
 
       # Update the database file
       if (options[:generate_key])
@@ -124,13 +124,13 @@ module Ducttape::Cli::Client
       client.vpn_ip_address = options[:vpn_ip_address] if options[:vpn_ip_address]
 
       # Check for a way to log in
-      if(Ducttape::Helpers::StringUtils.blank?(client.password) and Ducttape::Helpers::StringUtils.blank?(client.key_pem))
+      if(Netjoin::Helpers::StringUtils.blank?(client.password) and Netjoin::Helpers::StringUtils.blank?(client.key_pem))
         puts "ERROR : Missing a password or pem key file to ssh/scp"
         return
       end
 
       # Check for key generation of file
-      if(Ducttape::Helpers::StringUtils.blank?(client.generate_key) and Ducttape::Helpers::StringUtils.blank?(client.file_key))
+      if(Netjoin::Helpers::StringUtils.blank?(client.generate_key) and Netjoin::Helpers::StringUtils.blank?(client.file_key))
         puts "ERROR : Key file missing, if you want to generate a key file, add '--generate true' to the command."
         puts "        This will only work if the OpenVPN Server has easy-rsa installed and configures!"
         return
@@ -142,19 +142,19 @@ module Ducttape::Cli::Client
         return
       end
 
-      if(!Ducttape::Helpers::StringUtils.blank?(client.ip_address) and !Ducttape::Helpers::StringUtils.valid_ip_address?(client.ip_address))
+      if(!Netjoin::Helpers::StringUtils.blank?(client.ip_address) and !Netjoin::Helpers::StringUtils.valid_ip_address?(client.ip_address))
         puts "ERROR : Not a valid IP address!"
         return
       end
 
-      if(!Ducttape::Helpers::StringUtils.blank?(client.vpn_ip_address) and !Ducttape::Helpers::StringUtils.valid_ip_address?(client.vpn_ip_address))
+      if(!Netjoin::Helpers::StringUtils.blank?(client.vpn_ip_address) and !Netjoin::Helpers::StringUtils.valid_ip_address?(client.vpn_ip_address))
         puts "ERROR : Not a valid VPN IP address!"
         return
       end
 
       # Write database file
       database['clients'][client.name()] = client.export()
-      Ducttape::Cli::Root.write_database(database)
+      Netjoin::Cli::Root.write_database(database)
 
       puts client.export_yaml()
     end

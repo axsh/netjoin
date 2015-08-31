@@ -2,7 +2,7 @@
 
 require_relative 'linux'
 
-module Ducttape::Models::Servers
+module Netjoin::Models::Servers
 
   class Aws < Linux
 

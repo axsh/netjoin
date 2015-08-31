@@ -2,7 +2,7 @@
 
 require_relative 'base'
 
-module Ducttape::Cli::Server
+module Netjoin::Cli::Server
 
   class Linux < Base
 
@@ -26,7 +26,7 @@ module Ducttape::Cli::Server
     option :username, :type => :string, :required => true
     def add(name)
       # Read database file
-      database = Ducttape::Cli::Root.load_database()
+      database = Netjoin::Cli::Root.load_database()
 
       # Check for existing server
       if (database['servers'] and database['servers'][name])
@@ -34,23 +34,23 @@ module Ducttape::Cli::Server
         return
       end
 
-      if(Ducttape::Helpers::StringUtils.blank?(options[:password]) and Ducttape::Helpers::StringUtils.blank?(options[:key_pem]))
+      if(Netjoin::Helpers::StringUtils.blank?(options[:password]) and Netjoin::Helpers::StringUtils.blank?(options[:key_pem]))
         puts "ERROR : Missing a password or pem key file to ssh/scp"
         return
       end
 
-      if(!Ducttape::Helpers::StringUtils.blank?(options[:ip_address]) and !Ducttape::Helpers::StringUtils.valid_ip_address?(options[:ip_address]))
+      if(!Netjoin::Helpers::StringUtils.blank?(options[:ip_address]) and !Netjoin::Helpers::StringUtils.valid_ip_address?(options[:ip_address]))
         puts "ERROR : Not a valid IP address!"
         return
       end
 
-      if(!Ducttape::Helpers::StringUtils.blank?(options[:network_ip]) and !Ducttape::Helpers::StringUtils.valid_ip_address?(options[:network_ip]))
+      if(!Netjoin::Helpers::StringUtils.blank?(options[:network_ip]) and !Netjoin::Helpers::StringUtils.valid_ip_address?(options[:network_ip]))
         puts "ERROR : Not a valid network IP address!"
         return
       end
 
       # Create server object to work with
-      server = Ducttape::Models::Servers::Linux.new(name, options[:ip_address], options[:username])
+      server = Netjoin::Models::Servers::Linux.new(name, options[:ip_address], options[:username])
 
       if (options[:configured])
         if(options[:configured] === "false")
@@ -79,7 +79,7 @@ module Ducttape::Cli::Server
       server.port = options[:port] if options[:port]
 
       # Check for OpenVPN installation on the server
-      if (!server.ip_address === '0.0.0.0' and !Ducttape::Interfaces::Linux.check_openvpn_installed(server))
+      if (!server.ip_address === '0.0.0.0' and !Netjoin::Interfaces::Linux.check_openvpn_installed(server))
         puts "OpenVPN not installed on the server, aborting!"
         return
       end
@@ -89,7 +89,7 @@ module Ducttape::Cli::Server
         database['servers'] = {}
       end
       database['servers'][server.name()] = server.export()
-      Ducttape::Cli::Root.write_database(database)
+      Netjoin::Cli::Root.write_database(database)
 
       puts server.export_yaml
     end
@@ -112,7 +112,7 @@ module Ducttape::Cli::Server
     option :username, :type => :string
     def update(name)
       # Read database file
-      database = Ducttape::Cli::Root.load_database()
+      database = Netjoin::Cli::Root.load_database()
 
       # Check for existing server
       if (!database['servers'] or !database['servers'][name])
@@ -121,7 +121,7 @@ module Ducttape::Cli::Server
       end
 
       info = database['servers'][name]
-      server = Ducttape::Models::Servers::Linux.retrieve(name, info)
+      server = Netjoin::Models::Servers::Linux.retrieve(name, info)
 
       # Update the database file
       if (options[:configured])
@@ -152,30 +152,30 @@ module Ducttape::Cli::Server
       server.port = options[:port] if options[:port]
       server.username = options[:username] if options[:username]
 
-      if(Ducttape::Helpers::StringUtils.blank?(server.password) and Ducttape::Helpers::StringUtils.blank?(server.key_pem))
+      if(Netjoin::Helpers::StringUtils.blank?(server.password) and Netjoin::Helpers::StringUtils.blank?(server.key_pem))
         puts "ERROR : Missing a password or pem key file to ssh/scp"
         return
       end
 
-      if(!Ducttape::Helpers::StringUtils.blank?(server.ip_address) and !Ducttape::Helpers::StringUtils.valid_ip_address?(server.ip_address))
+      if(!Netjoin::Helpers::StringUtils.blank?(server.ip_address) and !Netjoin::Helpers::StringUtils.valid_ip_address?(server.ip_address))
         puts "ERROR : Not a valid IP address!"
         return
       end
 
-      if(!Ducttape::Helpers::StringUtils.blank?(server.network_ip) and !Ducttape::Helpers::StringUtils.valid_ip_address?(server.network_ip))
+      if(!Netjoin::Helpers::StringUtils.blank?(server.network_ip) and !Netjoin::Helpers::StringUtils.valid_ip_address?(server.network_ip))
         puts "ERROR : Not a valid network IP address!"
         return
       end
 
       database['servers'][name] = server.export()
-      Ducttape::Cli::Root.write_database(database)
+      Netjoin::Cli::Root.write_database(database)
 
       puts server.export_yaml
     end
 
     desc "install <name>", "Install and configure server"
     def install(name)
-      database = Ducttape::Cli::Root.load_database()
+      database = Netjoin::Cli::Root.load_database()
 
       # Check for existing server
       if (!database['servers'] or !database['servers'][name])
@@ -185,11 +185,11 @@ module Ducttape::Cli::Server
 
       info = database['servers'][name]
 
-      server = Ducttape::Models::Servers::Linux.retrieve(name, info)
+      server = Netjoin::Models::Servers::Linux.retrieve(name, info)
 
       puts "Checking OpenVPN Installation"
-      if (!Ducttape::Interfaces::Linux.check_openvpn_installed(server))
-        if (Ducttape::Interfaces::Linux.install_openvpn(server))
+      if (!Netjoin::Interfaces::Linux.check_openvpn_installed(server))
+        if (Netjoin::Interfaces::Linux.install_openvpn(server))
           puts "  OpenVPN installed!"
           server.installed = true
         else
@@ -202,44 +202,44 @@ module Ducttape::Cli::Server
       end
 
       database['servers'][name] = server.export()
-      Ducttape::Cli::Root.write_database(database)
+      Netjoin::Cli::Root.write_database(database)
 
       if(!server.configured)
         puts "Configuring OpenVPN"
         error = false
-        Ducttape::Interfaces::Linux.mkdir(server, "/tmp/openvpn/")
+        Netjoin::Interfaces::Linux.mkdir(server, "/tmp/openvpn/")
         if(File.file?(server.file_conf))
-          Ducttape::Interfaces::Linux.upload_file(server, server.file_conf, "/tmp/openvpn/")
+          Netjoin::Interfaces::Linux.upload_file(server, server.file_conf, "/tmp/openvpn/")
         else
           puts "  File missing 'file_conf' at #{server.file_conf}"
           error = true
         end
         if(File.file?(server.file_ca_crt))
-          Ducttape::Interfaces::Linux.upload_file(server, server.file_ca_crt, "/tmp/openvpn/")
+          Netjoin::Interfaces::Linux.upload_file(server, server.file_ca_crt, "/tmp/openvpn/")
         else
           puts "  File missing 'file_ca_crt' at #{server.file_ca_cert}"
           error = true
         end
         if(File.file?(server.file_pem))
-          Ducttape::Interfaces::Linux.upload_file(server, server.file_pem, "/tmp/openvpn/")
+          Netjoin::Interfaces::Linux.upload_file(server, server.file_pem, "/tmp/openvpn/")
         else
           puts "  File missing 'file_pem' at #{server.file_pem}"
           error = true
         end
         if(File.file?(server.file_crt))
-          Ducttape::Interfaces::Linux.upload_file(server, server.file_crt, "/tmp/openvpn/")
+          Netjoin::Interfaces::Linux.upload_file(server, server.file_crt, "/tmp/openvpn/")
         else
           puts "  File missing 'file_crt' at #{server.file_crt}"
           error = true
         end
         if(File.file?(server.file_key))
-          Ducttape::Interfaces::Linux.upload_file(server, server.file_key, "/tmp/openvpn/")
+          Netjoin::Interfaces::Linux.upload_file(server, server.file_key, "/tmp/openvpn/")
         else
           puts "  File missing 'file_key' at #{server.file_key}"
           error = true
         end
         if (!error)
-          Ducttape::Interfaces::Linux.move_file(server, "/tmp/openvpn/*", "/etc/openvpn/")
+          Netjoin::Interfaces::Linux.move_file(server, "/tmp/openvpn/*", "/etc/openvpn/")
           server.configured = true
           puts "  OpenVPN configured!"
         else
@@ -251,13 +251,13 @@ module Ducttape::Cli::Server
       end
 
       database['servers'][name] = server.export()
-      Ducttape::Cli::Root.write_database(database)
+      Netjoin::Cli::Root.write_database(database)
 
       if(!error)
         puts "Starting OpenVPN with config"
-        Ducttape::Interfaces::Linux.restart_openvpn(server)
-        Ducttape::Interfaces::Linux.start_openvpn_config(server)
-        Ducttape::Interfaces::Linux.restart_openvpn(server)
+        Netjoin::Interfaces::Linux.restart_openvpn(server)
+        Netjoin::Interfaces::Linux.start_openvpn_config(server)
+        Netjoin::Interfaces::Linux.restart_openvpn(server)
       else
         raise Exception.new("Something went wrong")
       end

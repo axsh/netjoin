@@ -1,6 +1,6 @@
 require 'resolv'
 
-module Ducttape::Helpers
+module Netjoin::Helpers
 
   class StringUtils
 

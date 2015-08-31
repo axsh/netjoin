@@ -2,7 +2,7 @@
 
 require_relative 'base'
 
-module Ducttape::Models::Servers
+module Netjoin::Models::Servers
 
   class Linux < Base
 

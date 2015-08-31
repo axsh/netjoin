@@ -1,17 +1,17 @@
-module Ducttape::Cli
+module Netjoin::Cli
 
   class Root < Thor
 
     desc "config SUBCOMMAND ...ARGS", "manage configuration"
-    subcommand "config", Ducttape::Cli::Config
+    subcommand "config", Netjoin::Cli::Config
 
     desc "clients SUBCOMMAND ...ARGS", "manage clients"
-    subcommand "clients", Ducttape::Cli::Clients
+    subcommand "clients", Netjoin::Cli::Clients
 
     desc "servers SUBCOMMAND ...ARGS", "manage servers"
-    subcommand "servers", Ducttape::Cli::Servers
+    subcommand "servers", Netjoin::Cli::Servers
 
-    desc "init", "init ducttape"
+    desc "init", "init netjoin"
     def init()
       if (!File.file?('config.yml'))
         dist_config = Root.load_file('config-dist.yml')

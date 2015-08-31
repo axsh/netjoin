@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Ducttape::Cli::Root do
+describe Netjoin::Cli::Root do
 
   context "Export" do
 

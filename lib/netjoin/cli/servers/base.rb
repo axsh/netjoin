@@ -2,7 +2,7 @@
 
 require 'thor'
 
-module Ducttape::Cli::Server
+module Netjoin::Cli::Server
 
   class Base < Thor
 
@@ -13,7 +13,7 @@ module Ducttape::Cli::Server
     def show()
 
       # Read database file
-      database = Ducttape::Cli::Root.load_database()
+      database = Netjoin::Cli::Root.load_database()
 
       if(!database['servers'])
         return

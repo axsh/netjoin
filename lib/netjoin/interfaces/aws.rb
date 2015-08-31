@@ -4,7 +4,7 @@ require "right_aws_api"
 
 require_relative 'linux'
 
-module Ducttape::Interfaces
+module Netjoin::Interfaces
 
   class Aws < Linux
 
