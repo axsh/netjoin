@@ -8,6 +8,7 @@ module Netjoin::Models::Servers
 
     attr_accessor :domain
     attr_accessor :hostname
+    attr_accessor :instance_id
     attr_accessor :ssl_api_key
     attr_accessor :ssl_api_username
 
@@ -23,20 +24,21 @@ module Netjoin::Models::Servers
       self.fill(entity, data)
       entity.domain = data[:domain]
       entity.hostname = data[:hostname]
+      entity.instance_id = data[:instance_id]
       return entity
     end
 
     def type()
-      return :aws
+      return :softlayer
     end
 
     def export_data()
       data = super()
       data[:domain] = @domain
       data[:hostname] = @hostname
+      data[:instance_id] = @instance_id
       data[:ssl_api_key] = @ssl_api_key
       data[:ssl_api_username] = @ssl_api_username
-
       return data
     end
 

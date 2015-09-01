@@ -171,11 +171,35 @@ module Netjoin::Cli::Server
       info = database['servers'][name]
       server = Netjoin::Models::Servers::Softlayer.retrieve(name, info)
 
-      if(Netjoin::Interfaces::Softlayer.create(server))
-        server.installed = true
-      else
-        puts "ERROR: something went wrong"
+      if(server.installed)
+        puts "Already installed"
       end
+
+      if(!server.instance_id)
+        if(!Netjoin::Interfaces::Softlayer.create(server))
+          puts "ERROR: something went wrong"
+        end
+      else
+        puts " Softlayer instance already created, continuing"
+      end
+
+      # Write database file
+      database['servers'][server.name()] = server.export()
+      Netjoin::Cli::Root.write_database(database)
+
+      # Retrieving IP address
+
+      puts "Checking for IP address, abort by ctrl-c, rerun command to continue."
+
+      describe = Netjoin::Interfaces::Softlayer.show(server)
+      while(describe["primaryIpAddress"] == nil) do
+        puts "No IP address found, checking every 5 seconds!"
+        sleep(5)
+        describe = Netjoin::Interfaces::Softlayer.show(server)
+      end
+      server.ip_address = describe["primaryIpAddress"]
+
+      server.installed = true
 
       # Write database file
       database['servers'][server.name()] = server.export()
@@ -184,8 +208,8 @@ module Netjoin::Cli::Server
       puts server.export_yaml
     end
 
-    desc "test <name>", "test"
-    def test(name)
+    desc "describe <name>", "describe"
+    def describe(name)
       # Read database file
       database = Netjoin::Cli::Root.load_database()
 
@@ -199,13 +223,12 @@ module Netjoin::Cli::Server
       info = database['servers'][name]
       server = Netjoin::Models::Servers::Softlayer.retrieve(name, info)
 
-      Netjoin::Interfaces::Softlayer.test(server)
+      if (result = Netjoin::Interfaces::Softlayer.show(server))
+        puts result.inspect
+      else
+        puts "ERROR: Server does not exist or something went wrong"
+      end
 
-      # Write database file
-      database['servers'][server.name()] = server.export()
-      Netjoin::Cli::Root.write_database(database)
-
-      puts server.export_yaml
     end
 
   end
