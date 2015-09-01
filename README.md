@@ -1,5 +1,4 @@
 # netjoin
-Name provisional, WIP
 
 A CLI to allows you to specify and build a VPN network layout. Using the CLI you can servers and clients to a database file which will later be used to set up the VPN network.
 
