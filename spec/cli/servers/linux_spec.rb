@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Ducttape::Cli::Server::Linux do
+describe Netjoin::Cli::Server::Linux do
 
   context "Show" do
 

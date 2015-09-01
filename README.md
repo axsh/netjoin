@@ -1,5 +1,4 @@
-# ducttape
-Name provisional, WIP
+# netjoin
 
 A CLI to allows you to specify and build a VPN network layout. Using the CLI you can servers and clients to a database file which will later be used to set up the VPN network.
 
@@ -33,10 +32,10 @@ Not yet supported!
 
 Clone this repository.
 
-Initialize ducttape to create the config and database files by the following command :
+Initialize netjoin to create the config and database files by the following command :
 
 ```bash
-$ bin/ducttape init
+$ bin/netjoin init
 ```
 
 # Quick start with Easy-RSA
@@ -56,13 +55,13 @@ Remove  ``--interact`` from the ``build-key`` script.
 Server has OpenVPN already installed and configured using the above guide
 
 ```bash
-$ ducttape servers linux add vpn-server-name --ip-address 192.168.122.100 --username root --password root
+$ netjoin servers linux add vpn-server-name --ip-address 192.168.122.100 --username root --password root
 ```
 
 ## Add a client
 
 ```bash
-$ ducttape clients linux add vpn-client-name --server vpn-server-name --ip-address 192.168.122.165 --username root --password root
+$ netjoin clients linux add vpn-client-name --server vpn-server-name --ip-address 192.168.122.165 --username root --password root
 ```
 
 ## Attach the client to the VPN network
@@ -70,7 +69,7 @@ $ ducttape clients linux add vpn-client-name --server vpn-server-name --ip-addre
 Installs OpenVPN, generates certification file, uploads the file to the client and starts OpenVPN using that file
 
 ```bash
-$ ducttape clients attach
+$ netjoin clients attach
 ```
 
 # More advanced setup
@@ -91,7 +90,7 @@ When you take care of generating the configuration and certification files yours
 ## Add server
 
 ```bash
-$ ducttape servers linux add vpn-server --ip-address 192.168.122.100 --username root --password root --file-conf /tmp/server.conf --file-ca-crt /tmp/ca.crt --file-pem /tmp/server.pem --file-crt /tmp/server.crt --file-key /tmp/server.key
+$ netjoin servers linux add vpn-server --ip-address 192.168.122.100 --username root --password root --file-conf /tmp/server.conf --file-ca-crt /tmp/ca.crt --file-pem /tmp/server.pem --file-crt /tmp/server.crt --file-key /tmp/server.key
 ```
 
 ## Install server
@@ -99,13 +98,13 @@ $ ducttape servers linux add vpn-server --ip-address 192.168.122.100 --username 
 Installs OpenVPN, uploads the configuration and certification files and starts OpenVPN
 
 ```bash
-$ ducttape servers linux install vpn-server
+$ netjoin servers linux install vpn-server
 ```
 
 ## Add client
 
 ```bash
-$ ducttape clients linux add vpn-client-name --server vpn-server-name --ip-address 192.168.122.165 --username root --password root --generate-key true
+$ netjoin clients linux add vpn-client-name --server vpn-server-name --ip-address 192.168.122.165 --username root --password root --generate-key true
 ```
 
 ## Attach client
@@ -113,7 +112,7 @@ $ ducttape clients linux add vpn-client-name --server vpn-server-name --ip-addre
 Installs OpenVPN, uploads the local certification file  to the client and starts OpenVPN using that file
 
 ```bash
-$ ducttape clients attach
+$ netjoin clients attach
 ```
 
 # Troubleshooting
