@@ -37,7 +37,7 @@ module Netjoin::Cli::Server
       end
 
       # Check for a way to log in
-      if(Netjoin::Helpers::StringUtils.blank?(options[:password]) and Netjoin::Helpers::StringUtils.blank?(options[:key_pem]))
+      if(installed and Netjoin::Helpers::StringUtils.blank?(options[:password]) and Netjoin::Helpers::StringUtils.blank?(options[:key_pem]))
         puts "ERROR : Missing a password or pem key file to ssh/scp"
         return
       end
@@ -173,6 +173,7 @@ module Netjoin::Cli::Server
 
       if(server.installed)
         puts "Already installed"
+        return
       end
 
       if(!server.instance_id)
@@ -187,17 +188,37 @@ module Netjoin::Cli::Server
       database['servers'][server.name()] = server.export()
       Netjoin::Cli::Root.write_database(database)
 
+      softlayer_server = Netjoin::Interfaces::Softlayer.getServer(server)
+
       # Retrieving IP address
-
-      puts "Checking for IP address, abort by ctrl-c, rerun command to continue."
-
-      describe = Netjoin::Interfaces::Softlayer.show(server)
-      while(describe["primaryIpAddress"] == nil) do
-        puts "No IP address found, checking every 5 seconds!"
-        sleep(5)
-        describe = Netjoin::Interfaces::Softlayer.show(server)
+      if(!server.ip_address)
+        puts "Checking for IP address, abort by ctrl-c, rerun command to continue."
+        while(softlayer_server["primaryIpAddress"] == nil) do
+          puts "No IP address found, checking every 5 seconds!"
+          sleep(5)
+          softlayer_server = Netjoin::Interfaces::Softlayer.show(server)
+        end
+        server.ip_address = softlayer_server["primaryIpAddress"]
+        puts "  IP address found!"
+        # Write database file
+        database['servers'][server.name()] = server.export()
+        Netjoin::Cli::Root.write_database(database)
       end
-      server.ip_address = describe["primaryIpAddress"]
+
+      if(!server.password or !server.username)
+        puts "Fetching username and password"
+        account = softlayer_server["operatingSystem"]["passwords"][0]
+        server.password = account["password"]
+        server.username = account["username"]
+        if(!server.password)
+          puts "  ERROR : no password"
+          return
+        end
+        puts "  Username and password found!"
+        # Write database file
+        database['servers'][server.name()] = server.export()
+        Netjoin::Cli::Root.write_database(database)
+      end
 
       server.installed = true
 
@@ -205,7 +226,8 @@ module Netjoin::Cli::Server
       database['servers'][server.name()] = server.export()
       Netjoin::Cli::Root.write_database(database)
 
-      puts server.export_yaml
+      puts "Server created!"
+
     end
 
     desc "describe <name>", "describe"
@@ -228,7 +250,6 @@ module Netjoin::Cli::Server
       else
         puts "ERROR: Server does not exist or something went wrong"
       end
-
     end
 
   end

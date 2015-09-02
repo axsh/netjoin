@@ -8,19 +8,23 @@ module Netjoin::Interfaces
 
   class Softlayer < Linux
 
-    def self.connect(server, name)
-      return SoftLayer::Service.new(name,
+    def self.client(server)
+      return SoftLayer::Client.new(
           :username => server.ssl_api_username,
           :api_key => server.ssl_api_key,
           :timeout => 120
         )
     end
 
-    def self.show(server)
-      client = Softlayer.connect(server, "SoftLayer_Virtual_Guest")
+    def self.service(server, name)
+      return client(server).service_named(name)
+    end
+
+    def self.getServer(server)
       begin
-        result = client.object_with_id(server.instance_id).getObject;
-        return result
+        client = client(server)
+        server = SoftLayer::VirtualServer.server_with_id(server.instance_id, { :client => client } )
+        return server
       rescue => e
         puts e.inspect
       end
@@ -28,10 +32,10 @@ module Netjoin::Interfaces
     end
 
     def self.list_datacenters(server)
-      client = Softlayer.connect(server, "SoftLayer_Location_Datacenter")
+      client = Softlayer.service(server, "SoftLayer_Location_Datacenter")
       begin
 
-        result = client.getDatacenters();
+        result = client.getDatacenters()
         puts result.inspect
       rescue => e
         puts e.inspect
@@ -41,7 +45,7 @@ module Netjoin::Interfaces
     end
 
     def self.create(server)
-      client = Softlayer.connect(server, "SoftLayer_Virtual_Guest")
+      client = Softlayer.service(server, "SoftLayer_Virtual_Guest")
       begin
         templateObject = {
           'complexType' => "SoftLayer_Virtual_Guest",
