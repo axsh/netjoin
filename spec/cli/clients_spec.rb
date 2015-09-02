@@ -61,6 +61,19 @@ aws-client-02:
     :password:#{' '}
     :username: root
     :vpn_ip_address:#{' '}
+softlayer-client-01:
+  :type: :linux
+  :server: softlayer-server-1
+  :status: :new
+  :error:#{' '}
+  :data:
+    :generate_key: false
+    :file_key: \"/tmp/client-1.ovpn\"
+    :ip_address: 21.93.16.152
+    :key_pem: \"/tmp/user.pem\"
+    :password:#{' '}
+    :username: root
+    :vpn_ip_address:#{' '}
 "
       end
     end # End context "All"
@@ -114,6 +127,7 @@ aws-client-02:
 \"vpn-client-99\" : new
 \"aws-client-01\" : new
 \"aws-client-02\" : new
+\"softlayer-client-01\" : new
 "
       end
     end # End context All

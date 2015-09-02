@@ -20,7 +20,11 @@ module Netjoin::Cli::Server
     option :file_pem, :type => :string
     option :hostname, :type => :string
     option :installed, :type => :string
+    option :ip_address, :type => :string
     option :key_pem, :type => :string
+    option :mode, :type => :string
+    option :network_ip, :type => :string
+    option :network_prefix, :type => :string
     option :password, :type => :string
     option :port, :type => :string, :required => true
     option :ssl_api_key, :type => :string, :required => true
@@ -36,14 +40,24 @@ module Netjoin::Cli::Server
         return
       end
 
+      # Create Server object to work with
+      server = Netjoin::Models::Servers::Softlayer.new(name, options[:ssl_api_key], options[:ssl_api_username])
+
       # Check for a way to log in
-      if(installed and Netjoin::Helpers::StringUtils.blank?(options[:password]) and Netjoin::Helpers::StringUtils.blank?(options[:key_pem]))
+      if(server.installed and Netjoin::Helpers::StringUtils.blank?(options[:password]) and Netjoin::Helpers::StringUtils.blank?(options[:key_pem]))
         puts "ERROR : Missing a password or pem key file to ssh/scp"
         return
       end
 
-      # Create Server object to work with
-      server = Netjoin::Models::Servers::Softlayer.new(name, options[:ssl_api_key], options[:ssl_api_username])
+      if(!Netjoin::Helpers::StringUtils.blank?(options[:ip_address]) and !Netjoin::Helpers::StringUtils.valid_ip_address?(options[:ip_address]))
+        puts "ERROR : Not a valid IP address!"
+        return
+      end
+
+      if(!Netjoin::Helpers::StringUtils.blank?(options[:network_ip]) and !Netjoin::Helpers::StringUtils.valid_ip_address?(options[:network_ip]))
+        puts "ERROR : Not a valid network IP address!"
+        return
+      end
 
       if (options[:configured])
         if(options[:configured] === "false")
@@ -67,6 +81,9 @@ module Netjoin::Cli::Server
         end
       end
       server.key_pem = options[:key_pem] if options[:key_pem]
+      server.mode = options[:mode] if options[:mode]
+      server.network_ip = options[:network_ip] if options[:network_ip]
+      server.network_prefix = options[:network_prefix] if options[:network_prefix]
       server.password = options[:password] if options[:password]
       server.port = options[:port] if options[:port]
       server.ssl_api_key = options[:ssl_api_key] if options[:ssl_api_key]
@@ -94,7 +111,11 @@ module Netjoin::Cli::Server
     option :file_pem, :type => :string
     option :hostname, :type => :string
     option :installed, :type => :string
+    option :ip_address, :type => :string
     option :key_pem, :type => :string
+    option :mode, :type => :string
+    option :network_ip, :type => :string
+    option :network_prefix, :type => :string
     option :password, :type => :string
     option :port, :type => :string
     option :ssl_api_key, :type => :string
@@ -136,16 +157,30 @@ module Netjoin::Cli::Server
           server.installed = true
         end
       end
+      server.ip_address = options[:ip_address] if options[:ip_address]
       server.key_pem = options[:key_pem] if options[:key_pem]
+      server.mode = options[:mode] if options[:mode]
+      server.network_ip = options[:network_ip] if options[:network_ip]
+      server.network_prefix = options[:network_prefix] if options[:network_prefix]
       server.password = options[:password] if options[:password]
       server.port = options[:port] if options[:port]
-      server.port = options[:ssl_api_key] if options[:ssl_api_key]
-      server.port = options[:ssl_api_username] if options[:ssl_api_username]
+      server.ssl_api_key = options[:ssl_api_key] if options[:ssl_api_key]
+      server.ssl_api_username = options[:ssl_api_username] if options[:ssl_api_username]
       server.username = options[:username] if options[:username]
 
       # Check for a way to log in
-      if(Netjoin::Helpers::StringUtils.blank?(server.password) and Netjoin::Helpers::StringUtils.blank?(server.key_pem))
+      if(server.installed and Netjoin::Helpers::StringUtils.blank?(server.password) and Netjoin::Helpers::StringUtils.blank?(server.key_pem))
         puts "ERROR : Missing a password or pem key file to ssh/scp"
+        return
+      end
+
+      if(!Netjoin::Helpers::StringUtils.blank?(server.ip_address) and !Netjoin::Helpers::StringUtils.valid_ip_address?(server.ip_address))
+        puts "ERROR : Not a valid IP address!"
+        return
+      end
+
+      if(!Netjoin::Helpers::StringUtils.blank?(server.network_ip) and !Netjoin::Helpers::StringUtils.valid_ip_address?(server.network_ip))
+        puts "ERROR : Not a valid network IP address!"
         return
       end
 
