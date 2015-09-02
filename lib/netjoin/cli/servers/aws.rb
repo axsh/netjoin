@@ -285,46 +285,14 @@ module Netjoin::Cli::Server
 
       # If server is not yet configured, do it now
       if(!server.configured)
-        puts "  Uploading files"
+        puts "Configuring OpenVPN"
         error = false
-        Netjoin::Interfaces::Linux.mkdir(server, "/tmp/openvpn/")
-        if(File.file?(server.file_conf))
-          Netjoin::Interfaces::Aws.upload_file(server, server.file_conf, "/tmp/openvpn/")
-        else
-          puts "File missing 'file_conf' at #{server.file_conf}"
-          error = true
-        end
-        if(File.file?(server.file_ca_crt))
-          Netjoin::Interfaces::Aws.upload_file(server, server.file_ca_crt, "/tmp/openvpn/")
-        else
-          puts "File missing 'file_ca_crt' at #{server.file_ca_cert}"
-          error = true
-        end
-        if(File.file?(server.file_pem))
-          Netjoin::Interfaces::Aws.upload_file(server, server.file_pem, "/tmp/openvpn/")
-        else
-          puts "File missing 'file_pem' at #{server.file_pem}"
-          error = true
-        end
-        if(File.file?(server.file_crt))
-          Netjoin::Interfaces::Aws.upload_file(server, server.file_crt, "/tmp/openvpn/")
-        else
-          puts "File missing 'file_crt' at #{server.file_crt}"
-          error = true
-        end
-        if(File.file?(server.file_key))
-          Netjoin::Interfaces::Aws.upload_file(server, server.file_key, "/tmp/openvpn/")
-        else
-          puts "File missing 'file_key' at #{server.file_key}"
-          error = true
-        end
-
-        if (!error)
-          Netjoin::Interfaces::Aws.move_file(server, "/tmp/openvpn/*", "/etc/openvpn/")
+        if(Netjoin::Interfaces::Aws.upload_openvpn_config(server))
           server.configured = true
-          puts "OpenVPN configured!"
+          puts "  OpenVPN configured!"
         else
-          puts "ERROR: OpenVPN configuration failed!"
+          puts "ERROR:  OpenVPN configuration failed!"
+          return
         end
       else
         puts "OpenVPN already configured!"

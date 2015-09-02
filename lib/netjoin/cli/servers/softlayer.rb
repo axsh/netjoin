@@ -227,7 +227,87 @@ module Netjoin::Cli::Server
       Netjoin::Cli::Root.write_database(database)
 
       puts "Server created!"
+    end
 
+    desc "install <name>", "Install and configure server"
+    def install(name)
+      # Read database file
+      database = Netjoin::Cli::Root.load_database()
+
+      # Check for existing server
+      if (!database['servers'] or !database['servers'][name])
+        puts "ERROR : server with name '#{name}' does not exist"
+        return
+      end
+
+      info = database['servers'][name]
+      server = Netjoin::Models::Servers::Softlayer.retrieve(name, info)
+
+      # Check OpenVPN installation, install if missing
+      puts "Checking epel-release installation"
+      if (!server.installed or !Netjoin::Interfaces::Softlayer.check_epel_installed(server))
+        puts "  Not installed, installing now"
+        if (Netjoin::Interfaces::Softlayer.install_epel(server))
+          puts "    Installed!"
+        else
+          puts "ERROR: Installation failed!"
+        end
+      else
+        puts "  Already installed!"
+      end
+
+      # Check OpenVPN installation, install if missing
+      puts "Checking OpenVPN installation"
+      if (!server.installed or !Netjoin::Interfaces::Softlayer.check_openvpn_installed(server))
+        puts "  Not installed, installing now"
+        if (Netjoin::Interfaces::Softlayer.install_openvpn(server))
+          puts "    Installed!"
+          server.installed = true
+        else
+          puts "ERROR: Installation failed!"
+          server.installed = false
+        end
+      else
+        puts "  Already installed!"
+      end
+
+      # Save current progress
+      database['servers'][name] = server.export()
+      Netjoin::Cli::Root.write_database(database)
+
+      # If installation failed, abort here
+      if(!server.installed)
+        puts "ERROR: Server not installed, aborting!"
+        return
+      end
+
+      # If server is not yet configured, do it now
+      if(!server.configured)
+        puts "Configuring OpenVPN"
+        error = false
+        if(Netjoin::Interfaces::Softlayer.upload_openvpn_config(server))
+          server.configured = true
+          puts "  OpenVPN configured!"
+        else
+          puts "ERROR:  OpenVPN configuration failed!"
+          return
+        end
+      else
+        puts "OpenVPN already configured!"
+      end
+
+      # Save current progress
+      database['servers'][name] = server.export()
+      Netjoin::Cli::Root.write_database(database)
+
+      puts "Restarting OpenVPN"
+      if(Netjoin::Interfaces::Softlayer.restart_openvpn(server))
+        puts "  OpenVPN restart : success!"
+      else
+        puts "  OpenVPN restart : failed!"
+      end
+
+      puts server.export_yaml
     end
 
     desc "describe <name>", "describe"
