@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Ducttape::Cli::Client::Linux do
+describe Netjoin::Cli::Client::Linux do
 
   context "Show" do
 
@@ -57,6 +57,19 @@ aws-client-02:
     :generate_key: false
     :file_key: \"/tmp/client-2.ovpn\"
     :ip_address: 214.93.163.15
+    :key_pem: \"/tmp/user.pem\"
+    :password:#{' '}
+    :username: root
+    :vpn_ip_address:#{' '}
+softlayer-client-01:
+  :type: :linux
+  :server: softlayer-server-1
+  :status: :new
+  :error:#{' '}
+  :data:
+    :generate_key: false
+    :file_key: \"/tmp/client-1.ovpn\"
+    :ip_address: 21.93.16.152
     :key_pem: \"/tmp/user.pem\"
     :password:#{' '}
     :username: root

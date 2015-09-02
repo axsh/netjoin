@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Ducttape::Cli::Config do
+describe Netjoin::Cli::Config do
 
   context "Database" do
 

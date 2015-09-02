@@ -1,16 +1,16 @@
 require 'spec_helper'
 
-describe Netjoin::Cli::Server::Linux do
+describe Netjoin::Cli::Server::Softlayer do
 
   context "Show" do
 
     context "All" do
       let(:output) { capture(:stdout) { subject.show } }
 
-      it "shows all linux servers" do
+      it "shows all softlayer servers" do
         expect(output).to eql "---
-vpn-server-1:
-  :type: :linux
+softlayer-server-1:
+  :type: :softlayer
   :data:
     :configured: true
     :file_ca_crt: \"/tmp/ca.crt\"
@@ -19,27 +19,32 @@ vpn-server-1:
     :file_key: \"/tmp/server.key\"
     :file_pem: \"/tmp/server.pem\"
     :installed: true
-    :ip_address: 225.79.101.15
-    :key_pem: \"/tmp/user.pem\"
+    :ip_address: 161.232.155.142
+    :key_pem:#{' '}
     :mode: dynamic
-    :network_ip: 10.8.0.0
-    :network_prefix: 32
-    :password: test123
-    :port:#{' '}
+    :network_ip:#{' '}
+    :network_prefix:#{' '}
+    :password: root
+    :port: '1194'
     :username: root
+    :domain: example.com
+    :hostname: netjoin
+    :instance_id: 163024005
+    :ssl_api_key: SoftLayerSSLAPIKey
+    :ssl_api_username: ssl_username
 "
       end
     end # End context All
 
     context "Single" do
       let(:output) { capture(:stdout) {
-        subject.options = {:name => 'vpn-server-1'}
+        subject.options = {:name => 'softlayer-server-1'}
         subject.show
       } }
 
-      it "show a single linux server" do
+      it "show a single softlayer server" do
         expect(output).to include "---
-:type: :linux
+:type: :softlayer
 :data:
   :configured: true
   :file_ca_crt: \"/tmp/ca.crt\"
@@ -48,14 +53,19 @@ vpn-server-1:
   :file_key: \"/tmp/server.key\"
   :file_pem: \"/tmp/server.pem\"
   :installed: true
-  :ip_address: 225.79.101.15
-  :key_pem: \"/tmp/user.pem\"
+  :ip_address: 161.232.155.142
+  :key_pem:#{' '}
   :mode: dynamic
-  :network_ip: 10.8.0.0
-  :network_prefix: 32
-  :password: test123
-  :port:#{' '}
+  :network_ip:#{' '}
+  :network_prefix:#{' '}
+  :password: root
+  :port: '1194'
   :username: root
+  :domain: example.com
+  :hostname: netjoin
+  :instance_id: 163024005
+  :ssl_api_key: SoftLayerSSLAPIKey
+  :ssl_api_username: ssl_username
 "
       end
     end # End context Single
@@ -87,17 +97,19 @@ vpn-server-1:
           :mode => 'dynamic',
           :network_ip => '10.8.0.0',
           :network_prefix => 32,
-          :password => 'root',
           :port => 1500,
-          :username => 'root',
+          :domain => 'example.com',
+          :hostname => 'netjoin',
+          :ssl_api_key => 'SoftLayerSSLAPIKey',
+          :ssl_api_username => 'ssl_username'
         }
         subject.add 'test-server'
       } }
 
-      it "creates a new linux server" do
+      it "creates a new softlayer server" do
         expect(output).to eql "---
 test-server:
-  :type: :linux
+  :type: :softlayer
   :data:
     :configured:#{' '}
     :file_ca_crt: \"/tmp/ca.crt\"
@@ -106,14 +118,19 @@ test-server:
     :file_key: \"/tmp/server.key\"
     :file_pem: \"/tmp/server.pem\"
     :installed:#{' '}
-    :ip_address: 0.0.0.0
+    :ip_address:#{' '}
     :key_pem:#{' '}
     :mode: dynamic
     :network_ip: 10.8.0.0
     :network_prefix: 32
-    :password: root
+    :password:#{' '}
     :port: 1500
-    :username: root
+    :username:#{' '}
+    :domain: example.com
+    :hostname: netjoin
+    :instance_id:#{' '}
+    :ssl_api_key: SoftLayerSSLAPIKey
+    :ssl_api_username: ssl_username
 "
       end
     end # End context News
@@ -130,8 +147,11 @@ test-server:
           :mode => 'dynamic',
           :network_ip => '10.8.0.0',
           :network_prefix => 32,
-          :password => 'root',
-          :username => 'root',
+          :port => 1500,
+          :domain => 'example.com',
+          :hostname => 'netjoin',
+          :ssl_api_key => 'SoftLayerSSLAPIKey',
+          :ssl_api_username => 'ssl_username'
         }
         subject.add 'test-server'
       } }
@@ -156,27 +176,6 @@ test-server:
 #      end
 #    end # End context Missing parameters
 
-    context "Missing auth info" do
-      let(:output) { capture(:stdout) {
-        subject.options = {
-          :file_ca_crt => "/tmp/ca.crt",
-          :file_conf => "/tmp/server.conf",
-          :file_crt => "/tmp/server.crt",
-          :file_key => "/tmp/server.key",
-          :ip_address => '0.0.0.0',
-          :mode => 'dynamic',
-          :network_ip => '10.8.0.0',
-          :network_prefix => 32,
-          :username => 'root',
-        }
-        subject.add 'test-server-missing'
-      } }
-
-      it "show error message for missing auth information" do
-        expect(output).to eql "ERROR : Missing a password or pem key file to ssh/scp\n"
-      end
-    end # End context Missing auth info
-
     context "Invalid IP Address" do
       let(:output) { capture(:stdout) {
         subject.options = {
@@ -189,8 +188,11 @@ test-server:
           :mode => 'dynamic',
           :network_ip => '10.8.0.0',
           :network_prefix => 32,
-          :password => 'root',
-          :username => 'root',
+          :port => 1500,
+          :domain => 'example.com',
+          :hostname => 'netjoin',
+          :ssl_api_key => 'SoftLayerSSLAPIKey',
+          :ssl_api_username => 'ssl_username'
         }
         subject.add 'test-server-2'
       } }
@@ -212,8 +214,11 @@ test-server:
           :mode => 'dynamic',
           :network_ip => '10.308.0.0',
           :network_prefix => 32,
-          :password => 'root',
-          :username => 'root',
+          :port => 1500,
+          :domain => 'example.com',
+          :hostname => 'netjoin',
+          :ssl_api_key => 'SoftLayerSSLAPIKey',
+          :ssl_api_username => 'ssl_username'
         }
         subject.add 'test-server-2'
       } }
@@ -242,6 +247,10 @@ test-server:
           :password => 'root2',
           :port => 1600,
           :username => 'root2',
+          :domain => 'example2.net',
+          :hostname => 'net-join',
+          :ssl_api_key => 'SoftLayerSSLAPIKeyNumber2',
+          :ssl_api_username => 'ssl_username_2'
         }
         subject.update 'test-server'
       } }
@@ -249,7 +258,7 @@ test-server:
       it "updates an existing server" do
         expect(output).to eql "---
 test-server:
-  :type: :linux
+  :type: :softlayer
   :data:
     :configured:#{' '}
     :file_ca_crt: \"/tmp/ca-2.crt\"
@@ -266,6 +275,11 @@ test-server:
     :password: root2
     :port: 1600
     :username: root2
+    :domain: example2.net
+    :hostname: net-join
+    :instance_id:#{' '}
+    :ssl_api_key: SoftLayerSSLAPIKeyNumber2
+    :ssl_api_username: ssl_username_2
 "
       end
     end # End context Existing
@@ -280,20 +294,6 @@ test-server:
         expect(output).to eql "ERROR : server with name 'test-server2' does not exist\n"
       end
     end # End context Non-existing
-
-    context "Missing auth info" do
-      let(:output) { capture(:stdout) {
-        subject.options = {
-          :password => '',
-          :file_key => '',
-        }
-        subject.update 'test-server'
-      } }
-
-      it "show error message for missing auth information" do
-        expect(output).to eql "ERROR : Missing a password or pem key file to ssh/scp\n"
-      end
-    end # End context Missing auth info
 
     context "Invalid IP Address" do
       let(:output) { capture(:stdout) {

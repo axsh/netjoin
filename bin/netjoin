@@ -1,0 +1,9 @@
+#!/usr/bin/env ruby
+# -*- coding: utf-8 -*-
+
+require 'thor'
+require 'yaml'
+
+require_relative '../lib/netjoin'
+
+Netjoin::Cli::Root.start(ARGV)
