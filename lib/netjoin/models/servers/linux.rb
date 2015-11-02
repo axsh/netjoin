@@ -6,12 +6,15 @@ module Netjoin::Models::Servers
 
   class Linux < Base
 
+    attr_accessor :mode
+    attr_accessor :master
     attr_accessor :configured
     attr_accessor :file_ca_crt
     attr_accessor :file_conf
     attr_accessor :file_crt
     attr_accessor :file_key
     attr_accessor :file_pem
+    attr_accessor :psk
     attr_accessor :installed
     attr_accessor :ip_address
     attr_accessor :key_pem
@@ -37,12 +40,15 @@ module Netjoin::Models::Servers
     end
 
     def self.fill(entity, data)
+      entity.mode = data[:mode]
+      entity.master = data[:master]
       entity.configured = data[:configured]
       entity.file_ca_crt = data[:file_ca_crt]
       entity.file_conf = data[:file_conf]
       entity.file_crt = data[:file_crt]
       entity.file_key = data[:file_key]
       entity.file_pem = data[:file_pem]
+      entity.psk = data[:psk]
       entity.installed = data[:installed]
       entity.key_pem = data[:key_pem]
       entity.ip_address = data[:ip_address]
@@ -60,12 +66,15 @@ module Netjoin::Models::Servers
 
     def export_data()
       data = super()
+      data[:mode] = @mode
+      data[:master] = @master
       data[:configured] = @configured
       data[:file_ca_crt] = @file_ca_crt
       data[:file_conf] = @file_conf
       data[:file_crt] = @file_crt
       data[:file_key] = @file_key
       data[:file_pem] = @file_pem
+      data[:psk] = @psk
       data[:installed] = @installed
       data[:ip_address] = @ip_address
       data[:key_pem] = @key_pem
