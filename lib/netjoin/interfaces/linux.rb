@@ -12,11 +12,12 @@ module Netjoin::Interfaces
   class Linux < Base
 
     def self.upload_file(client, source, destination)
-      Net::SCP.start(client.ip_address, client.username, Base.auth_param(client)) do |scp|
-        scp.upload!(source, destination)
-        return true
-      end
-      return false
+      `scp #{source} #{client.username}@#{client.ip_address}:#{destination}`
+      # Net::SCP.start(client.ip_address, client.username, Base.auth_param(client)) do |scp|
+      #   scp.upload!(source, destination)
+      #   return true
+      # end
+      # return false
     end
 
     def self.mkdir(client, dir_name)
@@ -28,7 +29,7 @@ module Netjoin::Interfaces
             end
           end
 
-          channel.exec("mkdir #{dir_name}") do |ch, success|
+          channel.exec("mkdir -p #{dir_name}") do |ch, success|
             abort "Could not execute commands!" unless success
             channel.on_data do |ch, data|
               puts ch.exec("ls #{dir_name}")
@@ -358,12 +359,20 @@ verb 3
     def self.upload_openvpn_config(server, database)
       required_file_exist = false
 
+      path = ''
+      if server.username == 'root'
+        path = '/etc/openvpn'
+      else
+        mkdir(server, "~/openvpn")
+        path = '~/openvpn'
+      end
+
       if !server.file_conf.nil? && File.exist?(server.file_conf)
-        Netjoin::Interfaces::Linux.upload_file(server, server.file_conf, "/etc/openvpn/")
+        Netjoin::Interfaces::Linux.upload_file(server, server.file_conf, path)
       else
         if server.mode == "site-to-site"
-          path = generate_site_to_site_conf_file(server, database)
-          Netjoin::Interfaces::Linux.upload_file(server, path, "/etc/openvpn/")
+          conf = generate_site_to_site_conf_file(server, database)
+          Netjoin::Interfaces::Linux.upload_file(server, conf, path)
         else
           puts "  File missing 'file_conf' at #{server.file_conf}"
         end
@@ -387,10 +396,15 @@ verb 3
       end
 
       if required_file_exist
-        upload_files.each do |path|
-          Netjoin::Interfaces::Linux.upload_file(server, path, "/etc/openvpn/")
+        upload_files.each do |file|
+          Netjoin::Interfaces::Linux.upload_file(server, file, path)
         end
       end
+
+      if server.username != 'root'
+        move_file(server, '~/openvpn/*', '/etc/openvpn/')
+      end
+
       required_file_exist
     end
 
@@ -415,11 +429,11 @@ verb 3
       lines << "log vpn.log"
       lines << "verb 3"
       lines << "secret /etc/openvpn/#{File.basename(server.psk)}" if File.exist?(server.psk)
-      fp = File.open("./server-site.conf", "w")
+      fp = File.open("server-site.conf", "w")
       fp.write(lines.join("\n"))
       fp.write("\n")
       fp.close
-      "./server-site.conf"
+      "server-site.conf"
     end
   end
 
