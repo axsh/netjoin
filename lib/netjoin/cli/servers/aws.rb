@@ -287,7 +287,7 @@ module Netjoin::Cli::Server
       if(!server.configured)
         puts "Configuring OpenVPN"
         error = false
-        if(Netjoin::Interfaces::Aws.upload_openvpn_config(server))
+        if(Netjoin::Interfaces::Aws.upload_openvpn_config(server, database))
           server.configured = true
           puts "  OpenVPN configured!"
         else
