@@ -30,6 +30,8 @@ module Netjoin::Cli::Server
     option :security_groups, :type => :array, :required => true
     option :username, :type => :string
     option :zone, :type => :string, :required => true
+    option :vpc_cidr, :type => :string
+    option :public_ip, :type => :string
     def add(name)
       # Read database file
       database = Netjoin::Cli::Root.load_database()
@@ -55,7 +57,9 @@ module Netjoin::Cli::Server
         options[:ami],
         options[:instance_type],
         options[:key_pair],
-        options[:security_groups]
+        options[:security_groups],
+        options[:vpc_cidr],
+        options[:public_ip]
       )
 
       if (options[:configured])
@@ -191,7 +195,7 @@ module Netjoin::Cli::Server
       # Check if server has already been created on AWS
       if(!server.instance_id)
         puts "Initializing new instance, this will take a few minutes"
-        Netjoin::Interfaces::Aws.create_instance(server)
+        Netjoin::Interfaces::Aws.create_instance(server, database)
       else
         puts "Instance already created. skipping!"
       end

@@ -18,22 +18,14 @@ module Netjoin::Interfaces
         puts "Region missing, unable to connect!"
         return nil
       end
-      Aws.config.update({
-        region: server.region,
-        credentials: Aws::Credentials.new(server.access_key_id, server.secret_key)
-      })
     end
 
-    def self.create_instance(server)
+    def self.create_instance(server, database)
 
       required_params = [
-        :zone,
         :ami,
         :instance_type,
         :key_pair,
-        :vpc_cidr,
-        :subnet_cidr,
-        :global_cidr
       ]
 
       required_params.each do |param|
@@ -42,7 +34,23 @@ module Netjoin::Interfaces
         return
       end
 
-      ec2 = Aws::EC2::Client.new
+      ::Aws.config.update({
+        region: server.region,
+        credentials: ::Aws::Credentials.new(server.access_key_id, server.secret_key)
+      })
+      ec2 = ::Aws::EC2::Client.new
+
+      vpc_id = ""
+      subnet_id = ""
+      route_table_id = ""
+      igw_id = ""
+      secg_id = ""
+
+      global_cidr = '118.238.205.23/32'
+      vpc_cidr = '172.16.0.0/16'
+      subnet_cidr = '172.16.172.0/24'
+
+      image_id = 'ami-81d092b1'
 
       if vpc_id == ""
         vpc_id = ec2.create_vpc(
@@ -51,7 +59,7 @@ module Netjoin::Interfaces
         ).vpc.vpc_id
         puts "Create VPC #{vpc_id}"
       end
-      vpc = Aws::EC2::Vpc.new(id: vpc_id)
+      vpc = ::Aws::EC2::Vpc.new(id: vpc_id)
 
       if subnet_id == ""
         subnet_id = ec2.create_subnet(
@@ -60,7 +68,7 @@ module Netjoin::Interfaces
         ).subnet.subnet_id
         puts "Create subnet #{subnet_id}"
       end
-      subnet = Aws::EC2::Subnet.new(id: subnet_id)
+      subnet = ::Aws::EC2::Subnet.new(id: subnet_id)
 
       if route_table_id == ""
         route_table_id = ec2.describe_route_tables(
@@ -79,7 +87,7 @@ module Netjoin::Interfaces
       if igw_id == ""
         igw_id = ec2.create_internet_gateway.internet_gateway.internet_gateway_id
       end
-      igw = Aws::EC2::InternetGateway.new(id: igw_id)
+      igw = ::Aws::EC2::InternetGateway.new(id: igw_id)
       puts "Create igw #{igw_id}"
 
       if igw.attachments.empty?
@@ -102,7 +110,7 @@ module Netjoin::Interfaces
           vpc_id: vpc_id
         }).group_id
       end
-      secg = Aws::EC2::SecurityGroup.new(id: secg_id)
+      secg = ::Aws::EC2::SecurityGroup.new(id: secg_id)
       puts "Create secg #{secg_id}"
 
       if secg.data.ip_permissions.empty?
@@ -125,7 +133,7 @@ module Netjoin::Interfaces
           { device_index: 0, associate_public_ip_address: true, subnet_id: subnet_id, groups: [secg_id] }
         ]
       }).instances.first.instance_id
-      i = Aws::EC2::Instance.new(id: instance_id)
+      i = ::Aws::EC2::Instance.new(id: instance_id)
       puts "Create instance #{instance_id}"
       i.wait_until_running
 
