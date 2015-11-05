@@ -1,5 +1,12 @@
 # -*- coding: utf-8 -*-
+
+require 'logger'
+
 module Netjoin
+
+  class << self
+    attr_accessor :logger
+  end
 
   module Cli
   end
@@ -12,6 +19,9 @@ module Netjoin
 
   module Helpers
   end
+
+  require_relative 'netjoin/node'
+  require_relative 'netjoin/helpers/logger'
 
   require_relative 'netjoin/helpers/string_utils'
 
@@ -26,3 +36,5 @@ module Netjoin
   require_relative 'netjoin/cli/root'
 
 end
+
+Netjoin.logger = ::Logger.new(STDOUT)
