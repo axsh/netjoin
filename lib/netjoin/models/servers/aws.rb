@@ -18,8 +18,9 @@ module Netjoin::Models::Servers
     attr_accessor :vpc_id
     attr_accessor :private_ip_address
     attr_accessor :public_dns_name
+    attr_accessor :vpc_cidr
 
-    def initialize(name, region = nil, zone = nil, access_key_id = nil, secret_key = nil, ami = nil, instance_type = nil, key_pair = nil, security_groups = [])
+    def initialize(name, region = nil, zone = nil, access_key_id = nil, secret_key = nil, ami = nil, instance_type = nil, key_pair = nil, security_groups = [], vpc_cidr = '172.16.0.0/16')
       super(name)
       @username = "ec2-user"
       @region = region
@@ -30,6 +31,7 @@ module Netjoin::Models::Servers
       @instance_type = instance_type
       @key_pair = key_pair
       @security_groups = security_groups
+      @vpc_cidr = vpc_cidr
     end
 
     def self.retrieve(name, info)
@@ -48,6 +50,7 @@ module Netjoin::Models::Servers
       entity.vpc_id = data[:vpc_id]
       entity.private_ip_address = data[:private_ip_address]
       entity.public_dns_name = data[:public_dns_name]
+      entity.vpc_cidr = data[:vpc_cidr]
       return entity
     end
 
@@ -69,6 +72,7 @@ module Netjoin::Models::Servers
       data[:security_groups] = @security_groups
       data[:vpc_id] = @vpc_id
       data[:zone] = @zone
+      data[:vpc_cidr] = @vpc_cidr
       return data
     end
 

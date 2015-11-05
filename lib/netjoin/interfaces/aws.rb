@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-require "right_aws_api"
+require 'aws-sdk'
 
 require_relative 'linux'
 
@@ -18,39 +18,127 @@ module Netjoin::Interfaces
         puts "Region missing, unable to connect!"
         return nil
       end
-      url = "https://ec2.#{server.region}.amazonaws.com"
-      return RightScale::CloudApi::AWS::EC2::Manager.new(server.access_key_id, server.secret_key, url)
     end
 
-    def self.create_instance(server)
+    def self.create_instance(server, database)
 
-      if (!server.zone or !server.ami or !server.instance_type or !server.key_pair)
-        puts "Unable to create instance, required parameters missing, please check the following information : zone, ami, instance_type, key_pair !"
-        return nil
+      required_params = [
+        :ami,
+        :instance_type,
+        :key_pair,
+      ]
+
+      required_params.each do |param|
+        next if server.__send__(param)
+        puts "Missing param #{param}"
+        return
       end
 
-      ec2 = connect(server)
+      ::Aws.config.update({
+        region: server.region,
+        credentials: ::Aws::Credentials.new(server.access_key_id, server.secret_key)
+      })
+      ec2 = ::Aws::EC2::Client.new
 
-      if (!ec2)
-        "Not connected!"
+      vpc_id = ""
+      subnet_id = ""
+      route_table_id = ""
+      igw_id = ""
+      secg_id = ""
+
+      global_cidr = '118.238.205.23/32'
+      vpc_cidr = '172.16.0.0/16'
+      subnet_cidr = '172.16.172.0/24'
+
+      image_id = 'ami-81d092b1'
+
+      if vpc_id == ""
+        vpc_id = ec2.create_vpc(
+          cidr_block: vpc_cidr,
+          instance_tenancy: "default",
+        ).vpc.vpc_id
+        puts "Create VPC #{vpc_id}"
+      end
+      vpc = ::Aws::EC2::Vpc.new(id: vpc_id)
+
+      if subnet_id == ""
+        subnet_id = ec2.create_subnet(
+          vpc_id: vpc_id,
+          cidr_block: subnet_cidr,
+        ).subnet.subnet_id
+        puts "Create subnet #{subnet_id}"
+      end
+      subnet = ::Aws::EC2::Subnet.new(id: subnet_id)
+
+      if route_table_id == ""
+        route_table_id = ec2.describe_route_tables(
+          filters: [
+            { name: "vpc-id", values: [vpc_id] }
+          ]
+        ).route_tables.first.route_table_id
+        puts "Create route table #{route_table_id}"
       end
 
-      response = ec2.RunInstances(
-          'ImageId'            => "#{server.ami}",
-          'MinCount'           => 1,
-          'MaxCount'           => 1,
-          'KeyName'            => "#{server.key_pair}",
-          'InstanceType'       => "#{server.instance_type}",
-          'SecurityGroupId'    => server.security_groups,
-          'Placement'          => {
-             'AvailabilityZone' => "#{server.zone}",
-             'Tenancy'          => 'default' }
-      )
+      ec2.associate_route_table({
+        subnet_id: subnet_id,
+        route_table_id: route_table_id
+      })
 
-      instance = response["RunInstancesResponse"]["instancesSet"]["item"]
-      server.instance_id = instance["instanceId"]
-      server.vpc_id = instance["vpcId"]
-      server.private_ip_address = instance["privateIpAddress"]
+      if igw_id == ""
+        igw_id = ec2.create_internet_gateway.internet_gateway.internet_gateway_id
+      end
+      igw = ::Aws::EC2::InternetGateway.new(id: igw_id)
+      puts "Create igw #{igw_id}"
+
+      if igw.attachments.empty?
+        ec2.attach_internet_gateway({
+          internet_gateway_id: igw_id,
+          vpc_id: vpc_id
+        })
+      end
+
+      ec2.create_route({
+        route_table_id: route_table_id,
+        destination_cidr_block: '0.0.0.0/0',
+        gateway_id: igw_id
+      })
+
+      if secg_id == ""
+        secg_id = ec2.create_security_group({
+          group_name: "netjoin-default",
+          description: "netjoin-default",
+          vpc_id: vpc_id
+        }).group_id
+      end
+      secg = ::Aws::EC2::SecurityGroup.new(id: secg_id)
+      puts "Create secg #{secg_id}"
+
+      if secg.data.ip_permissions.empty?
+        secg.authorize_ingress(ip_permissions: [{ip_protocol: "tcp", from_port: 1194, to_port: 1194, ip_ranges: [{cidr_ip: "#{global_cidr}"}]}])
+        secg.authorize_ingress(ip_permissions: [{ip_protocol: "tcp", from_port: 22, to_port: 22, ip_ranges: [{cidr_ip: "#{global_cidr}"}]}])
+        secg.authorize_ingress(ip_permissions: [{ip_protocol: "-1", from_port: nil, to_port: nil, user_id_group_pairs: [{group_id: "#{secg.id}"}]}])
+
+        secg.authorize_egress(ip_permissions: [{ip_protocol: "tcp", from_port: 1194, to_port: 1194, ip_ranges: [{cidr_ip: "#{global_cidr}"}]}])
+      end
+      secg.load
+      puts "Create rules #{secg.data}"
+
+      instance_id = ec2.run_instances({
+        image_id: image_id,
+        min_count: 1,
+        max_count: 1,
+        key_name: 'axsh-tis',
+        instance_type: 't2.micro',
+        network_interfaces: [
+          { device_index: 0, associate_public_ip_address: true, subnet_id: subnet_id, groups: [secg_id] }
+        ]
+      }).instances.first.instance_id
+      i = ::Aws::EC2::Instance.new(id: instance_id)
+      puts "Create instance #{instance_id}"
+      i.wait_until_running
+
+      server.instance_id = i.id
+      server.vpc_id = vpc.id
     end
 
     def self.describe(server)

@@ -24,6 +24,7 @@ module Netjoin::Models::Servers
     attr_accessor :password
     attr_accessor :port
     attr_accessor :username
+    attr_accessor :public_ip
 
     def initialize(name, ip_address = nil, username = nil, mode = "dynamic")
       super(name)
@@ -58,6 +59,7 @@ module Netjoin::Models::Servers
       entity.password = data[:password]
       entity.port = data[:port]
       entity.username = data[:username]
+      entity.public_ip = data[:public_ip]
     end
 
     def type()
@@ -84,6 +86,7 @@ module Netjoin::Models::Servers
       data[:password] = @password
       data[:port] = @port
       data[:username] = @username
+      data[:public_ip] = @public_ip
       return data
     end
 
