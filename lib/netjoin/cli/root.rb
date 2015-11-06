@@ -1,24 +1,30 @@
 # -*- coding: utf-8 -*-
 
-require 'fileutils'
-
 module Netjoin::Cli
 
   class Root < Thor
     include Netjoin::Helpers::Logger
+    include Netjoin::Helpers::Constants
 
     desc "init", "init netjoin"
     def init()
-      ['config', 'database'].each do |name|
-        if File.exist?("#{name}.yml")
-          info "#{name}.yml exists"
+      [
+        {file_name: DATABASE_YAML, file_format: DEFAULT_DATABASE_YAML},
+        {file_name: CONFIG_YAML, file_format: DEFAULT_CONFIG_YAML}
+      ].each do |h|
+        if File.exist?(h[:file_name])
+          info "#{h[:file_name]} exists"
         else
-          FileUtils.cp("#{name}-dist.yml", "#{name}.yml")
-          info "create #{name}.yml"
+          f = File.new(h[:file_name], "w")
+          f.write(h[:file_format])
+          f.close
+          info "Create #{h[:file_name]}"
         end
       end
     end
 
+    desc "nodes", "manage node"
+    subcommand "nodes", Netjoin::Cli::Nodes
     # desc "config SUBCOMMAND ...ARGS", "manage configuration"
     # subcommand "config", Netjoin::Cli::Config
 
