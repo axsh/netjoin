@@ -3,6 +3,7 @@ source 'http://rubygems.org'
 gem 'net-ssh'
 gem 'net-scp'
 gem 'libxml-ruby'
+gem 'bcrypt'
 
 gem 'thor', '~> 0.19.1'
 gem 'aws-sdk'
