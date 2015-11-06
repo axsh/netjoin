@@ -2,6 +2,7 @@
 
 require 'ostruct'
 require 'yaml'
+require 'bcrypt'
 
 module Netjoin::Models
   class Base < OpenStruct
@@ -9,6 +10,7 @@ module Netjoin::Models
 
     def self.create(name, options)
       return if validate(options)
+      encrypt_password(options)
 
       hash = YAML.load_file(DATABASE_YAML)
       hash['nodes'].merge!(name => options)
@@ -21,6 +23,11 @@ module Netjoin::Models
     end
 
     private
+
+    def self.encrypt_password(options)
+      return if not options['ssh_password']
+      options['ssh_password'] = ::BCrypt::Password.create(options['ssh_password']).to_s
+    end
 
     def self.validate(options)
       raise "NotImplementedError"
