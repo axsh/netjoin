@@ -2,15 +2,18 @@
 
 require 'ostruct'
 require 'yaml'
-require 'bcrypt'
 
 module Netjoin::Models
   class Base < OpenStruct
     include Netjoin::Helpers::Constants
 
-    def self.create(name, options)
-      return if validate(options)
-      encrypt_password(options)
+    def initialize(params)
+      hash = YAML.load_file(DATABASE_YAML)
+      super(shape(hash, params))
+    end
+
+    def self.add(name, options)
+      return if not validate(options)
 
       hash = YAML.load_file(DATABASE_YAML)
       hash['nodes'].merge!(name => options)
@@ -24,9 +27,8 @@ module Netjoin::Models
 
     private
 
-    def self.encrypt_password(options)
-      return if not options['ssh_password']
-      options['ssh_password'] = ::BCrypt::Password.create(options['ssh_password']).to_s
+    def shape(hash, params)
+      raise "NotImplementedError"
     end
 
     def self.validate(options)
