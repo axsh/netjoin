@@ -4,6 +4,8 @@ require 'logger'
 
 module Netjoin
 
+  ROOT = ENV['NETJOIN_ROOT'] || File.expand_path("../../", __FILE__)
+
   class << self
     attr_accessor :logger
   end
