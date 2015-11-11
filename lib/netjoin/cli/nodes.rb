@@ -10,6 +10,7 @@ module Netjoin::Cli
 
     option :type, :type => :string, :required => true # bare-metal, kvm, aws, softlayer
     option :ssh_ip_address, :type => :string, :required => true
+    option :prefix, :type => :numeric
     option :ssh_user, :type => :string, :required => true
     option :ssh_password, :type => :string
     option :ssh_pem, :type => :string
