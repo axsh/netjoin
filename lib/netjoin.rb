@@ -11,13 +11,15 @@ module Netjoin
   end
 
   module Cli
-    autoload :Root,   'netjoin/cli/root'
-    autoload :Nodes,  'netjoin/cli/nodes'
+    autoload :Root,      'netjoin/cli/root'
+    autoload :Nodes,     'netjoin/cli/nodes'
+    autoload :Networks,  'netjoin/cli/networks'
   end
 
   module Models
-    autoload :Base,   'netjoin/models/base'
-    autoload :Nodes,  'netjoin/models/nodes'
+    autoload :Base,      'netjoin/models/base'
+    autoload :Nodes,     'netjoin/models/nodes'
+    autoload :Networks,  'netjoin/models/networks'
   end
 
   module Interfaces
