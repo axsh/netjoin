@@ -22,6 +22,10 @@ module Netjoin
     autoload :Networks,  'netjoin/models/networks'
   end
 
+  module Drivers
+    autoload :Openvpn, 'netjoin/drivers/openvpn'
+  end
+
   module Interfaces
   end
 
