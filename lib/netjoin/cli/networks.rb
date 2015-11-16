@@ -9,13 +9,15 @@ module Netjoin::Cli
     desc "add <name>", "add a new node"
 
     option :driver, :type => :string, :required => true
-    option :nodes, :type => :string, :required => true
+    option :type, :type => :string, :required => true
+    option :nodes, :type => :array, :required => true
 
     def add(name)
       info "add #{name}"
       Netjoin::Models::Networks.add(name, options.to_h)
     end
 
+    desc "create <name>", "create a network"
     def create(name)
       info "create #{name}"
       network = Netjoin::Models::Networks.new(name: name)
