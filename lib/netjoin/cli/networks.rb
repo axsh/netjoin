@@ -6,11 +6,14 @@ module Netjoin::Cli
   class Networks < Thor
     include Netjoin::Helpers::Logger
 
-    desc "add <name>", "add a new node"
+    desc "add <name>", "add a new network"
 
     option :driver, :type => :string, :required => true
     option :type, :type => :string, :required => true
-    option :nodes, :type => :array, :required => true
+    option :server_nodes, :type => :array, :required => true
+    option :client_nodes, :type => :array, :required => true
+
+    option :psk, :type => :string
 
     def add(name)
       info "add #{name}"
