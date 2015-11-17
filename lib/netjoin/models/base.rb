@@ -16,7 +16,8 @@ module Netjoin::Models
       return if not validate(options)
 
       hash = YAML.load_file(DATABASE_YAML)
-      hash['nodes'].merge!(name => options)
+      class_name = self.name.split('::').last.downcase
+      hash[class_name].merge!(name => options)
 
       f = File.open(DATABASE_YAML, 'w')
       f.write(hash.to_yaml)

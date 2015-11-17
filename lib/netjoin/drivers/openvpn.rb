@@ -1,0 +1,38 @@
+# -*- coding: utf-8 -*-
+
+module Netjoin::Drivers
+  module Openvpn
+    def self.install(node, network)
+      tmp_config_file = "./tmp_config.conf"
+
+      File.open(tmp_config_file, "w") do |f|
+        f.puts("persist-remote-ip")
+        f.puts("dev tun")
+        f.puts("persist-tun")
+        f.puts("persist-local-ip")
+        f.puts("comp-lzo")
+        f.puts("user nobody")
+        f.puts("group nobody")
+        f.puts("log vpn.log")
+        f.puts("verb 3")
+        # f.puts("secret #{File.basename(network.psk)}")
+      end
+
+      if node.ssh_from
+        ip = node.ssh_from['ssh_ip_address']
+        user = node.ssh_from['ssh_user']
+        password = node.ssh_from['ssh_password']
+
+        Net::SCP.upload!(ip, user, tmp_config_file, "/tmp", :ssh => {:password => password})
+        Net::SSH.start(ip, user, :password => password) do |ssh|
+          _i = node.ssh_ip_address
+          _u = node.ssh_user
+          p ssh.exec!("ssh -i /root/.ssh/id_rsa #{_u}@#{_i} yum -y install epel-release")
+          p ssh.exec!("ssh -i /root/.ssh/id_rsa #{_u}@#{_i} yum -y install openvpn")
+          p ssh.exec!("scp -i /root/.ssh/id_rsa /tmp/tmp_config.conf #{_u}@#{_i}:/etc/openvpn")
+          p ssh.exec!("ssh -i /root/.ssh/id_rsa #{_u}@#{_i} service openvpn start")
+        end
+      end
+    end
+  end
+end
