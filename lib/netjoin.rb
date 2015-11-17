@@ -23,7 +23,8 @@ module Netjoin
   end
 
   module Drivers
-    autoload :Openvpn, 'netjoin/drivers/openvpn'
+    autoload :Openvpn,   'netjoin/drivers/openvpn'
+    autoload :Kvm,       'netjoin/drivers/kvm'
   end
 
   module Interfaces
