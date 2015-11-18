@@ -1,120 +1,76 @@
-# netjoin
 
-A CLI to allows you to specify and build a VPN network layout. Using the CLI you can servers and clients to a database file which will later be used to set up the VPN network.
+# Netjoin
+
+Netjoin is a toolset to allow users to create VPN networks as they need.
 
 **Disclaimer** : This CLI does not maintain the VPN network once it has been set up!
 
-First version will only work with Linux clients and OpenVPN.
+The first version only works with the Linux clients and the OpenVPN.
 
-## VPN Server
-
-### Linux - OpenVPN
-
-Works with OpenVPN (optionally with Easy-RSA for key generation)
-
-#### Supported OS :
+# Requirements
 
 * CentOS 6.6
-
-## VPN Clients
-
-### Linux - OpenVPN
-
-#### Supported OS :
-
-* CentOS 6.6
-
-### AWS
-
-Not yet supported!
 
 # Setup
 
-Clone this repository.
-
-Initialize netjoin to create the config and database files by the following command :
-
 ```bash
-$ bin/netjoin init
+$ git clone https://github.com/axsh/netjoin.git
+$ cd path/to/repo
+$ bundle install --path vendor/bundle
+$ bundle exec ./bin/netjoin init
 ```
 
-# Quick start with Easy-RSA
+# How to use
 
-When you just want a quick and simple way of setting up your OpenVPN network
-
-### Prerequisites
-
-* Running server and client on CentOS 6.6 with OpenVPN installed and configured with Easy-RSA
-
-Set up server using following guide : [https://www.digitalocean.com/community/tutorials/how-to-setup-and-configure-an-openvpn-server-on-centos-6]
-
-Remove  ``--interact`` from the ``build-key`` script.
-
-## Add a server
-
-Server has OpenVPN already installed and configured using the above guide
+Define nodes
 
 ```bash
-$ netjoin servers linux add vpn-server-name --ip-address 192.168.122.100 --username root --password root
+$ bundle exec ./bin/netjoin nodes add node-name \
+  --type kvm \
+  --ssh-ip-address 192.168.100.100 \
+  --prefix 24 \
+  --ssh-password vulnerablepassword \
+  --ssh-pem pemfilename.pem \
+  --ssh-from parent-node-name \
+  --provision true # if this node is not created yet \
+  --access-key-id ACCESSKEYIDFORAWSIFTYPEISAWS \
+  --secret-key AWSSECRETKEY \
+  --ami ami-abcdefg \
+  --instance-type t2.foobar \
+  --key-pair registered-key-pair \
+  --region aws-region \
+  --security-groups [sg-aaaa, sg-bbbb] \
+  --vpc-id vpc-aaaa \
+  --zone aws-zone
 ```
 
-## Add a client
+Define networks
 
 ```bash
-$ netjoin clients linux add vpn-client-name --server vpn-server-name --ip-address 192.168.122.165 --username root --password root
+$ bundle exec ./bin/netjoin networks add network-name \
+  --driver openvpn \
+  --type site-to-site # or client-to-client \
+  --server-nodes [node1, node2, node3] \
+  --client-nodes [client1, client2] \
+  --psk /path/to/psk.psk
 ```
 
-## Attach the client to the VPN network
-
-Installs OpenVPN, generates certification file, uploads the file to the client and starts OpenVPN using that file
+Provision nodes
 
 ```bash
-$ netjoin clients attach
+$ bundle exec ./bin/netjoin nodes create node-name
 ```
 
-# More advanced setup
-
-When you take care of generating the configuration and certification files yourself
-
-### Prerequisites
-
-* Running server and client on CentOS 6.6
-* Have the `<vpn-client-name>.ovpn` file located in `keys` folder
-* Have the server config and certification files ready in `/tmp/` or another folder (edit below line as needed)
-  * server.conf
-  * ca.crt
-  * dh2048.pem
-  * server.crt
-  * server.key
-
-## Add server
+Provision networks
 
 ```bash
-$ netjoin servers linux add vpn-server --ip-address 192.168.122.100 --username root --password root --file-conf /tmp/server.conf --file-ca-crt /tmp/ca.crt --file-pem /tmp/server.pem --file-crt /tmp/server.crt --file-key /tmp/server.key
+$ bundle exec ./bin/netjoin networks create network-name
 ```
 
-## Install server
 
-Installs OpenVPN, uploads the configuration and certification files and starts OpenVPN
+# Misc
 
-```bash
-$ netjoin servers linux install vpn-server
-```
-
-## Add client
-
-```bash
-$ netjoin clients linux add vpn-client-name --server vpn-server-name --ip-address 192.168.122.165 --username root --password root --generate-key true
-```
-
-## Attach client
-
-Installs OpenVPN, uploads the local certification file  to the client and starts OpenVPN using that file
-
-```bash
-$ netjoin clients attach
-```
-
-# Troubleshooting
-
-Make sure iptables and SELinux are configured properly to allows traffic on the IP's and ports specified for your VPN network!
+Netjoin uses the default credentials in `test/keys` directory if no credentials specified in `database.yml`.
+If you want to prepare your own credentials for VPN networks,
+This [tutorial](https://www.digitalocean.com/community/tutorials/how-to-setup-and-configure-an-openvpn-server-on-centos-6)
+of EasyRSA gives you a simple yet clear way to create required credentials.
