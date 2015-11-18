@@ -26,6 +26,16 @@ module Netjoin::Models
       hash
     end
 
+    def save
+      hash = YAML.load_file(DATABASE_YAML)
+      class_name = self.class.name.split('::').last.downcase
+      hash[class_name][self.name] = Hash[self.to_h.map{|k,v| [k.to_s,v]}]
+
+      File.open(DATABASE_YAML, "w") do |f|
+        f.write hash.to_yaml
+      end
+    end
+
     private
 
     def shape(hash, params)
