@@ -9,14 +9,23 @@ module Netjoin::Cli
     desc "add <name>", "add a new node"
 
     option :type, :type => :string, :required => true # bare-metal, kvm, aws, softlayer
-    option :ssh_ip_address, :type => :string, :required => true
+    option :ssh_ip_address, :type => :string
     option :prefix, :type => :numeric
-    option :ssh_user, :type => :string, :required => true
+    option :ssh_user, :type => :string
     option :ssh_password, :type => :string
     option :ssh_pem, :type => :string
     option :ssh_from, :type => :string
-    option :network, :type => :string
     option :provision, :type => :boolean
+
+    option :access_key_id, :type => :string
+    option :secret_key, :type => :string
+    option :ami, :type => :string
+    option :instance_type, :type => :string
+    option :key_pair, :type => :string
+    option :region, :type => :string
+    option :security_groups, :type => :array
+    option :vpc_id, :type => :string
+    option :zone, :type => :string
 
     def add(name)
       info "add #{name}"
