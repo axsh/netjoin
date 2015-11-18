@@ -28,9 +28,6 @@ module Netjoin
     autoload :Aws,       'netjoin/drivers/aws'
   end
 
-  module Interfaces
-  end
-
   module Helpers
     autoload :Logger,     'netjoin/helpers/logger'
     autoload :Constants,  'netjoin/helpers/constants'
