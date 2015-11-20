@@ -12,8 +12,7 @@ module Netjoin::Cli
     option :ssh_ip_address, :type => :string
     option :prefix, :type => :numeric
     option :ssh_user, :type => :string
-    option :ssh_password, :type => :string
-    option :ssh_pem, :type => :string
+    option :ssh_privatekey, :type => :string
     option :ssh_from, :type => :string
     option :provision, :type => :boolean
 
