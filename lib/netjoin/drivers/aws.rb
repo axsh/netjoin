@@ -31,7 +31,7 @@ module Netjoin::Drivers
       igw_id = ""
       secg_id = ""
 
-      global_cidr = GLOBAL_CIDR
+      global_cidr = Netjoin::Helpers::Constants::GLOBAL_CIDR
       vpc_cidr = node.vpc_cidr
       subnet_cidr = node.subnet_cidr
 
