@@ -2,6 +2,7 @@
 
 require 'net/ssh'
 require 'net/scp'
+require 'net/ssh/proxy/command'
 
 module Netjoin::Drivers
   module Openvpn
@@ -19,67 +20,78 @@ module Netjoin::Drivers
     end
 
     def self.install_on_aws(node, network)
-      tmp_config_file = "./tmp_config.conf"
-
-      File.open(tmp_config_file, "w") do |f|
-        f.puts("persist-remote-ip")
-        f.puts("dev tun")
-        f.puts("persist-tun")
-        f.puts("persist-local-ip")
-        f.puts("comp-lzo")
-        f.puts("user nobody")
-        f.puts("group nobody")
-        f.puts("log vpn.log")
-        f.puts("verb 3")
-        # f.puts("secret #{File.basename(network.psk)}")
-      end
-
       ip = node.public_ip_address
       user = 'root'
 
       Net::SSH.start(ip, user, :keys => [node.privatekey_file_name]) do |ssh|
-        p ssh.exec!("yum -y install epel-release")
-        p ssh.exec!("yum -y install openvpn")
-      end
+        info ssh.exec!("yum -y install epel-release")
+        info ssh.exec!("yum -y install openvpn")
 
-      Net::SCP.upload!(ip, user, tmp_config_file, "/etc/openvpn", :ssh => {:keys => [node.privatekey_file_name]})
+        conf = generate_conf
+        conf << "persist-remote-ip\n"
+        conf << "ifconfig 10.8.0.1 10.8.0.2\n"
+        conf << "secret /etc/openvpn/#{File.basename(network.psk)}"
 
-      Net::SSH.start(ip, user, :keys => [node.privatekey_file_name]) do |ssh|
-        p ssh.exec!("service openvpn start")
+        info ssh.exec!("echo \"#{conf}\" > /etc/openvpn/vpn.conf")
+        info ssh.exec!("service openvpn stop || :")
+        info ssh.exec!("service openvpn start")
       end
     end
 
     def self.install_on_kvm(node, network)
-      tmp_config_file = "./tmp_config.conf"
+      parent = Netjoin::Models::Nodes.new(name: node.parent)
+      proxy = Net::SSH::Proxy::Command.new("
+        ssh #{parent.ssh_ip_address} \
+          -l #{parent.ssh_user} \
+          -o StrictHostKeyChecking=no \
+          -o UserKnownHostsFile=/dev/null \
+          -W %h:%p -i #{parent.ssh_privatekey}")
 
-      File.open(tmp_config_file, "w") do |f|
-        f.puts("persist-remote-ip")
-        f.puts("dev tun")
-        f.puts("persist-tun")
-        f.puts("persist-local-ip")
-        f.puts("comp-lzo")
-        f.puts("user nobody")
-        f.puts("group nobody")
-        f.puts("log vpn.log")
-        f.puts("verb 3")
-        # f.puts("secret #{File.basename(network.psk)}")
-      end
+      ssh_options = {}
+      ssh_options.merge!(:proxy => proxy)
+      ssh_options.merge!(:keys => [node.ssh_privatekey])
 
-      if node.ssh_from
-        ip = node.ssh_from['ssh_ip_address']
-        user = node.ssh_from['ssh_user']
-        password = node.ssh_from['ssh_password']
-
-        Net::SCP.upload!(ip, user, tmp_config_file, "/tmp", :ssh => {:password => password})
-        Net::SSH.start(ip, user, :password => password) do |ssh|
-          _i = node.ssh_ip_address
-          _u = node.ssh_user
-          p ssh.exec!("ssh -i /root/.ssh/id_rsa #{_u}@#{_i} yum -y install epel-release")
-          p ssh.exec!("ssh -i /root/.ssh/id_rsa #{_u}@#{_i} yum -y install openvpn")
-          p ssh.exec!("scp -i /root/.ssh/id_rsa /tmp/tmp_config.conf #{_u}@#{_i}:/etc/openvpn")
-          p ssh.exec!("ssh -i /root/.ssh/id_rsa #{_u}@#{_i} service openvpn start")
+      master_node = nil
+      network.server_nodes.each do |n|
+        _n = Netjoin::Models::Nodes.new(name: n)
+        if _n.type == 'aws'
+          master_node = _n
         end
       end
+
+      Net::SSH.start(node.ssh_ip_address, node.ssh_user, ssh_options) do |ssh|
+        info ssh.exec!("echo \"#{File.read(network.psk)}\" > /etc/openvpn/#{File.basename(network.psk)}")
+
+        conf = generate_conf
+        conf << "remote #{master_node.public_ip_address}\n"
+        conf << "ifconfig 10.8.0.2 10.8.0.1\n"
+        conf << "secret /etc/openvpn/#{File.basename(network.psk)}"
+
+        info ssh.exec!("echo \"#{conf}\" > /etc/openvpn/vpn.conf")
+
+        info ssh.exec!("yum -y install epel-release || :")
+        info ssh.exec!("yum -y install openvpn || :")
+        info ssh.exec!("ls -la /etc/openvpn || :")
+        info ssh.exec!("service openvpn stop || :")
+        info ssh.exec!("service openvpn start")
+      end
+    end
+
+    private
+
+    def self.generate_conf
+      str = ""
+      str << "float\n"
+      str << "port 1194\n"
+      str << "dev tun\n"
+      str << "persist-tun\n"
+      str << "persist-local-ip\n"
+      str << "comp-lzo\n"
+      str << "user nobody\n"
+      str << "group nobody\n"
+      str << "log vpn.log\n"
+      str << "verb 3\n"
+      str
     end
   end
 end
