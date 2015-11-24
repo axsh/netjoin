@@ -12,17 +12,17 @@ module Netjoin::Models
     end
 
     def create
-      Netjoin::Drivers.const_get(self.type.capitalize).create(self)
+      if provision
+        Netjoin::Drivers.const_get(self.type.capitalize).create(self)
+      else
+        info "seems the node is already provisioned: #{name}"
+      end
     end
 
     private
 
     def shape(hash, params)
       node = hash['nodes'][params[:name]]
-      if node['ssh_from']
-        ssh_from = node['ssh_from']
-        node['ssh_from'] = hash['nodes'][ssh_from]
-      end
       node['name'] = params[:name]
       node
     end

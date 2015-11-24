@@ -9,5 +9,7 @@ module Netjoin::Helpers
 
     DEFAULT_DATABASE_YAML = {'nodes' => {}, 'networks' => {}}.to_yaml
     DEFAULT_CONFIG_YAML = {'configs' => {}}.to_yaml
+
+    GLOBAL_CIDR = ENV['GLOBAL_CIDR']
   end
 end

@@ -4,6 +4,7 @@ gem 'net-ssh'
 gem 'net-scp'
 gem 'libxml-ruby'
 gem 'bcrypt'
+gem 'sshkey'
 
 gem 'thor', '~> 0.19.1'
 gem 'aws-sdk'
