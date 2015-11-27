@@ -14,6 +14,7 @@ module Netjoin
     autoload :Root,      'netjoin/cli/root'
     autoload :Nodes,     'netjoin/cli/nodes'
     autoload :Networks,  'netjoin/cli/networks'
+    autoload :Manifests,  'netjoin/cli/manifests'
   end
 
   module Models
