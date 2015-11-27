@@ -10,7 +10,7 @@ module Netjoin::Cli
 
     option :driver, :type => :string, :required => true
     option :type, :type => :string, :required => true
-    option :networks :type => :array, :required => true
+    option :networks, :type => :array, :required => true
 
     def add(name)
       info "add #{name}"
