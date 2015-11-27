@@ -14,6 +14,7 @@ module Netjoin::Cli
 
     def add(name)
       info "add #{name}"
+      Netjoin::Models::Manifests.add(name, options.to_h)
     end
   end
 end
