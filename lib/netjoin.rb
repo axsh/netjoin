@@ -21,6 +21,7 @@ module Netjoin
     autoload :Base,      'netjoin/models/base'
     autoload :Nodes,     'netjoin/models/nodes'
     autoload :Networks,  'netjoin/models/networks'
+    autoload :Manifests,  'netjoin/models/manifests'
   end
 
   module Drivers
