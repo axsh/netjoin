@@ -8,13 +8,22 @@ module Netjoin::Cli
 
     desc "add <name>", "add a new manifests"
 
-    option :driver, :type => :string, :required => true
+    # ex.) --driver=name:openvpn psk:/path/to/psk
+    option :driver, :type => :hash, :required => true
     option :type, :type => :string, :required => true
-    option :networks, :type => :array, :required => true
+    option :server_nodes, :type => :array, :required => true
+    option :client_nodes, :type => :array
 
     def add(name)
       info "add #{name}"
       Netjoin::Models::Manifests.add(name, options.to_h)
+    end
+
+    desc "create <name>", "create and setup nodes according to manifest registered"
+    def create(name)
+      info "create #{name}"
+      manifest = Netjoin::Models::Manifests.new(name: name)
+      manifest.create
     end
   end
 end

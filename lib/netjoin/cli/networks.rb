@@ -8,12 +8,15 @@ module Netjoin::Cli
 
     desc "add <name>", "add a new network"
 
-    option :driver, :type => :string, :required => true
-    option :type, :type => :string, :required => true
-    option :server_nodes, :type => :array, :required => true
-    option :client_nodes, :type => :array, :required => true
+    option :network_ip_address, :type => :string
+    option :prefix, :type => :numeric
 
-    option :psk, :type => :string
+    # option :driver, :type => :string, :required => true
+    # option :type, :type => :string, :required => true
+    # option :server_nodes, :type => :array, :required => true
+    # option :client_nodes, :type => :array, :required => true
+
+    # option :psk, :type => :string
 
     def add(name)
       info "add #{name}"
