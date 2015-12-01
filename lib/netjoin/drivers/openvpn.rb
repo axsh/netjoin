@@ -19,19 +19,6 @@ module Netjoin::Drivers
       end
     end
 
-    def self.ssh_exec(ssh, command)
-      ssh.open_channel do |ch|
-        ch.request_pty do |ch, success|
-          info command
-          ch.exec command do |ch, success|
-            ch.on_data do |ch, data|
-              info data
-            end
-          end
-        end
-      end
-    end
-
     def self.install_on_aws(node, manifest)
       ip = node.public_ip_address
       user = node.ssh_user ? node.ssh_user : 'ec2-user'
@@ -69,11 +56,15 @@ module Netjoin::Drivers
         ssh_exec(ssh, "sudo yum -y install epel-release")
         ssh_exec(ssh, "sudo yum -y install openvpn")
 
+        ssh_exec(ssh, "sudo curl -O http://dlc.openvnet.axsh.jp/packages/rhel/openvswitch/openvswitch-2.4.0-1.x86_64.rpm")
+        ssh_exec(ssh, "sudo yum -y localinstall openvswitch-2.4.0-1.x86_64.rpm")
+
         ssh_exec(ssh, "sudo mv /home/#{user}/#{File.basename(psk)} /etc/openvpn")
         ssh_exec(ssh, "sudo mv /home/#{user}/tmpconf /etc/openvpn/vpn.conf")
 
         ssh_exec(ssh, "sudo service openvpn stop || :")
         ssh_exec(ssh, "sudo service openvpn start")
+        ssh_exec(ssh, "sudo service openvswitch start")
       end
     end
 
@@ -103,7 +94,7 @@ module Netjoin::Drivers
 
       Net::SSH.start(node.ssh_ip_address, node.ssh_user, ssh_options) do |ssh|
         psk = manifest.driver['psk']
-        info ssh.exec!("echo \"#{File.read(psk)}\" > /etc/openvpn/#{File.basename(psk)}")
+        ssh_exec(ssh, "echo \"#{File.read(psk)}\" > /etc/openvpn/#{File.basename(psk)}")
 
         conf = generate_conf
         conf << "remote #{master_node.public_ip_address}\n"
@@ -116,13 +107,13 @@ module Netjoin::Drivers
           end
         end
 
-        info ssh.exec!("echo \"#{conf}\" > /etc/openvpn/vpn.conf")
+        ssh_exec(ssh, "echo \"#{conf}\" > /etc/openvpn/vpn.conf")
 
-        info ssh.exec!("yum -y install epel-release || :")
-        info ssh.exec!("yum -y install openvpn || :")
-        info ssh.exec!("ls -la /etc/openvpn || :")
-        info ssh.exec!("service openvpn stop || :")
-        info ssh.exec!("service openvpn start")
+        ssh_exec(ssh, "yum -y install epel-release || :")
+        ssh_exec(ssh, "yum -y install openvpn || :")
+        ssh_exec(ssh, "ls -la /etc/openvpn || :")
+        ssh_exec(ssh, "service openvpn stop || :")
+        ssh_exec(ssh, "service openvpn start")
       end
     end
 

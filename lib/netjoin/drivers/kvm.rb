@@ -16,14 +16,14 @@ module Netjoin::Drivers
         k = SSHKey.new(File.read(node.ssh_privatekey))
 
         Net::SSH.start(parent.ssh_ip_address, parent.ssh_user, :keys => [parent.ssh_privatekey]) do |ssh|
-          info ssh.exec!(generate_execscript(k))
-          info ssh.exec!(generate_runscript)
-          info ssh.exec!(create_and_launch_kvm(node))
+          ssh_exec(ssh, generate_execscript(k))
+          ssh_exec(ssh, generate_runscript)
+          ssh_exec(ssh, create_and_launch_kvm(node))
 
           net = IPAddr.new("#{node.ssh_ip_address}/#{node.prefix}")
-          ssh.exec!("iptables -t nat -A POSTROUTING -s #{net.to_s}/#{node.prefix} -j MASQUERADE || :")
-          ssh.exec!("iptables -D FORWARD -j REJECT --reject-with icmp-host-prohibited || :")
-          ssh.exec!("sysctl -n -e net.ipv4.ip_forward=1")
+          ssh_exec(ssh, "iptables -t nat -A POSTROUTING -s #{net.to_s}/#{node.prefix} -j MASQUERADE || :")
+          ssh_exec(ssh, "iptables -D FORWARD -j REJECT --reject-with icmp-host-prohibited || :")
+          ssh_exec(ssh, "sysctl -n -e net.ipv4.ip_forward=1")
         end
       elsif node.parent == 'self'
         info "self"
