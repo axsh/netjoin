@@ -69,9 +69,8 @@ module Netjoin::Drivers
         ssh_exec(ssh, "sudo yum -y install epel-release")
         ssh_exec(ssh, "sudo yum -y install openvpn")
 
-        ssh_exec(ssh, "sudo mv ~/#{File.basename(psk)} /etc/openvpn")
-        ssh_exec(ssh, "sudo mv ~/tmpconf /etc/openvpn/vpn.conf")
-
+        ssh_exec(ssh, "sudo mv /home/#{user}/#{File.basename(psk)} /etc/openvpn")
+        ssh_exec(ssh, "sudo mv /home/#{user}/tmpconf /etc/openvpn/vpn.conf")
 
         ssh_exec(ssh, "sudo service openvpn stop || :")
         ssh_exec(ssh, "sudo service openvpn start")
