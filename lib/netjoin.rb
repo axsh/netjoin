@@ -14,12 +14,14 @@ module Netjoin
     autoload :Root,      'netjoin/cli/root'
     autoload :Nodes,     'netjoin/cli/nodes'
     autoload :Networks,  'netjoin/cli/networks'
+    autoload :Manifests,  'netjoin/cli/manifests'
   end
 
   module Models
     autoload :Base,      'netjoin/models/base'
     autoload :Nodes,     'netjoin/models/nodes'
     autoload :Networks,  'netjoin/models/networks'
+    autoload :Manifests,  'netjoin/models/manifests'
   end
 
   module Drivers

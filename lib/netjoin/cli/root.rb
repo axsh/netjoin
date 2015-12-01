@@ -28,5 +28,8 @@ module Netjoin::Cli
 
     desc "networks", "manage network"
     subcommand "networks", Netjoin::Cli::Networks
+
+    desc "manifests", "manage manifest"
+    subcommand "manifests", Netjoin::Cli::Manifests
   end
 end

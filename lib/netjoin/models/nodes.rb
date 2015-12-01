@@ -8,7 +8,7 @@ module Netjoin::Models
 
     def self.validate(options)
       options['prefix'] = 24 if options['prefix'].nil?
-      #encrypt_password(options)
+      true
     end
 
     def create

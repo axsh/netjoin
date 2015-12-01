@@ -26,6 +26,8 @@ module Netjoin::Cli
     option :vpc_id, :type => :string
     option :zone, :type => :string
 
+    option :networks, :type => :array
+
     def add(name)
       info "add #{name}"
       Netjoin::Models::Nodes.add(name, options.to_h)
