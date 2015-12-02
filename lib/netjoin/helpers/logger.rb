@@ -22,10 +22,10 @@ module Netjoin::Helpers
       logger.warn msg
     end
 
-    def ssh_exec(ssh, command)
+    def ssh_exec(ssh, commands)
       ssh.open_channel do |ch|
         ch.request_pty do |ch, success|
-          ch.exec command do |ch, success|
+          ch.exec commands.join(';') do |ch, success|
             ch.on_data do |ch, data|
               data.chomp.split("\n").each { |d| info d }
             end
