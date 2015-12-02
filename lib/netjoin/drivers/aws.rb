@@ -99,11 +99,10 @@ module Netjoin::Drivers
       info "Create secg #{secg_id}"
 
       if secg.data.ip_permissions.empty?
-        secg.authorize_ingress(ip_permissions: [{ip_protocol: "tcp", from_port: 1194, to_port: 1194, ip_ranges: [{cidr_ip: "#{global_cidr}"}]}])
-        secg.authorize_ingress(ip_permissions: [{ip_protocol: "tcp", from_port: 22, to_port: 22, ip_ranges: [{cidr_ip: "#{global_cidr}"}]}])
+        secg.authorize_ingress(ip_permissions: [{ip_protocol: "-1", from_port: nil, to_port: nil, ip_ranges: [{cidr_ip: "#{global_cidr}"}]}])
         secg.authorize_ingress(ip_permissions: [{ip_protocol: "-1", from_port: nil, to_port: nil, user_id_group_pairs: [{group_id: "#{secg.id}"}]}])
 
-        secg.authorize_egress(ip_permissions: [{ip_protocol: "tcp", from_port: 1194, to_port: 1194, ip_ranges: [{cidr_ip: "#{global_cidr}"}]}])
+        secg.authorize_egress(ip_permissions: [{ip_protocol: "-1", from_port: nil, to_port: nil, ip_ranges: [{cidr_ip: "#{global_cidr}"}]}])
       end
       secg.load
       info "Create rules #{secg.data}"
