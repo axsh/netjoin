@@ -10,14 +10,14 @@ module Netjoin::Models
 
     def create
       d = Netjoin::Drivers.const_get(self.driver['name'].capitalize)
-      self.server_nodes.each do |node|
-        info "creating #{node}"
-        n = Netjoin::Models::Nodes.new(name: node)
-        d.install(n, self)
-      end
 
-      if not client_nodes && client_nodes.empty?
-        # do something for clients
+      self.topologies.each do |t_name|
+        t = Netjoin::Models::Topologies.new(name: t_name)
+        t.server_nodes.each do |node|
+          info "creating #{node}"
+          n = Netjoin::Models::Nodes.new(name: node)
+          d.install(n, self)
+        end
       end
     end
 
