@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 require 'logger'
+require 'yaml'
 
 module Netjoin
 
@@ -8,6 +9,7 @@ module Netjoin
 
   class << self
     attr_accessor :logger
+    attr_accessor :db
   end
 
   module Cli
@@ -39,3 +41,4 @@ module Netjoin
 end
 
 Netjoin.logger = ::Logger.new(STDOUT)
+Netjoin.db ||= YAML.load_file(Netjoin::Helpers::Constants::DATABASE_YAML)
