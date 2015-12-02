@@ -11,17 +11,19 @@ module Netjoin
   end
 
   module Cli
-    autoload :Root,      'netjoin/cli/root'
-    autoload :Nodes,     'netjoin/cli/nodes'
-    autoload :Networks,  'netjoin/cli/networks'
-    autoload :Manifests,  'netjoin/cli/manifests'
+    autoload :Root,        'netjoin/cli/root'
+    autoload :Nodes,       'netjoin/cli/nodes'
+    autoload :Networks,    'netjoin/cli/networks'
+    autoload :Manifests,   'netjoin/cli/manifests'
+    autoload :Topologies,  'netjoin/cli/topologies'
   end
 
   module Models
-    autoload :Base,      'netjoin/models/base'
-    autoload :Nodes,     'netjoin/models/nodes'
-    autoload :Networks,  'netjoin/models/networks'
-    autoload :Manifests,  'netjoin/models/manifests'
+    autoload :Base,        'netjoin/models/base'
+    autoload :Nodes,       'netjoin/models/nodes'
+    autoload :Networks,    'netjoin/models/networks'
+    autoload :Manifests,   'netjoin/models/manifests'
+    autoload :Topologies,  'netjoin/models/topologies'
   end
 
   module Drivers

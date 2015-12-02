@@ -31,5 +31,8 @@ module Netjoin::Cli
 
     desc "manifests", "manage manifest"
     subcommand "manifests", Netjoin::Cli::Manifests
+
+    desc "topologies", "manage topology"
+    subcommand "topologies", Netjoin::Cli::Topologies
   end
 end

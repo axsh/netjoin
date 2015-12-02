@@ -11,8 +11,9 @@ module Netjoin::Cli
     # ex.) --driver=name:openvpn psk:/path/to/psk
     option :driver, :type => :hash, :required => true
     option :type, :type => :string, :required => true
-    option :server_nodes, :type => :array, :required => true
-    option :client_nodes, :type => :array
+    option :topologies, :type => :array, :required => true
+    # option :server_nodes, :type => :array, :required => true
+    # option :client_nodes, :type => :array
 
     def add(name)
       info "add #{name}"
