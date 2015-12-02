@@ -7,7 +7,7 @@ module Netjoin::Cli
     include Netjoin::Helpers::Constants
 
     desc "init", "init netjoin"
-    def init()
+    def init
       [
         {file_name: DATABASE_YAML, file_format: DEFAULT_DATABASE_YAML},
         {file_name: CONFIG_YAML, file_format: DEFAULT_CONFIG_YAML}
@@ -20,6 +20,15 @@ module Netjoin::Cli
           f.close
           info "Create #{h[:file_name]}"
         end
+      end
+    end
+
+    desc "config", "configure netjoin"
+    option :global_cidrs, :type => :array
+    def config
+      Netjoin.config = Hash[options.to_h.map{|k,v| [k.to_s,v]}]
+      File.open(CONFIG_YAML, "w") do |f|
+        f.write Netjoin.config.to_yaml
       end
     end
 
