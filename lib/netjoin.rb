@@ -10,6 +10,7 @@ module Netjoin
   class << self
     attr_accessor :logger
     attr_accessor :db
+    attr_accessor :config
   end
 
   module Cli
@@ -42,3 +43,4 @@ end
 
 Netjoin.logger = ::Logger.new(STDOUT)
 Netjoin.db ||= YAML.load_file(Netjoin::Helpers::Constants::DATABASE_YAML)
+Netjoin.config ||= YAML.load_file(Netjoin::Helpers::Constants::CONFIG_YAML)
