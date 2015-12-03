@@ -7,7 +7,7 @@ module Netjoin::Cli
     include Netjoin::Helpers::Constants
 
     desc "init", "init netjoin"
-    def init()
+    def init
       [
         {file_name: DATABASE_YAML, file_format: DEFAULT_DATABASE_YAML},
         {file_name: CONFIG_YAML, file_format: DEFAULT_CONFIG_YAML}
@@ -23,6 +23,15 @@ module Netjoin::Cli
       end
     end
 
+    desc "config", "configure netjoin"
+    option :global_cidrs, :type => :array
+    def config
+      Netjoin.config = Hash[options.to_h.map{|k,v| [k.to_s,v]}]
+      File.open(CONFIG_YAML, "w") do |f|
+        f.write Netjoin.config.to_yaml
+      end
+    end
+
     desc "nodes", "manage node"
     subcommand "nodes", Netjoin::Cli::Nodes
 
@@ -31,5 +40,8 @@ module Netjoin::Cli
 
     desc "manifests", "manage manifest"
     subcommand "manifests", Netjoin::Cli::Manifests
+
+    desc "topologies", "manage topology"
+    subcommand "topologies", Netjoin::Cli::Topologies
   end
 end
