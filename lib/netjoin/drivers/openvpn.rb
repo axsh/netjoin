@@ -31,8 +31,6 @@ module Netjoin::Drivers
       psk = manifest.driver['psk']
 
       conf = generate_conf
-      conf << "persist-remote-ip\n"
-      conf << "ifconfig 10.8.0.1 10.8.0.2\n"
       conf << "secret /etc/openvpn/#{File.basename(psk)}\n"
       other_routes.each do |other_node|
         other_node.networks.each do |network|
@@ -94,8 +92,6 @@ module Netjoin::Drivers
       psk = manifest.driver['psk']
 
       conf = generate_conf
-      conf << "persist-remote-ip\n"
-      conf << "ifconfig 10.8.0.2 10.8.0.1\n"
       conf << "secret /etc/openvpn/#{File.basename(psk)}\n"
       conf << "remote #{master_node.public_ip_address}\n"
       other_routes.each do |other_node|
@@ -109,6 +105,8 @@ module Netjoin::Drivers
         f.write conf
       end
 
+      p node.ssh_ip_address
+      p node.ssh_user
       Net::SCP.start(node.ssh_ip_address, node.ssh_user, ssh_options) do |scp|
         scp.upload!(psk, "#{File.basename(psk)}")
         scp.upload!("./tmpconf", "tmpconf")
@@ -141,9 +139,9 @@ module Netjoin::Drivers
       str = ""
       str << "float\n"
       str << "port 1194\n"
-      str << "dev tun\n"
+      str << "dev tap0\n"
       str << "persist-tun\n"
-      str << "persist-local-ip\n"
+      str << "persist-key\n"
       str << "comp-lzo\n"
       str << "user nobody\n"
       str << "group nobody\n"
