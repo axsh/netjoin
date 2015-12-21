@@ -43,12 +43,12 @@ module Netjoin::Drivers
         f.write conf
       end
 
-      Net::SCP.start(ip, user, :keys => [node.privatekey_file_name]) do |scp|
+      Net::SCP.start(ip, user, :keys => [node.ssh_privatekey]) do |scp|
         scp.upload!(psk, "#{File.basename(psk)}")
         scp.upload!("./tmpconf", "tmpconf")
       end
 
-      Net::SSH.start(ip, user, :keys => [node.privatekey_file_name]) do |ssh|
+      Net::SSH.start(ip, user, :keys => [node.ssh_privatekey]) do |ssh|
         commands = []
         commands << "sudo yum -y install epel-release"
         commands << "sudo yum -y install openvpn"
@@ -92,6 +92,7 @@ module Netjoin::Drivers
       psk = manifest.driver['psk']
 
       conf = generate_conf
+      conf << "resolv-retry infinite\n"
       conf << "secret /etc/openvpn/#{File.basename(psk)}\n"
       conf << "remote #{master_node.public_ip_address}\n"
       other_routes.each do |other_node|
