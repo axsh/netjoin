@@ -11,13 +11,9 @@ module Netjoin::Models
     def create
       d = Netjoin::Drivers.const_get(self.driver['name'].capitalize)
 
-      self.topologies.each do |t_name|
-        t = Netjoin::Models::Topologies.new(name: t_name)
-        t.server_nodes.each do |node|
-          info "creating #{node}"
-          n = Netjoin::Models::Nodes.new(name: node)
-          d.install(n, self)
-        end
+      self.nodes.each do |node|
+        info "creating #{node}"
+        d.install(Netjoin::Models::Nodes.new(name: node), self)
       end
     end
 
