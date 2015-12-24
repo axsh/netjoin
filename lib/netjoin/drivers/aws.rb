@@ -126,6 +126,7 @@ module Netjoin::Drivers
       node.vpc_id = vpc.id
       node.security_groups = i.data.security_groups.map(&:group_id)
       node.public_ip_address = i.data.public_ip_address
+      node.subnet = subnet.id
       node.save
     end
   end

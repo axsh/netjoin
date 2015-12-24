@@ -3,6 +3,7 @@
 require 'net/ssh'
 require 'net/scp'
 require 'net/ssh/proxy/command'
+require 'ipaddr'
 
 module Netjoin::Drivers
   module Openvpn
@@ -24,33 +25,22 @@ module Netjoin::Drivers
       user = node.ssh_user ? node.ssh_user : 'ec2-user'
 
       other_routes = []
-      Netjoin::Models::Topologies.get_all_server_nodes_except(node.name).each do |n|
-        other_routes << Netjoin::Models::Nodes.new(name: n)
-      end
 
       psk = manifest.driver['psk']
 
       conf = generate_conf
-      conf << "persist-remote-ip\n"
-      conf << "ifconfig 10.8.0.1 10.8.0.2\n"
       conf << "secret /etc/openvpn/#{File.basename(psk)}\n"
-      other_routes.each do |other_node|
-        other_node.networks.each do |network|
-          n = Netjoin::Models::Networks.new(name: network)
-          conf << "route #{n.network_ip_address} 255.255.255.0\n"
-        end
-      end
 
       File.open("./tmpconf", "w") do |f|
         f.write conf
       end
 
-      Net::SCP.start(ip, user, :keys => [node.privatekey_file_name]) do |scp|
+      Net::SCP.start(ip, user, :keys => [node.ssh_privatekey]) do |scp|
         scp.upload!(psk, "#{File.basename(psk)}")
         scp.upload!("./tmpconf", "tmpconf")
       end
 
-      Net::SSH.start(ip, user, :keys => [node.privatekey_file_name]) do |ssh|
+      Net::SSH.start(ip, user, :keys => [node.ssh_privatekey]) do |ssh|
         commands = []
         commands << "sudo yum -y install epel-release"
         commands << "sudo yum -y install openvpn"
@@ -64,6 +54,13 @@ module Netjoin::Drivers
         commands << "sudo service openvpn stop || :"
         commands << "sudo service openvpn start"
         commands << "sudo service openvswitch start"
+
+        commands << "sudo ovs-vsctl --if-exists del-br brtun"
+        commands << "sudo ovs-vsctl --may-exist add-br brtun"
+        commands << "sudo ovs-vsctl --if-exists del-port brtun tap0"
+        commands << "sudo ovs-vsctl --may-exist add-port brtun tap0"
+        commands << "sudo ip link set brtun up"
+        commands << "sudo ip link set tap0 up"
         ssh_exec(ssh, commands)
       end
     end
@@ -81,27 +78,17 @@ module Netjoin::Drivers
       ssh_options.merge!(:proxy => proxy)
       ssh_options.merge!(:keys => [node.ssh_privatekey])
 
-      other_routes = []
-      master_node = nil
-      Netjoin::Models::Topologies.get_all_server_nodes_except(node.name).each do |n|
-        _n = Netjoin::Models::Nodes.new(name: n)
-        if _n.type == 'aws'
-          master_node = _n
-        end
-        other_routes << _n if _n.name != node.name && _n.type != 'bare-metal'
-      end
-
       psk = manifest.driver['psk']
 
       conf = generate_conf
-      conf << "persist-remote-ip\n"
-      conf << "ifconfig 10.8.0.2 10.8.0.1\n"
+      conf << "resolv-retry infinite\n"
       conf << "secret /etc/openvpn/#{File.basename(psk)}\n"
-      conf << "remote #{master_node.public_ip_address}\n"
-      other_routes.each do |other_node|
-        other_node.networks.each do |network|
-          n = Netjoin::Models::Networks.new(name: network)
-          conf << "route #{n.network_ip_address} 255.255.255.0\n"
+
+      manifest.nodes.each do |n|
+        next if n == node.name
+        _n = Netjoin::Models::Nodes.new(name: n)
+        if _n.type == 'aws'
+          conf << "remote #{_n.public_ip_address}\n"
         end
       end
 
@@ -124,6 +111,13 @@ module Netjoin::Drivers
 
         commands << "service openvpn stop || :"
         commands << "service openvpn start"
+
+        commands << "sudo ovs-vsctl --if-exists del-br brtun"
+        commands << "sudo ovs-vsctl --may-exist add-br brtun"
+        commands << "sudo ovs-vsctl --if-exists del-port brtun tap0"
+        commands << "sudo ovs-vsctl --may-exist add-port brtun tap0"
+        commands << "sudo ip link set brtun up"
+        commands << "sudo ip link set tap0 up"
         ssh_exec(ssh, commands)
       end
     end
@@ -141,9 +135,9 @@ module Netjoin::Drivers
       str = ""
       str << "float\n"
       str << "port 1194\n"
-      str << "dev tun\n"
+      str << "dev tap0\n"
       str << "persist-tun\n"
-      str << "persist-local-ip\n"
+      str << "persist-key\n"
       str << "comp-lzo\n"
       str << "user nobody\n"
       str << "group nobody\n"

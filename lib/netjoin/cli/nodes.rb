@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 require 'thor'
+require 'net/ssh'
 
 module Netjoin::Cli
   class Nodes < Thor
