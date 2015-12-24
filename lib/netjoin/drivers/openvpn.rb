@@ -3,6 +3,7 @@
 require 'net/ssh'
 require 'net/scp'
 require 'net/ssh/proxy/command'
+require 'ipaddr'
 
 module Netjoin::Drivers
   module Openvpn
@@ -24,20 +25,11 @@ module Netjoin::Drivers
       user = node.ssh_user ? node.ssh_user : 'ec2-user'
 
       other_routes = []
-      Netjoin::Models::Topologies.get_all_server_nodes_except(node.name).each do |n|
-        other_routes << Netjoin::Models::Nodes.new(name: n)
-      end
 
       psk = manifest.driver['psk']
 
       conf = generate_conf
       conf << "secret /etc/openvpn/#{File.basename(psk)}\n"
-      other_routes.each do |other_node|
-        other_node.networks.each do |network|
-          n = Netjoin::Models::Networks.new(name: network)
-          conf << "route #{n.network_ip_address} 255.255.255.0\n"
-        end
-      end
 
       File.open("./tmpconf", "w") do |f|
         f.write conf
@@ -62,6 +54,13 @@ module Netjoin::Drivers
         commands << "sudo service openvpn stop || :"
         commands << "sudo service openvpn start"
         commands << "sudo service openvswitch start"
+
+        commands << "sudo ovs-vsctl --if-exists del-br brtun"
+        commands << "sudo ovs-vsctl --may-exist add-br brtun"
+        commands << "sudo ovs-vsctl --if-exists del-port brtun tap0"
+        commands << "sudo ovs-vsctl --may-exist add-port brtun tap0"
+        commands << "sudo ip link set brtun up"
+        commands << "sudo ip link set tap0 up"
         ssh_exec(ssh, commands)
       end
     end
@@ -79,26 +78,17 @@ module Netjoin::Drivers
       ssh_options.merge!(:proxy => proxy)
       ssh_options.merge!(:keys => [node.ssh_privatekey])
 
-      other_routes = []
-      master_node = nil
-      Netjoin::Models::Topologies.get_all_server_nodes_except(node.name).each do |n|
-        _n = Netjoin::Models::Nodes.new(name: n)
-        if _n.type == 'aws'
-          master_node = _n
-        end
-        other_routes << _n if _n.name != node.name && _n.type != 'bare-metal'
-      end
-
       psk = manifest.driver['psk']
 
       conf = generate_conf
       conf << "resolv-retry infinite\n"
       conf << "secret /etc/openvpn/#{File.basename(psk)}\n"
-      conf << "remote #{master_node.public_ip_address}\n"
-      other_routes.each do |other_node|
-        other_node.networks.each do |network|
-          n = Netjoin::Models::Networks.new(name: network)
-          conf << "route #{n.network_ip_address} 255.255.255.0\n"
+
+      manifest.nodes.each do |n|
+        next if n == node.name
+        _n = Netjoin::Models::Nodes.new(name: n)
+        if _n.type == 'aws'
+          conf << "remote #{_n.public_ip_address}\n"
         end
       end
 
@@ -106,8 +96,6 @@ module Netjoin::Drivers
         f.write conf
       end
 
-      p node.ssh_ip_address
-      p node.ssh_user
       Net::SCP.start(node.ssh_ip_address, node.ssh_user, ssh_options) do |scp|
         scp.upload!(psk, "#{File.basename(psk)}")
         scp.upload!("./tmpconf", "tmpconf")
@@ -123,6 +111,13 @@ module Netjoin::Drivers
 
         commands << "service openvpn stop || :"
         commands << "service openvpn start"
+
+        commands << "sudo ovs-vsctl --if-exists del-br brtun"
+        commands << "sudo ovs-vsctl --may-exist add-br brtun"
+        commands << "sudo ovs-vsctl --if-exists del-port brtun tap0"
+        commands << "sudo ovs-vsctl --may-exist add-port brtun tap0"
+        commands << "sudo ip link set brtun up"
+        commands << "sudo ip link set tap0 up"
         ssh_exec(ssh, commands)
       end
     end
