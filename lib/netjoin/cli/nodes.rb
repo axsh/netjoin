@@ -41,37 +41,5 @@ module Netjoin::Cli
       node = Netjoin::Models::Nodes.new(name: name)
       node.create
     end
-
-    desc "setup <name>", "setup a client node according to vpn server"
-
-    option :ssh_ip_address,   :type => :string, :required => true
-    option :ssh_user,         :type => :string, :required => true
-    option :ssh_privatekey,   :type => :string, :required => true
-    option :server_node,      :type => :string, :required => true
-    option :local_ip_address, :type => :string, :required => true
-
-    def setup
-      n = Netjoin::Models::Nodes.new(name: options['server_node'])
-
-      Net::SSH.start(
-        options['ssh_ip_address'],
-        options['ssh_user'],
-        :keys => [options['ssh_privatekey']]) do |ssh|
-
-        commands = []
-        commands << "sudo ovs-vsctl --may-exist add-port brtun t-aws -- set interface t-aws type=gre options:remote_ip=#{n.local_ip}"
-        ssh_exec(ssh, commands)
-      end
-
-      Net::SSH.start(
-        n.ssh_ip_address,
-        n.ssh_user,
-        :keys => [n.privatekey_file_name]) do |ssh|
-
-        commands = []
-        commands << "sudo ovs-vsctl --may-exist add-port brtun t-local -- set interface t-local type=gre options:remote_ip=#{options['local_ip_address']}"
-        ssh_exec(ssh, commands)
-      end
-    end
   end
 end
