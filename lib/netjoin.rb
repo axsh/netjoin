@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+require 'netjoin/version'
 require 'logger'
 require 'yaml'
 
@@ -14,6 +15,7 @@ module Netjoin
   end
 
   module Cli
+    autoload :Base,        'netjoin/cli/base'
     autoload :Root,        'netjoin/cli/root'
     autoload :Nodes,       'netjoin/cli/nodes'
     autoload :Networks,    'netjoin/cli/networks'
@@ -42,5 +44,17 @@ module Netjoin
 end
 
 Netjoin.logger = ::Logger.new(STDOUT)
-Netjoin.db ||= YAML.load_file(Netjoin::Helpers::Constants::DATABASE_YAML)
-Netjoin.config ||= YAML.load_file(Netjoin::Helpers::Constants::CONFIG_YAML)
+
+
+Netjoin.db = if File.exist?(Netjoin::Helpers::Constants::DATABASE_YAML)
+               YAML.load_file(Netjoin::Helpers::Constants::DATABASE_YAML)
+             else
+               nil
+             end
+
+Netjoin.config = if File.exist?(Netjoin::Helpers::Constants::CONFIG_YAML)
+                    YAML.load_file(Netjoin::Helpers::Constants::CONFIG_YAML)
+                  else
+                    nil
+                  end
+
