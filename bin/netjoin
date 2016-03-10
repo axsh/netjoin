@@ -3,6 +3,7 @@
 
 $LOAD_PATH.unshift File.expand_path('../../lib', __FILE__)
 
+require 'netjoin/rubygems'
 require 'thor'
 require 'yaml'
 require 'netjoin'
