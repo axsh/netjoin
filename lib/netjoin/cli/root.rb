@@ -10,7 +10,7 @@ module Netjoin::Cli
 
     desc "init", "init netjoin"
     def init
-      template_dir = "#{NETJOIN_ROOT}/templates"
+      template_dir = "#{Netjoin::ROOT}/templates"
       [
         {from: "#{template_dir}/config_template.yml", to: CONFIG_YAML},
         {from: "#{template_dir}/database_template.yml", to: DATABASE_YAML}
