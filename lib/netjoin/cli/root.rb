@@ -28,6 +28,10 @@ module Netjoin::Cli
     def up
       Netjoin.db = YAML.load_file(DATABASE_YAML).symbolize_keys
       Netjoin.config = YAML.load_file(CONFIG_YAML).symbolize_keys
+
+      list_to_provision(db).each do |node_name|
+        p node_name
+      end
     end
 
     desc "nodes", "manage node"
@@ -41,5 +45,16 @@ module Netjoin::Cli
 
     desc "topologies", "manage topology"
     subcommand "topologies", Netjoin::Cli::Topologies
+
+    no_tasks {
+      def list_to_provision(db)
+        db[:nodes].inject([]) do |nodes_to_provision, (key, value)|
+          if value.include?(:provision)
+            nodes_to_provision << key
+          end
+          nodes_to_provision
+        end
+      end
+    }
   end
 end
