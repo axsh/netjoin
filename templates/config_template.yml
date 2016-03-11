@@ -1,0 +1,8 @@
+---
+vpc_id:
+vpc_cidr:
+subnet_cidr:
+ami:
+subnet:
+security_groups:
+global_cidrs:
