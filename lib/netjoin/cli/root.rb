@@ -23,15 +23,6 @@ module Netjoin::Cli
       end
     end
 
-    desc "config", "configure netjoin"
-    option :global_cidrs, :type => :array
-    def config
-      Netjoin.config = Hash[options.to_h.map{|k,v| [k.to_s,v]}]
-      File.open(CONFIG_YAML, "w") do |f|
-        f.write Netjoin.config.to_yaml
-      end
-    end
-
     desc "nodes", "manage node"
     subcommand "nodes", Netjoin::Cli::Nodes
 
