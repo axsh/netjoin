@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+require 'yaml'
+
 module Netjoin::Cli
 
   class Root < Thor
@@ -20,6 +22,12 @@ module Netjoin::Cli
           info "Create #{file[:to]}"
         end
       end
+    end
+
+    desc "up", "provision resources"
+    def up
+      Netjoin.db = YAML.load_file(DATABASE_YAML).symbolize_keys
+      Netjoin.config = YAML.load_file(CONFIG_YAML).symbolize_keys
     end
 
     desc "nodes", "manage node"

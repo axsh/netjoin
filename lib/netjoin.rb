@@ -4,6 +4,16 @@ require 'netjoin/version'
 require 'logger'
 require 'yaml'
 
+require_relative 'ext/hash'
+
+def db
+  Netjoin.db
+end
+
+def config
+  Netjoin.config
+end
+
 module Netjoin
 
   ROOT = ENV['NETJOIN_ROOT'] || File.expand_path("../../", __FILE__)
@@ -40,21 +50,8 @@ module Netjoin
   module Helpers
     autoload :Logger,     'netjoin/helpers/logger'
     autoload :Constants,  'netjoin/helpers/constants'
+    autoload :Loader,     'netjoin/helpers/loader'
   end
 end
 
 Netjoin.logger = ::Logger.new(STDOUT)
-
-
-Netjoin.db = if File.exist?(Netjoin::Helpers::Constants::DATABASE_YAML)
-               YAML.load_file(Netjoin::Helpers::Constants::DATABASE_YAML)
-             else
-               nil
-             end
-
-Netjoin.config = if File.exist?(Netjoin::Helpers::Constants::CONFIG_YAML)
-                    YAML.load_file(Netjoin::Helpers::Constants::CONFIG_YAML)
-                  else
-                    nil
-                  end
-
