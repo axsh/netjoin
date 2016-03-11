@@ -8,17 +8,16 @@ module Netjoin::Cli
 
     desc "init", "init netjoin"
     def init
+      template_dir = "#{NETJOIN_ROOT}/templates"
       [
-        {file_name: DATABASE_YAML, file_format: DEFAULT_DATABASE_YAML},
-        {file_name: CONFIG_YAML, file_format: DEFAULT_CONFIG_YAML}
-      ].each do |h|
-        if File.exist?(h[:file_name])
-          info "#{h[:file_name]} exists"
+        {from: "#{template_dir}/config_template.yml", to: CONFIG_YAML},
+        {from: "#{template_dir}/database_template.yml", to: DATABASE_YAML}
+      ].each do |file|
+        if File.exist?(file[:to])
+          info "#{file[:to]} exists"
         else
-          f = File.new(h[:file_name], "w")
-          f.write(h[:file_format])
-          f.close
-          info "Create #{h[:file_name]}"
+          FileUtils.cp(file[:from], file[:to])
+          info "Create #{file[:to]}"
         end
       end
     end
