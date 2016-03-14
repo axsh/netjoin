@@ -60,6 +60,7 @@ cat > ${kvm_dir}/run.sh <<EOF
 name=${node_name}
 num=`shuf -i 10-99 -n 1`
 kvm_cmd=/usr/libexec/qemu-kvm
+memory=${kvm_memory_size}
 
 bridge_internal='brint'
 bridge_global='brglo'
@@ -68,7 +69,7 @@ eth0=${node_name}-eth0
 eth1=${node_name}-eth1
 
 \${kvm_cmd} \\
-  -name \${name} -cpu qemu64,+vmx -m 128 -smp 1 \\
+  -name \${name} -cpu qemu64,+vmx -m \${memory} -smp 1 \\
   -vnc 127.0.0.1:110\${num} -k en-us -rtc base=utc \\
   -monitor telnet:127.0.0.1:140\${num},server,nowait \\
   -serial telnet:127.0.0.1:150\${num},server,nowait \\
