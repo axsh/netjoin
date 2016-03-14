@@ -1,9 +1,8 @@
 ---
-seed_image_url:
 vpc_id:
 vpc_cidr:
 subnet_cidr:
 ami:
-subnet:
+subnet_id:
 security_groups:
 global_cidrs:
