@@ -8,7 +8,7 @@ networks:
     network_type: "linux"
     bridge_name: "brlocal"
 
-  linux_management:
+  linux_manage:
     network_type: "linux"
     bridge_name: "brmanage"
 
@@ -22,11 +22,10 @@ nodes:
       ip: "172.16.1.254"
       user: "root"
       key: "./insecure_key.pem"
+      sudo_password: false
 
   vpn_on_premises:
     provision:
-      provisioner:
-        - NETJOIN_OPENVPN_ON_PREMISES
       spec:
         type: "kvm"
         disk: 10
@@ -72,7 +71,6 @@ nodes:
         - NETJOIN_OPENVPN_AWS
       spec:
         type: "aws"
-        image_id: "ami-aaaaa"
         instance_type: "t2.micro"
         key_pair: "keypair"
         nics:
