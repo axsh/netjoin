@@ -30,7 +30,8 @@ module Netjoin::Cli
       Netjoin.config = YAML.load_file(CONFIG_YAML).symbolize_keys
 
       list_to_provision(db).each do |node_name|
-        p node_name
+        type = db[:nodes][node_name][:provision][:spec][:type].capitalize
+        Netjoin::Drivers.const_get(type).create(node_name)
       end
     end
 
