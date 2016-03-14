@@ -1,40 +1,32 @@
 # -*- coding: utf-8 -*-
 
 require 'aws-sdk'
+require 'net/ssh'
+require 'net/scp'
 
 module Netjoin::Drivers
   module Aws
     extend Netjoin::Helpers::Logger
 
-    def self.create(node)
-      required_params = [
-        :ami,
-        :instance_type,
-        :key_pair,
-      ]
-
-      required_params.each do |param|
-        next if node.__send__(param)
-        error "Missing param #{param}"
-        return
-      end
+    def self.create(node_name)
+      node = db[:nodes][node_name]
 
       ::Aws.config.update({
-        region: node.region,
-        credentials: ::Aws::Credentials.new(node.access_key_id, node.secret_key)
+        region: config[:region],
+        credentials: ::Aws::Credentials.new( ENV['ACCESS_KEY'] || config[:access_key], ENV['SECRET_KEY'] || config[:secret_key] )
       })
       ec2 = ::Aws::EC2::Client.new
 
-      vpc_id = ""
-      subnet_id = ""
-      route_table_id = ""
-      igw_id = ""
-      secg_id = ""
+      vpc_id = config[:vpc_id] || ""
+      subnet_id = config[:subnet_id] || ""
+      route_table_id = config[:route_table_id] || ""
+      igw_id = config[:igw_id] || ""
+      secg_id = config[:secg_id] || ""
 
-      vpc_cidr = node.vpc_cidr
-      subnet_cidr = node.subnet_cidr
+      vpc_cidr = config[:vpc_cidr]
+      subnet_cidr = config[:subnet_cidr]
 
-      image_id = node.ami
+      image_id = config[:ami]
 
       if vpc_id == ""
         vpc_id = ec2.create_vpc(
@@ -70,9 +62,9 @@ module Netjoin::Drivers
 
       if igw_id == ""
         igw_id = ec2.create_internet_gateway.internet_gateway.internet_gateway_id
+        info "Create igw #{igw_id}"
       end
       igw = ::Aws::EC2::InternetGateway.new(id: igw_id)
-      info "Create igw #{igw_id}"
 
       if igw.attachments.empty?
         ec2.attach_internet_gateway({
@@ -89,18 +81,18 @@ module Netjoin::Drivers
 
       if secg_id == ""
         secg_id = ec2.create_security_group({
-          group_name: "netjoin-default",
-          description: "netjoin-default",
+          group_name: config[:group_name],
+          description: config[:secg_description],
           vpc_id: vpc_id
         }).group_id
+        info "Create secg #{secg_id}"
       end
       secg = ::Aws::EC2::SecurityGroup.new(id: secg_id)
-      info "Create secg #{secg_id}"
 
       if secg.data.ip_permissions.empty?
         secg.authorize_ingress(ip_permissions: [{ip_protocol: "-1", from_port: nil, to_port: nil, user_id_group_pairs: [{group_id: "#{secg.id}"}]}])
 
-        Netjoin.config['global_cidrs'].each do |global_cidr|
+        config[:global_cidrs].each do |global_cidr|
           secg.authorize_ingress(ip_permissions: [{ip_protocol: "-1", from_port: nil, to_port: nil, ip_ranges: [{cidr_ip: "#{global_cidr}"}]}])
           secg.authorize_egress(ip_permissions: [{ip_protocol: "-1", from_port: nil, to_port: nil, ip_ranges: [{cidr_ip: "#{global_cidr}"}]}])
         end
@@ -112,8 +104,8 @@ module Netjoin::Drivers
         image_id: image_id,
         min_count: 1,
         max_count: 1,
-        key_name: node.key_pair,
-        instance_type: node.instance_type,
+        key_name: node[:provision][:spec][:key_pair],
+        instance_type: node[:provision][:spec][:instance_type],
         network_interfaces: [
           { device_index: 0, associate_public_ip_address: true, subnet_id: subnet_id, groups: [secg_id] }
         ]
@@ -122,12 +114,37 @@ module Netjoin::Drivers
       info "Create instance #{instance_id}"
       i.wait_until_running
 
-      node.instance_id = i.id
-      node.vpc_id = vpc.id
-      node.security_groups = i.data.security_groups.map(&:group_id)
-      node.public_ip_address = i.data.public_ip_address
-      node.subnet = subnet.id
-      node.save
+      node[:provision][:spec][:instance_id] = i.id
+      node[:provision][:spec][:public_ip_address] = i.data.public_ip_address
+      node[:ssh][:ip] = i.data.public_ip_address
+      node[:provision][:spec][:subnet] = subnet.id
+
+      File.open("database.yml", "w") do |f|
+        f.write db.stringify_keys.to_yaml
+      end
+
+      config[:security_groups] = i.data.security_groups.map(&:group_id)
+
+      File.open("config.yml", "w") do |f|
+        f.write config.stringify_keys.to_yaml
+      end
+
+      Net::SCP.start(node[:ssh][:ip], node[:ssh][:user], :keys => [ node[:ssh][:key] ]) do |scp|
+        scp.upload!("#{Netjoin::ROOT}/netjoin_scripts/vpn_server.sh", "/home/#{node[:ssh][:user]}")
+        if config[:vpn_key]
+          scp.upload!(config[:vpn_key], "/home/#{node[:ssh][:user]}")
+        else
+          scp.upload!("#{Netjoin::ROOT}/keys/insecure_vpn.key", "/home/#{node[:ssh][:user]}")
+        end
+      end
+
+      Net::SSH.start(node[:ssh][:ip], node[:ssh][:user], :keys => [ node[:ssh][:key] ]) do |ssh|
+        ssh_exec(ssh, [
+          "chmod +x ~/*.sh",
+          "sudo ~/vpn_server.sh | tee -a ~/vpn_install.log"
+        ])
+      end
+
     end
   end
 end
