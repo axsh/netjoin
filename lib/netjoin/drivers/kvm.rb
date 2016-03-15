@@ -46,6 +46,7 @@ module Netjoin::Drivers
 
         f_mac = File.open("macaddress", "w")
         f_bridge = File.open("bridge", "w")
+        f_remote_ip = File.open("remote_ip", "w")
 
         nic_num = 0
         node[:provision][:spec][:nics].each do |key, value|
@@ -64,8 +65,11 @@ module Netjoin::Drivers
           nic_num = nic_num + 1
         end
 
+        f_remote_ip.write get_remote_ip
+
         f_mac.close
         f_bridge.close
+        f_remote_ip.close
 
         Net::SCP.start(parent[:ssh][:ip], parent[:ssh][:user], :keys => [ parent[:ssh][:key] ]) do |scp|
           scp.upload!("#{Netjoin::ROOT}/netjoin_scripts/seed_download.sh", work_dir)
@@ -74,6 +78,7 @@ module Netjoin::Drivers
           scp.upload!("#{Netjoin::ROOT}/netjoin_scripts/firstboot.sh", "#{kvm_rootfs_dir}/root")
           scp.upload!("macaddress", kvm_dir)
           scp.upload!("bridge", kvm_dir)
+          scp.upload!("remote_ip", kvm_rootfs_dir)
 
           for i in 0..nic_num-1
             scp.upload("ifcfg-eth#{i}", "#{kvm_rootfs_dir}/etc/sysconfig/network-scripts/")
@@ -116,6 +121,13 @@ module Netjoin::Drivers
         error 'specify node.parent'
         return
       end
+    end
+
+    private
+
+    def self.get_remote_ip
+      d = db[:nodes].select {|k,v| v.key?(:provision) && v[:provision][:spec][:type] == 'aws'}
+      d.first.last[:ssh][:ip]
     end
   end
 end
