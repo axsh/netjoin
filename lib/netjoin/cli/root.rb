@@ -35,18 +35,6 @@ module Netjoin::Cli
       end
     end
 
-    desc "nodes", "manage node"
-    subcommand "nodes", Netjoin::Cli::Nodes
-
-    desc "networks", "manage network"
-    subcommand "networks", Netjoin::Cli::Networks
-
-    desc "manifests", "manage manifest"
-    subcommand "manifests", Netjoin::Cli::Manifests
-
-    desc "topologies", "manage topology"
-    subcommand "topologies", Netjoin::Cli::Topologies
-
     no_tasks {
       def list_to_provision(db)
         db[:nodes].inject([]) do |nodes_to_provision, (key, value)|

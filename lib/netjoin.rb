@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 
-require 'netjoin/version'
 require 'logger'
 require 'yaml'
 
