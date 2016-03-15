@@ -81,7 +81,7 @@ eth1=${node_name}-eth1
 i=0
 for bridge in \`cat bridge\`; do
   brctl addif \${bridge} \${name}-eth\${i}
-  ip link set \${name}-eth\${i}
+  ip link set \${name}-eth\${i} up
   i=\$((\${i}+1))
 done
 EOF
