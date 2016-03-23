@@ -26,6 +26,7 @@ nodes:
 
   vpn_on_premises:
     provision:
+      provisioned: false
       spec:
         type: "kvm"
         disk: 10
@@ -67,8 +68,7 @@ nodes:
 
   vpn_aws:
     provision:
-      provisioner:
-        - NETJOIN_OPENVPN_AWS
+      provisioned: false
       spec:
         type: "aws"
         instance_type: "t2.micro"

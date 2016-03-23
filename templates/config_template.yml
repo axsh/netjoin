@@ -1,8 +1,19 @@
 ---
+access_key:
+secret_key:
+seed_image_url:
+region:
 vpc_id:
 vpc_cidr:
 subnet_cidr:
 ami:
 subnet_id:
-security_groups:
+route_table_id:
+igw_id:
+secg_id:
+group_name:
+secg_description:
 global_cidrs:
+- 0.0.0.0/0
+security_groups:
+- sg-test
