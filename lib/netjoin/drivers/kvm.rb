@@ -30,7 +30,6 @@ module Netjoin::Drivers
         kvm_dir        = work_dir + "/" + node_name.to_s
         kvm_rootfs_dir = work_dir + "/" + node_name.to_s + "/rootfs"
 
-        k = SSHKey.new(File.read(node[:ssh][:key]))
 
         Net::SSH.start(parent[:ssh][:ip], parent[:ssh][:user], :keys => [ parent[:ssh][:key] ]) do |ssh|
 
@@ -40,6 +39,7 @@ module Netjoin::Drivers
           commands << "mkdir -p #{kvm_rootfs_dir} || :"
           commands << "mkdir -p #{kvm_rootfs_dir}/etc/sysconfig/network-scripts/ || :"
           commands << "mkdir -p #{kvm_rootfs_dir}/root/ || :"
+          commands << "mkdir -p #{kvm_rootfs_dir}/root/.ssh || :"
 
           ssh_exec(ssh, commands)
         end
@@ -89,6 +89,13 @@ module Netjoin::Drivers
           else
             scp.upload!("#{Netjoin::ROOT}/keys/insecure_vpn.key", kvm_rootfs_dir)
           end
+
+          k = SSHKey.new(File.read(node[:ssh][:key]))
+          File.open("authorized_keys", "w") do |f|
+            f.write k.ssh_public_key
+          end
+          scp.upload!("authorized_keys", "#{kvm_rootfs_dir}/root/.ssh")
+          FileUtils.rm("authorized_keys")
         end
 
         FileUtils.rm("macaddress")
@@ -104,6 +111,12 @@ module Netjoin::Drivers
             "chmod +x #{kvm_dir}/*.sh",
             "chmod +x #{kvm_rootfs_dir}/*.sh",
             "chmod +x #{kvm_rootfs_dir}/root/*.sh",
+            "chmod 700 #{kvm_rootfs_dir}/root/.ssh",
+            "chmod 600 #{kvm_rootfs_dir}/root/.ssh/authorized_keys",
+            "sudo chown root.root #{kvm_rootfs_dir}/*",
+            "sudo chown root.root #{kvm_rootfs_dir}/root/.ssh",
+            "sudo chown root.root #{kvm_rootfs_dir}/root/.ssh/authorized_keys",
+            "sudo chmod g-w #{kvm_rootfs_dir}/root",
             "chown #{node[:ssh][:user]}.#{node[:ssh][:user]} #{kvm_dir}/*.sh",
             "#{work_dir}/seed_download.sh",
           ])
