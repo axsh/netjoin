@@ -1,4 +1,3 @@
-
 # Netjoin
 
 Netjoin is a toolset to allow users to create VPN networks as they need.
@@ -18,63 +17,40 @@ Netjoin creates KVM instances on a given physical host. At least one network int
 # Setup
 
 ```bash
-$ git clone https://github.com/axsh/netjoin.git
-$ cd path/to/repo
-$ bundle install --path vendor/bundle
-$ bundle exec ./bin/netjoin init
+$ cd /path/to/repo
+$ bundle install --path vendor/bundle --standalone
+$ PATH=/path/to/repo/bin:$PATH
 ```
 
 # How to use
 
-Define nodes
+Create a working directory.
 
 ```bash
-$ bundle exec ./bin/netjoin nodes add node-name \
-  --type kvm \
-  --ssh-ip-address 192.168.100.100 \
-  --prefix 24 \
-  --ssh-password vulnerablepassword \
-  --ssh-pem pemfilename.pem \
-  --ssh-from parent-node-name \
-  --provision true # if this node is not created yet \
-  --access-key-id ACCESSKEYIDFORAWSIFTYPEISAWS \
-  --secret-key AWSSECRETKEY \
-  --ami ami-abcdefg \
-  --instance-type t2.foobar \
-  --key-pair registered-key-pair \
-  --region aws-region \
-  --security-groups [sg-aaaa, sg-bbbb] \
-  --vpc-id vpc-aaaa \
-  --zone aws-zone
+$ mkdir /path/to/your/work_dir
 ```
 
-Define networks
+Initialize netjoin.
 
 ```bash
-$ bundle exec ./bin/netjoin networks add network-name \
-  --driver openvpn \
-  --type site-to-site # or client-to-client \
-  --server-nodes [node1, node2, node3] \
-  --client-nodes [client1, client2] \
-  --psk /path/to/psk.psk
+$ cd /path/to/your/work_dir
+$ netjoin init
 ```
 
-Provision nodes
+`netjoin init` generates the following files:
+- `netjoin.yml`
+- `netjoin_config.yml`
+
+Edit the files then hit the following.
 
 ```bash
-$ bundle exec ./bin/netjoin nodes create node-name
-```
-
-Provision networks
-
-```bash
-$ bundle exec ./bin/netjoin networks create network-name
+$ netjoin up
 ```
 
 
 # Misc
 
-Netjoin uses the default credentials in `test/keys` directory if no credentials specified in `database.yml`.
+Netjoin uses `keys/insecure_vpn.key` as the default vpn key if nothing is specified in `netjoin_config.yml`.
 If you want to prepare your own credentials for VPN networks,
 This [tutorial](https://www.digitalocean.com/community/tutorials/how-to-setup-and-configure-an-openvpn-server-on-centos-6)
 of EasyRSA gives you a simple yet clear way to create required credentials.
