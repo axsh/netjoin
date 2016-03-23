@@ -7,6 +7,7 @@ require 'net/scp'
 module Netjoin::Drivers
   module Aws
     extend Netjoin::Helpers::Logger
+    extend Netjoin::Helpers::Constants
 
     def self.create(node_name)
       node = db[:nodes][node_name]
@@ -114,18 +115,31 @@ module Netjoin::Drivers
       info "Create instance #{instance_id}"
       i.wait_until_running
 
+      ec2.wait_until(:instance_status_ok, instance_ids:[instance_id]) do |w|
+        w.before_attempt do |n|
+          info "wait until 'instance_status_ok' for #{instance_id} (#{n})"
+        end
+      end
+
+      ec2.wait_until(:system_status_ok, instance_ids:[instance_id]) do |w|
+        w.before_attempt do |n|
+          info "wait until 'system_status_ok' for #{instance_id} (#{n})"
+        end
+      end
+
       node[:provision][:spec][:instance_id] = i.id
       node[:provision][:spec][:public_ip_address] = i.data.public_ip_address
+      node[:provision][:spec][:nics][:eth0][:ipaddr] = i.data.private_ip_address
       node[:ssh][:ip] = i.data.public_ip_address
       node[:provision][:spec][:subnet] = subnet.id
 
-      File.open("database.yml", "w") do |f|
+      File.open(Netjoin::Helpers::Constants::DATABASE_YAML, "w") do |f|
         f.write db.stringify_keys.to_yaml
       end
 
       config[:security_groups] = i.data.security_groups.map(&:group_id)
 
-      File.open("config.yml", "w") do |f|
+      File.open(Netjoin::Helpers::Constants::CONFIG_YAML, "w") do |f|
         f.write config.stringify_keys.to_yaml
       end
 
