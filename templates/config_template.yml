@@ -17,3 +17,4 @@ global_cidrs:
 - 0.0.0.0/0
 security_groups:
 - sg-test
+vpn_key:
