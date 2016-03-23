@@ -5,14 +5,6 @@ require 'yaml'
 
 require_relative 'ext/hash'
 
-def db
-  Netjoin.db
-end
-
-def config
-  Netjoin.config
-end
-
 module Netjoin
 
   ROOT = ENV['NETJOIN_ROOT'] || File.expand_path("../../", __FILE__)
@@ -51,6 +43,16 @@ module Netjoin
     autoload :Constants,  'netjoin/helpers/constants'
     autoload :Loader,     'netjoin/helpers/loader'
   end
+
 end
 
 Netjoin.logger = ::Logger.new(STDOUT)
+
+def db
+  Netjoin.db ||= YAML.load_file(Netjoin::Helpers::Constants::DATABASE_YAML).symbolize_keys
+end
+
+def config
+  Netjoin.config ||= YAML.load_file(Netjoin::Helpers::Constants::CONFIG_YAML).symbolize_keys
+end
+
