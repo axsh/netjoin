@@ -11,6 +11,10 @@ The first version only works with the Linux clients and the OpenVPN.
 
 * CentOS 6.6
 
+* Configuration for IP masquerade
+
+Netjoin creates KVM instances on a given physical host. At least one network interface of the KVM instance should be accessible to the Internet. Netjoin requires `iptables` and ip forward are already configured.
+
 # Setup
 
 ```bash
